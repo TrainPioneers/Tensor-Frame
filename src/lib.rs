@@ -1,6 +1,3 @@
-mod tensor;
-mod acceleration;
-mod build;
 
 #[cfg(test)]
 mod tests {

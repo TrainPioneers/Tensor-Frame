@@ -8,18 +8,24 @@ authors = ["Artur arturmisiurev@gmail.com"]
 include = ["/instructions/wgpu/"]
 
 [features]
-default = ["cpu"]
-cuda = ["cust"]
-wgpu = ["dep:wgpu"]
-cpu = []
+default = ["cpu_vm"]
+cuda = ["cuda_vm"]
+wgpu = ["wgpu_vm"]
+cpu = ["cpu_vm"]
 
 
 [dependencies]
-wgpu = { version = "23.0.0", optional = true }
-cust = { version = "0.3.2", optional = true }
+core = { path = "crates/core" }
+cpu_vm = { path = "crates/cpu_vm" }
+cuda_vm = { path = "crates/cuda_vm" }
+tensor = { path = "crates/tensor" }
+wgpu_vm = { path = "crates/wgpu_vm" }
 
-bytemuck = "1.19.0"
-futures = "0.3.31"
-futures-intrusive = "0.5.0"
-once_cell = "1.20.2"
-
+[workspace]
+members = [
+    "crates/cuda_vm",
+    "crates/wgpu_vm",
+    "crates/tensor",
+    "crates/core",
+    "crates/cpu_vm"
+]
