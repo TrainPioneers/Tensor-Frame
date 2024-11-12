@@ -1,6 +1,7 @@
-use wgpu::{Queue, CommandEncoder, Buffer, MapMode, Maintain, Device, BufferSlice};
-use futures_intrusive::channel::shared::{oneshot_channel};
-use crate::acceleration::wgpu::Receiver;
+use futures_intrusive::channel::shared::oneshot_channel;
+use wgpu::{Buffer, BufferSlice, CommandEncoder, Device, Maintain, MapMode, Queue};
+
+use crate::Receiver;
 
 pub async fn submit_to_queue(
     device: &Device,

@@ -1,5 +1,6 @@
-use wgpu::{ComputePipeline, Device, Queue, Buffer, BufferSlice};
-use crate::acceleration::wgpu::{Receiver,create_buffer, create_result_buffer, create_bind_group, run_encoder, submit_to_queue, create_encoder};
+use wgpu::{Buffer, BufferSlice, ComputePipeline, Device, Queue};
+
+use crate::{create_bind_group, create_buffer, create_encoder, create_result_buffer, Receiver, run_encoder, submit_to_queue};
 
 pub async fn create_workload(
     device: &Device,

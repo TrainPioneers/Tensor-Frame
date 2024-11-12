@@ -1,0 +1,9 @@
+[package]
+name = "cuda_vm"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+cust = "0.3.2"
+util = { path = "../util" }

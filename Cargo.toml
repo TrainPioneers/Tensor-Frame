@@ -1,5 +1,5 @@
 [package]
-name = "tensor"
+name = "fast_tensor"
 version = "0.1.0"
 edition = "2021"
 build = "src/build.rs"
@@ -7,19 +7,15 @@ repository = "https://github.com/TrainPioneers/fast_tensor"
 authors = ["Artur arturmisiurev@gmail.com"]
 include = ["/instructions/wgpu/"]
 
-[features]
-default = ["cpu_vm"]
-cuda = ["cuda_vm"]
-wgpu = ["wgpu_vm"]
-cpu = ["cpu_vm"]
-
-
 [dependencies]
 core = { path = "crates/core" }
-cpu_vm = { path = "crates/cpu_vm" }
-cuda_vm = { path = "crates/cuda_vm" }
 tensor = { path = "crates/tensor" }
-wgpu_vm = { path = "crates/wgpu_vm" }
+
+[features]
+default = ["core/cpu"]
+cuda = ["core/cuda"]
+wgpu = ["core/wgpu"]
+cpu = ["core/cpu"]
 
 [workspace]
 members = [
@@ -28,4 +24,4 @@ members = [
     "crates/tensor",
     "crates/core",
     "crates/cpu_vm"
-]
+    , "crates/util"]
