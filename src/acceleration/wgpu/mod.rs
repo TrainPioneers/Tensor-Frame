@@ -1,10 +1,10 @@
 use std::future::Future;
 use futures::future::join_all;
-use wgpu::BufferSlice;
+use wgpu::{BufferSlice, Device, Queue, ShaderModule};
 use crate::tensor::Tensor;
 
 mod buffer;
-mod shader;
+//mod shader;
 mod setup;
 mod pipeline;
 mod bind_group;
@@ -16,7 +16,7 @@ mod receiver;
 
 use receiver::*;
 use buffer::*;
-use shader::*;
+//use shader::*;
 use setup::*;
 use pipeline::*;
 use bind_group::*;
@@ -26,20 +26,13 @@ use break_vec::*;
 use workload::*;
 use crate::acceleration::run_functions::RunOperation;
 
-pub async fn send_to_gpu(t1: Tensor, t2: Tensor, operation: RunOperation) -> Tensor{
+pub async fn run_on_wgpu(t1: Tensor, t2: Tensor, device: Device, queue: Queue,operation: ShaderModule) -> Tensor{
     assert!(t1.same_shape(&t2), "Incorrect shape");
-    let setup = setup_wgpu();
     let t1_workload_future = break_vec(t1.data.clone());
     let t2_workload_future = break_vec(t2.data.clone());
-    let shader_code = SHADER_CACHE.get(&operation).unwrap().as_str();
 
-    let (device, queue) = setup.await;
-
-    let compiled_shader_future = compile_shader(&device, shader_code);
     let staging_buffer_future = create_staging_buffer(&device);
-
-    let compiled_shader = compiled_shader_future.await;
-    let pipeline_future = create_pipeline(&device, compiled_shader);
+    let pipeline_future = create_pipeline(&device, operation);
 
     let t1_workload = t1_workload_future.await;
     let length = t1_workload.len();
@@ -60,9 +53,9 @@ pub async fn send_to_gpu(t1: Tensor, t2: Tensor, operation: RunOperation) -> Ten
         );
     }
 
-    let receivers: Vec<(Receiver, BufferSlice)> = join_all(receivers_future).await;
+    let mut result: Vec<f32> = Vec::new();
 
-    let mut result: Vec<f32> = Vec::with_capacity(t1.data.len());
+    let receivers: Vec<(Receiver, BufferSlice)> = join_all(receivers_future).await;
 
     for i in receivers.iter(){
         let (receiver, buffer_slice) = i;
