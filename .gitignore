@@ -1,9 +1,5 @@
 /target
 /to_be_dispersed_and_moved
 /Cargo.lock
-/crates/core/.idea/
-/crates/tensor/.idea/
-/crates/vm/cpu_vm/.idea/
-/crates/vm/wgpu_vm/.idea/
-/crates/vm/cuda_vm/.idea/
-/crates/util/.idea/
+/crates/*/.idea/
+/crates/vm/*/.idea/
