@@ -37,29 +37,3 @@ __global__ void div(float *a, float *b, float *result, int n) {
         }
     }
 }
-
-// Kernel function to compute the dot product of two vectors
-__global__ void dot(float *a, float *b, float *result, int n) {
-    __shared__ float cache[256];
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    float temp = 0;
-
-    while (idx < n) {
-        temp += a[idx] * b[idx];
-        idx += blockDim.x;
-    }
-
-    cache[threadIdx.x] = temp;
-    __syncthreads();
-
-    for (int i = blockDim.x / 2; i > 0; i /= 2) {
-        if (threadIdx.x < i) {
-            cache[threadIdx.x] += cache[threadIdx.x + i];
-        }
-        __syncthreads();
-    }
-
-    if (threadIdx.x == 0) {
-        *result = cache[0];
-    }
-}

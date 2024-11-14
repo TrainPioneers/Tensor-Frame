@@ -3,6 +3,6 @@ name = "core"
 version = "0.1.0"
 edition = "2021"
 publish = false
-build = "src/build.rs"
+build = "../../build/core_build.rs"
 
 [dependencies]

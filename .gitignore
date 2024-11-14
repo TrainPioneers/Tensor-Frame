@@ -3,3 +3,4 @@
 /Cargo.lock
 /crates/*/.idea/
 /crates/vm/*/.idea/
+.idea/

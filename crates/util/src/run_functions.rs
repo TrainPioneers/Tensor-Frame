@@ -4,5 +4,4 @@ pub(crate) enum RunOperation {
     Sub,
     Mul,
     Div,
-    Dot
 }

@@ -2,11 +2,12 @@ use crate::Tensor;
 
 impl<T> std::ops::Index<&[usize]> for Tensor<T>
 where
-    T: util::IsNum,
+    T: util::ValidTensorType + Clone,
 {
-    type Output = f32;
+    type Output = T;
 
     fn index(&self, index: &[usize]) -> &Self::Output {
-        self.get(index)
+        todo!();
+        &self.get(index)
     }
 }

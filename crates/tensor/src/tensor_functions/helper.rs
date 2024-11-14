@@ -2,7 +2,7 @@ use crate::Tensor;
 
 impl<T> Tensor<T>
 where
-    T: util::ValidTensorType,
+    T: util::ValidTensorType + Clone,
 {
     // Helper method to calculate the flat index from multidimensional indices
     fn flatten_index(&self, indices: &[usize]) -> usize {
@@ -10,7 +10,7 @@ where
             .zip(&self.shape)
             .fold(0, |acc, (idx, dim)| acc * dim + idx)
     }
-    pub fn same_shape<T>(&self, other: &Tensor<T>) -> bool
+    pub fn same_shape(&self, other: &Tensor<T>) -> bool
     where
         T: util::ValidTensorType,
     {

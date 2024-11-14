@@ -2,7 +2,7 @@ use crate::Tensor;
 
 impl<T> std::ops::Add for Tensor<T>
 where
-    T: util::IsNum,
+    T: util::ValidTensorType,
 {
     type Output = Tensor<T>;
 

@@ -1,3 +1,4 @@
+use std::error::Error;
 use std::future::Future;
 
 use futures::future::join_all;
@@ -11,7 +12,7 @@ use queue::*;
 use receiver::*;
 use setup::*;
 use shader::*;
-use util::break_vec;
+use util::{break_vec, ValidTensorType};
 use workload::*;
 
 mod buffer;
@@ -24,11 +25,18 @@ mod queue;
 mod workload;
 mod receiver;
 
-pub async fn run_on_wgpu(d1: Vec<f32>, d2: Vec<f32>, shader_code: &str) -> Vec<f32>{
+async fn run_vector_operation<T>(
+    a: Vec<T>,
+    b: Vec<T>,
+    shader_code: &str,
+) -> Result<Vec<T>, Box<dyn Error>>
+where
+    T: ValidTensorType,
+{
     let setup = setup_wgpu();
-    assert_eq!(d1.len(),d2.len(), "Incorrect shape");
-    let t1_workload_future = break_vec(d1.clone());
-    let t2_workload_future = break_vec(d2.clone());
+    assert_eq!(a.len(), b.len(), "Incorrect shape");
+    let t1_workload_future = break_vec(a.clone());
+    let t2_workload_future = break_vec(b.clone());
 
     let (device, queue) = setup.await;
     let shader = compile_shader(&device,shader_code);
@@ -71,7 +79,7 @@ pub async fn run_on_wgpu(d1: Vec<f32>, d2: Vec<f32>, shader_code: &str) -> Vec<f
         }
     }
     staging_buffer.unmap();
-    result
+    Ok(result)
 }
 
 #[cfg(test)]

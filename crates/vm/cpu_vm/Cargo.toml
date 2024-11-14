@@ -6,3 +6,4 @@ publish = false
 
 [dependencies]
 rayon = "1.10.0"
+util = { path = "../../util" }
