@@ -2,7 +2,7 @@ use crate::Tensor;
 
 impl<T> Tensor<T>
 where
-    T: util::IsNum,
+    T: util::ValidTensorType,
 {
     // Helper method to calculate the flat index from multidimensional indices
     fn flatten_index(&self, indices: &[usize]) -> usize {
@@ -12,7 +12,7 @@ where
     }
     pub fn same_shape<T>(&self, other: &Tensor<T>) -> bool
     where
-        T: util::IsNum,
+        T: util::ValidTensorType,
     {
         self.shape == other.shape
     }

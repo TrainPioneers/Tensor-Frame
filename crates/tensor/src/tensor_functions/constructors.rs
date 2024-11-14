@@ -2,7 +2,7 @@ use crate::Tensor;
 
 impl<T> Tensor<T>
 where
-    T: util::IsNum,
+    T: util::ValidTensorType,
 {
     pub fn with_num(num: T, shape: Vec<usize>) -> Tensor<T> {
         let size = shape.iter().product();
