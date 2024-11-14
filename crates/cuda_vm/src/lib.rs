@@ -2,7 +2,7 @@ use std::error::Error;
 
 use cust::prelude::*;
 
-use util::IsNum;
+use util::ValidTensorType;
 
 fn run_vector_operation<T>(
     a: Vec<T>,
@@ -10,7 +10,7 @@ fn run_vector_operation<T>(
     function_name: &str,
 ) -> Result<Vec<T>, Box<dyn Error>>
 where
-    T: IsNum,
+    T: ValidTensorType,
 {
     // Number of elements in the vectors
     let n = a.len();

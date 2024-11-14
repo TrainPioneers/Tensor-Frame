@@ -1,6 +1,6 @@
-pub trait IsNum {}
+pub trait ValidTensorType {}
 
-impl IsNum for i32 {}
-impl IsNum for i64 {}
-impl IsNum for f32 {}
-impl IsNum for f64 {}
+impl ValidTensorType for i32 {}
+impl ValidTensorType for i64 {}
+impl ValidTensorType for f32 {}
+impl ValidTensorType for f64 {}
