@@ -41,7 +41,7 @@ where
 
     // Configure the execution grid
     let block_size = 256; // Number of threads per block
-    let grid_size = (n as f32 / block_size as f32).ceil() as u32; // Number of blocks
+    //let grid_size = (n as T / block_size as T).ceil() as u32; // Number of blocks
 
     // Launch the kernel with the data
     unsafe {
@@ -58,7 +58,7 @@ where
 
 
     // Allocate a host vector to store the result
-    let mut c: Vec<f32> = vec![0.0; n];
+    let mut c: Vec<T> = vec![0 as T; n];
 
     // Copy the result from device to host
     d_c.copy_to(&mut c)?;
