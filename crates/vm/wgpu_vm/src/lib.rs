@@ -1,7 +1,18 @@
 use std::future::Future;
+
 use futures::future::join_all;
-use wgpu::{BufferSlice, Device, Queue, ShaderModule};
+use wgpu::BufferSlice;
+
+use bind_group::*;
+use buffer::*;
+use encoder::*;
+use pipeline::*;
+use queue::*;
+use receiver::*;
+use setup::*;
+use shader::*;
 use util::break_vec;
+use workload::*;
 
 mod buffer;
 mod shader;
@@ -12,16 +23,6 @@ mod encoder;
 mod queue;
 mod workload;
 mod receiver;
-
-use shader::*;
-use receiver::*;
-use buffer::*;
-use setup::*;
-use pipeline::*;
-use bind_group::*;
-use encoder::*;
-use queue::*;
-use workload::*;
 
 pub async fn run_on_wgpu(d1: Vec<f32>, d2: Vec<f32>, shader_code: &str) -> Vec<f32>{
     let setup = setup_wgpu();
@@ -75,8 +76,6 @@ pub async fn run_on_wgpu(d1: Vec<f32>, d2: Vec<f32>, shader_code: &str) -> Vec<f
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     #[test]
     fn it_works() {
 
