@@ -1,5 +1,6 @@
 use std::error::Error;
 
+use cust::launch;
 use cust::prelude::*;
 
 use util::ValidTensorType;
@@ -33,6 +34,8 @@ where
     let cubin = std::fs::read("../../../instructions/cuda/kernel.cubin")?;
     let module = Module::from_cubin(&cubin, &[])?;
 
+    let stream = Stream::new(StreamFlags::NON_BLOCKING, None)?;
+
     // Get the kernel function
     let kernel = module.get_function(function_name)?;
 
@@ -42,18 +45,23 @@ where
 
     // Launch the kernel with the data
     unsafe {
-        kernel.launch(
-            &[grid_size, 1, 1],
-            &[block_size, 1, 1],
-            &[&d_a, &d_b, &d_c, &n],
-        )?;
+        let result = launch!(kernel<<<(1, 1, 1), (10, 1, 1), 0, stream>>>(
+            d_a.as_device_ptr(),
+            d_b.as_device_ptr(),
+            d_c.as_device_ptr(),
+            d_c.len()
+        ));
+        result?;
     }
+
+    stream.synchronize()?;
+
 
     // Allocate a host vector to store the result
     let mut c: Vec<f32> = vec![0.0; n];
 
     // Copy the result from device to host
-    d_c.copy_to_slice(&mut c)?;
+    d_c.copy_to(&mut c)?;
 
     // Return the result
     Ok(c)
