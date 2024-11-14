@@ -1,4 +1,4 @@
-use wgpu::{Device, CommandEncoder, ComputePipeline, BindGroup,CommandEncoderDescriptor,ComputePassDescriptor};
+use wgpu::{BindGroup, CommandEncoder, CommandEncoderDescriptor, ComputePassDescriptor, ComputePipeline, Device};
 
 pub async fn create_encoder (device: &Device) -> CommandEncoder {
     device.create_command_encoder(&CommandEncoderDescriptor {

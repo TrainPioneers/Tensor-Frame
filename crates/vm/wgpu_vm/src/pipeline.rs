@@ -1,5 +1,7 @@
 use std::collections::HashMap;
-use wgpu::{Device, ShaderModule, ComputePipelineDescriptor, PipelineCompilationOptions, ComputePipeline};
+
+use wgpu::{ComputePipeline, ComputePipelineDescriptor, Device, PipelineCompilationOptions, ShaderModule};
+
 pub async fn create_pipeline(device: &Device, shader_module: ShaderModule) -> ComputePipeline {
     let compilation_options = PipelineCompilationOptions {
         constants: &HashMap::new(),

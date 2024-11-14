@@ -1,4 +1,5 @@
-use wgpu::{BindGroupLayout, Buffer, Device, BindGroupDescriptor, BindGroupEntry, BindGroup};
+use wgpu::{BindGroup, BindGroupDescriptor, BindGroupEntry, BindGroupLayout, Buffer, Device};
+
 pub async fn create_bind_group (
     device: &Device,
     bind_group_layout: BindGroupLayout,

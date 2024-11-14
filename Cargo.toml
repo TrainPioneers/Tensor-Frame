@@ -23,5 +23,8 @@ members = [
     "crates/wgpu_vm",
     "crates/tensor",
     "crates/core",
-    "crates/cpu_vm"
-    , "crates/util"]
+    "crates/cpu_vm",
+    "crates/util",
+    "crates/hip_vm",
+    "crates/ocl_vm"
+    , "crates/device_config"]

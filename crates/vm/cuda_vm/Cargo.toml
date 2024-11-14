@@ -6,4 +6,4 @@ publish = false
 
 [dependencies]
 cust = "0.3.2"
-util = { path = "../util" }
+util = { path = "../../util" }

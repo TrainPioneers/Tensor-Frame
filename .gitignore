@@ -3,7 +3,7 @@
 /Cargo.lock
 /crates/core/.idea/
 /crates/tensor/.idea/
-/crates/cpu_vm/.idea/
-/crates/wgpu_vm/.idea/
-/crates/cuda_vm/.idea/
+/crates/vm/cpu_vm/.idea/
+/crates/vm/wgpu_vm/.idea/
+/crates/vm/cuda_vm/.idea/
 /crates/util/.idea/

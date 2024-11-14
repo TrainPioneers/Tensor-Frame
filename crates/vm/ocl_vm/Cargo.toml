@@ -1,8 +1,6 @@
 [package]
-name = "core"
+name = "ocl_vm"
 version = "0.1.0"
 edition = "2021"
-publish = false
-build = "src/build.rs"
 
 [dependencies]

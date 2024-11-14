@@ -1,12 +1,13 @@
 use wgpu::{
-    Device,
-    Queue,
-    Instance,
     Backends,
-    RequestAdapterOptions,
+    Device,
     DeviceDescriptor,
-    InstanceDescriptor
+    Instance,
+    InstanceDescriptor,
+    Queue,
+    RequestAdapterOptions
 };
+
 pub async fn setup_wgpu() -> (Device, Queue) {
     // Create an instance of wgpu
     let instance = Instance::new(InstanceDescriptor{

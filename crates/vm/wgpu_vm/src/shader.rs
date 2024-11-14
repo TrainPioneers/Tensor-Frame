@@ -1,4 +1,4 @@
-use wgpu::{Device, ShaderModuleDescriptor, ShaderSource, ShaderModule};
+use wgpu::{Device, ShaderModule, ShaderModuleDescriptor, ShaderSource};
 
 pub async fn compile_shader (device: &Device, shader_code: &str) -> ShaderModule {
     device.create_shader_module(ShaderModuleDescriptor {

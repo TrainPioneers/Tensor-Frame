@@ -1,11 +1,11 @@
+use bytemuck::cast_slice;
 use wgpu::{
     Buffer,
-    Device,
-    BufferUsages,
     BufferDescriptor,
-    util::{DeviceExt, BufferInitDescriptor}
+    BufferUsages,
+    Device,
+    util::{BufferInitDescriptor, DeviceExt}
 };
-use bytemuck::cast_slice;
 
 pub async fn create_buffer(device: &Device, data: Vec<f32>) -> Buffer {
     device.create_buffer_init(&BufferInitDescriptor {
