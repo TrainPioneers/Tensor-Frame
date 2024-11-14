@@ -1,0 +1,16 @@
+[package]
+name = "core"
+version = "0.1.0"
+edition = "2021"
+publish = false
+build = "src/build.rs"
+
+[dependencies]
+cuda_vm = {path = "../cuda_vm", optional = true}
+wgpu_vm = {path = "../wgpu_vm", optional = true}
+cpu_vm = {path = "../cpu_vm", optional = true}
+
+[features]
+cpu = ["cpu_vm"]
+cuda = ["cuda_vm"]
+wgpu = ["wgpu_vm"]
