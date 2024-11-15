@@ -7,4 +7,4 @@ mod tests {
     }
 }
 
-mod prelude {}
+pub mod prelude {}

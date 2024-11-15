@@ -5,7 +5,7 @@ mod tensor_functions;
 #[derive(Debug, PartialEq, Clone)]
 pub struct Tensor<T>
 where
-    T: ValidTensorType,
+    T: ValidTensorType + From<i32> + From<i64> + From<f32> + From<f64>,
 {
     data: Vec<T>,
     shape: Vec<usize>,

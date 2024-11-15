@@ -1,1 +1,1 @@
-This is still a prealpha version, I will post it on crates.io soon
+This is still alpha version, I will post it on crates.io soon

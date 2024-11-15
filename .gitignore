@@ -3,7 +3,7 @@
 /Cargo.lock
 /crates/*/.idea/
 /crates/vm/*/.idea/
-.idea/
+/.idea
 /instructions/cuda/.idea/
 /instructions/cuda/CMakeLists.txt
 /instructions/cuda/cmake-build-debug/
