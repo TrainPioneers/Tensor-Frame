@@ -1,9 +1,10 @@
+# Ignore distribution
 /target
-/to_be_dispersed_and_moved
-/Cargo.lock
-/crates/*/.idea/
-/crates/vm/*/.idea/
-/.idea
-/instructions/cuda/.idea/
-/instructions/cuda/CMakeLists.txt
-/instructions/cuda/cmake-build-debug/
+# Ignore Cargo.lock
+Cargo.lock
+# Ignore IDE project files
+.idea/
+# Ignore CMake build directories
+cmake-build-debug/
+# Ignore CMakeLists.txt if it's specific to a certain IDE or environment
+CMakeLists.txt
