@@ -2,13 +2,12 @@
 name = "fast_tensor"
 version = "0.1.1"
 edition = "2021"
-build = "build/main_build.rs"
+build = ".build/main_build.rs"
 repository = "https://github.com/TrainPioneers/fast_tensor"
 authors = ["Artur arturmisiurev@gmail.com"]
 include = ["/instructions/wgpu/"]
 
 [dependencies]
-core = { path = "crates/core" }
 tensor = { path = "crates/tensor" }
 
 [features]
@@ -19,13 +18,12 @@ tensor = { path = "crates/tensor" }
 
 [workspace]
 members = [
+    "crates/tensor",
+    "crates/util",
+    "crates/device_config",
     "crates/vm/cuda_vm",
     "crates/vm/wgpu_vm",
-    "crates/tensor",
-    "crates/core",
-    "crates/vm/cpu_vm",
-    "crates/util",
     "crates/vm/hip_vm",
     "crates/vm/ocl_vm",
-    "crates/device_config"
+    "crates/vm/cpu_vm",
 ]

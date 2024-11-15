@@ -3,7 +3,7 @@ name = "cuda_vm"
 version = "0.1.0"
 edition = "2021"
 publish = false
-build = "/build/compile_cu.rs"
+build = "../../../.build/compile_cu.rs"
 
 [dependencies]
 cust = "0.3.2"

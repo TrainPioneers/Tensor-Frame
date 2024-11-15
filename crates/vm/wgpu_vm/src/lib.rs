@@ -2,7 +2,7 @@ use std::error::Error;
 use std::future::Future;
 
 use futures::future::join_all;
-use wgpu::BufferSlice;
+use wgpu::{BufferSlice, Device, Queue};
 
 use bind_group::*;
 use buffer::*;
@@ -33,7 +33,7 @@ async fn run_vector_operation<T>(
 where
     T: ValidTensorType,
 {
-    let setup = setup_wgpu();
+    let setup: impl Future<Output=(Device, Queue)> = setup_wgpu();
     assert_eq!(a.len(), b.len(), "Incorrect shape");
     let t1_workload_future = break_vec(a.clone());
     let t2_workload_future = break_vec(b.clone());
@@ -45,7 +45,7 @@ where
 
     let t1_workload = t1_workload_future.await;
     let length = t1_workload.len();
-    let mut receivers_future: impl Future<Output=Vec<(Receiver,BufferSlice)>>= Vec::with_capacity(length);
+    let mut receivers_future: impl Future<Output=Vec<(Receiver,BufferSlice)>> = Vec::with_capacity(length);
     let t2_workload = t2_workload_future.await;
     let pipeline_future = create_pipeline(&device, shader.await);
 

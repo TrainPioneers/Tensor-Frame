@@ -1,5 +1,5 @@
 #[derive(Debug, Hash, PartialEq, Eq)]
-pub(crate) enum RunOperation {
+pub enum RunOperation {
     Add,
     Sub,
     Mul,

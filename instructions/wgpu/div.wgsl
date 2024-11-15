@@ -5,5 +5,10 @@
 @compute @workgroup_size(64)
 fn main(@builtin(global_invocation_id) global_id : vec3<u32>) {
    let i = global_id.x;
-   result[i] = a[i] / b[i];
+   if (b[i] != 0.0f){
+        result[i] = a[i] / b[i];
+   }
+   else{
+        result[i] = 0.0f;
+   }
 }

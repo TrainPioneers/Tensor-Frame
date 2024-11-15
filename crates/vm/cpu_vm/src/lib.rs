@@ -19,7 +19,7 @@ where
         match function_name {
             "add" => vector_add(a, b),
             "sub" => vector_sub(a, b),
-            "mul" => vector_mul(a, b),
+            "mul.cl" => vector_mul(a, b),
             "div" => vector_div(a, b),
             _ => panic!("Incorrect function name")
         }

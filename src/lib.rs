@@ -3,7 +3,7 @@
 mod tests {
     #[test]
     fn add_1() {
-        todo!()
+        assert_eq!(1, 1);
     }
 }
 

@@ -1,4 +1,4 @@
-// kernel.cu
+// kernel.cpp
 
 
 // Kernel function to add two vectors
