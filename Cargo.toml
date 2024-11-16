@@ -2,10 +2,10 @@
 name = "fast_tensor"
 version = "0.1.1"
 edition = "2021"
-build = ".build/main_build.rs"
+build = "build/main_build.rs"
 repository = "https://github.com/TrainPioneers/fast_tensor"
 authors = ["Artur arturmisiurev@gmail.com"]
-include = ["/instructions/wgpu/"]
+include = ["/instructions", "/crates", "/.build"]
 
 [dependencies]
 tensor = { path = "crates/tensor" }
