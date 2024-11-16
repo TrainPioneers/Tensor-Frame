@@ -12,11 +12,11 @@ where
         }
     }
     pub fn zeros(shape: Vec<usize>) -> Tensor<T> {
-        Tensor::with_num(0 as T, shape)
+        Tensor::with_num(T::from(0), shape)
     }
 
     pub fn ones(shape: Vec<usize>) -> Tensor<T> {
-        Tensor::with_num(1 as T, shape)
+        Tensor::with_num(T::from(1), shape)
     }
 
     pub fn from_vec(data: Vec<T>, shape: Vec<usize>) -> Tensor<T> {

@@ -2,7 +2,7 @@ use crate::Tensor;
 
 impl<T> Tensor<T>
 where
-    T: util::ValidTensorType + Clone,
+    T: util::ValidTensorType + From<i32> + From<i64> + From<f32> + From<f64> + Clone,
 {
     // Helper method to calculate the flat index from multidimensional indices
     fn flatten_index(&self, indices: &[usize]) -> usize {
@@ -17,10 +17,10 @@ where
         self.shape == other.shape
     }
     // Get an element at the specified multidimensional index
-    pub fn get(&self, indices: &[usize]) -> T {
+    pub fn get(&self, indices: &[usize]) -> &T {
         assert_eq!(indices.len(), self.shape.len(), "Incorrect number of indices");
         let index = self.flatten_index(indices);
-        self.data[index].clone()
+        &self.data[index]
     }
 
     // Set an element at the specified multidimensional index

@@ -2,7 +2,9 @@
 name = "hip_vm"
 version = "0.1.0"
 edition = "2021"
+build = "../../../build/compile_hip.rs"
 
 [dependencies]
 libloading = "0.8.5"
 util = { path = "../../util" }
+
