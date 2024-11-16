@@ -15,7 +15,7 @@ members = [
     "crates/tensor",
     "crates/util",
     "crates/device_config",
-    #"crates/vm/cuda_vm",
+    "crates/vm/cuda_vm",
     "crates/vm/wgpu_vm",
     "crates/vm/hip_vm",
     "crates/vm/ocl_vm",
