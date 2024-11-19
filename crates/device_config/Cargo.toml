@@ -9,6 +9,7 @@ wgpu_vm = { path = "../vm/wgpu_vm", optional = true }
 cpu_vm = { path = "../vm/cpu_vm", optional = true }
 ocl_vm = { path = "../vm/ocl_vm", optional = true }
 hip_vm = { path = "../vm/hip_vm", optional = true }
+util = { path = "../util" }
 
 [features]
 cpu = ["cpu_vm"]

@@ -5,3 +5,5 @@ edition = "2021"
 build = "../../../build/compile_ocl.rs"
 
 [dependencies]
+ocl = "0.19.7"
+util = { path = "../../util" }
