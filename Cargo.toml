@@ -11,6 +11,10 @@ include = ["/instructions/", "/crates/", "/build/"]
 tensor = { path = "crates/tensor" }
 device_config = { path = "crates/device_config" }
 util = {path = "crates/util"}
+gpu_detector = { path = "crates/gpu_detector" }
+
+[features]
+prefer-cpu-over-wgpu = []
 
 [workspace]
 members = [
@@ -22,5 +26,6 @@ members = [
     "crates/vm/hip_vm",
     "crates/vm/ocl_vm",
     "crates/vm/cpu_vm",
+    "crates/gpu_detector",
 ]
 
