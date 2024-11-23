@@ -16,7 +16,7 @@ use wgpu_vm::*;
 use util::{RunOperation, ValidTensorType};
 
 
-fn run_operation<T>(d1: Vec<T>, d2: Vec<T>, operation: RunOperation) -> Vec<T>
+pub fn run_operation<T>(d1: Vec<T>, d2: Vec<T>, operation: RunOperation) -> Vec<T>
 where
     T: ValidTensorType + From<i32> + From<i64> + From<f32> + From<f64>,
 {

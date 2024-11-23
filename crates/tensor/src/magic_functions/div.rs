@@ -1,3 +1,5 @@
+use device_config::run_operation;
+use util::RunOperation;
 use crate::Tensor;
 
 impl<T> std::ops::Div for Tensor<T>
@@ -7,6 +9,7 @@ where
     type Output = Tensor<T>;
 
     fn div(self, other: Self) -> Self::Output {
-        todo!()
+        let new_vec = run_operation(self.data, other.data, RunOperation::Div);
+        Tensor::<T>::from_vec(new_vec, self.shape)
     }
 }

@@ -1,3 +1,5 @@
+use device_config::run_operation;
+use util::RunOperation;
 use crate::Tensor;
 
 impl<T> std::ops::Mul for Tensor<T>
@@ -7,6 +9,7 @@ where
     type Output = Tensor<T>;
 
     fn mul(self, other: Self) -> Self::Output {
-        todo!()
+        let new_vec = run_operation(self.data, other.data, RunOperation::Mul);
+        Tensor::<T>::from_vec(new_vec, self.shape)
     }
 }

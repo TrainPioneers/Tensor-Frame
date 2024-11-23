@@ -1,4 +1,6 @@
 use crate::Tensor;
+use device_config::run_operation;
+use util::RunOperation;
 
 impl<T> std::ops::Add for Tensor<T>
 where
@@ -7,6 +9,7 @@ where
     type Output = Tensor<T>;
 
     fn add(self, other: Self) -> Self::Output {
-        todo!()
+        let new_vec = run_operation(self.data, other.data, RunOperation::Add);
+        Tensor::<T>::from_vec(new_vec, self.shape)
     }
 }
