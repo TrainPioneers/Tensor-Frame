@@ -9,7 +9,7 @@ include = ["/instructions/", "/crates/", "/build/"]
 
 [dependencies]
 tensor = { path = "crates/tensor" }
-device_config = { path = "crates/device_config" }\
+device_config = { path = "crates/device_config" }
 util = {path = "crates/util"}
 
 [workspace]
