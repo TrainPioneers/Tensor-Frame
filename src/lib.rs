@@ -7,4 +7,12 @@ mod tests {
     }
 }
 
-pub mod prelude {}
+pub mod prelude {
+    pub use tensor::Tensor;
+    pub use device_config::run_operation;
+    pub use util::RunOperation;
+}
+
+pub mod dev {
+
+}
