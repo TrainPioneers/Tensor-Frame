@@ -1,16 +1,16 @@
-#[cfg ! (feature = "cpu")]
+#[cfg!(feature = "cpu")]
 use cpu_vm::*;
 
-#[cfg ! (feature = "cuda")]
+#[cfg!(feature = "cuda")]
 use cuda_vm::*;
 
-#[cfg ! (feature = "ocl")]
+#[cfg!(feature = "ocl")]
 use ocl_vm::*;
 
-#[cfg ! (feature = "hip")]
+#[cfg!(feature = "hip")]
 use hip_vm::*;
 
-#[cfg ! (feature = "wgpu")]
+#[cfg!(feature = "wgpu")]
 use wgpu_vm::*;
 
 use util::{RunOperation, ValidTensorType};
