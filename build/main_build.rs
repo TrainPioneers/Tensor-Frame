@@ -41,16 +41,13 @@ fn has_ocl() -> bool{
     process_output(output)
 }
 
-fn has_gpu() -> bool{
-    let output = gpu_detector::check_gpu();
-    match output {
-        Ok(_output) => {
-            true
-        },
-        Err(_) => {
-            false
-        }
-    }
+fn has_gpu() -> bool {
+    let instance = wgpu::Instance::default();
+    let adapter = pollster::block_on(instance.request_adapter(&wgpu::RequestAdapterOptions {
+        power_preference: wgpu::PowerPreference::LowPower,
+        compatible_surface: None,
+    }));
+    adapter.is_some()
 }
 
 fn process_output<E>(output: Result<Output, E>) -> bool{
