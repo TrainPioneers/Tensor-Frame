@@ -6,12 +6,14 @@ build = "build/main_build.rs"
 repository = "https://github.com/TrainPioneers/fast_tensor"
 authors = ["Artur arturmisiurev@gmail.com"]
 include = ["/instructions/", "/crates/", "/build/"]
+description = ""
 
 [dependencies]
 tensor = { path = "crates/tensor" }
 device_config = { path = "crates/device_config" }
-util = {path = "crates/util"}
+util = { path = "crates/util" }
 
+[build-dependencies]
 # Only for detecting if use has gpu
 wgpu = { version = "23.0.1" }
 pollster = "0.4.0"
