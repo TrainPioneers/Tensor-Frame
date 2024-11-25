@@ -9,7 +9,7 @@ where
     type Output = Tensor<T>;
 
     fn div(self, other: Self) -> Self::Output {
-        let new_vec = run_operation(self.data, other.data, RunOperation::Div);
+        let new_vec = run_operation::<T>(self.data, other.data, RunOperation::Div);
         Tensor::<T>::from_vec(new_vec, self.shape)
     }
 }

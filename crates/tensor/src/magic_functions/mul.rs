@@ -9,7 +9,7 @@ where
     type Output = Tensor<T>;
 
     fn mul(self, other: Self) -> Self::Output {
-        let new_vec = run_operation(self.data, other.data, RunOperation::Mul);
+        let new_vec = run_operation::<T>(self.data, other.data, RunOperation::Mul);
         Tensor::<T>::from_vec(new_vec, self.shape)
     }
 }
