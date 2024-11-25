@@ -5,7 +5,7 @@ edition = "2021"
 publish = false
 
 [dependencies]
-cuda_vm = { path = "../vm/hip_vm/cuda_vm", optional = true }
+cuda_vm = { path = "../vm/cuda_vm", optional = true }
 wgpu_vm = { path = "../vm/wgpu_vm", optional = true }
 cpu_vm = { path = "../vm/cpu_vm", optional = true }
 ocl_vm = { path = "../vm/ocl_vm", optional = true }
