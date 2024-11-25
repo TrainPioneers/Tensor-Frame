@@ -3,9 +3,9 @@ use util::ValidTensorType;
 mod magic_functions;
 mod tensor_functions;
 #[derive(Debug, PartialEq, Clone)]
-pub struct Tensor<T>
+pub struct Tensor<T = i32>
 where
-    T: ValidTensorType + From<i32> + From<i64> + From<f32> + From<f64>,
+    T: ValidTensorType,
 {
     data: Vec<T>,
     shape: Vec<usize>,

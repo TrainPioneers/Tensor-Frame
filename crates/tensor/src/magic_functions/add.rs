@@ -4,7 +4,7 @@ use util::RunOperation;
 
 impl<T> std::ops::Add for Tensor<T>
 where
-    T: util::ValidTensorType + From<i32> + From<i64> + From<f32> + From<f64>,
+    T: util::ValidTensorType + Clone + Copy + Default,
 {
     type Output = Tensor<T>;
 

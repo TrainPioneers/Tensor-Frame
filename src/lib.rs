@@ -2,8 +2,16 @@
 #[cfg(test)]
 mod tests {
     #[test]
-    fn add_1() {
-        assert_eq!(1, 1);
+    fn equals() {
+        use tensor::Tensor;
+        assert_eq!(Tensor::from_vec(vec![1, 2, 3, 4, 5], vec![5]), Tensor::from_vec(vec![1, 2, 3, 4, 5], vec![5]));
+    }
+    #[test]
+    fn add() {
+        use tensor::Tensor;
+        let t1 = Tensor::<f32>::zeros(vec![5]);
+        let t2 = Tensor::<f32>::ones(vec![5]);
+        assert_eq!(t1 + t2, Tensor::<f32>::ones(vec![5]));
     }
 }
 

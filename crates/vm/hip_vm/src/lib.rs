@@ -4,7 +4,7 @@ use std::error::Error;
 
 fn run_vector_operation<T>(a: Vec<T>, b: Vec<T>, function: &str) -> Result<Vec<T>, Box<dyn Error>>
 where
-    T: ValidTensorType + From<i32> + From<i64> + From<f32> + From<f64>,
+    T: ValidTensorType,
 {
     // Load the shared library containing the HIP kernel
     // Check that a and b are the same length

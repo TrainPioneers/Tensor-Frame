@@ -1,16 +1,16 @@
-#[cfg!(feature = "cpu")]
+#[cfg(feature = "cpu")]
 use cpu_vm::*;
 
-#[cfg!(feature = "cuda")]
+#[cfg(feature = "cuda")]
 use cuda_vm::*;
 
-#[cfg!(feature = "ocl")]
+#[cfg(feature = "ocl")]
 use ocl_vm::*;
 
-#[cfg!(feature = "hip")]
+#[cfg(feature = "hip")]
 use hip_vm::*;
 
-#[cfg!(feature = "wgpu")]
+#[cfg(feature = "wgpu")]
 use wgpu_vm::*;
 
 use util::{RunOperation, ValidTensorType};
@@ -18,7 +18,7 @@ use util::{RunOperation, ValidTensorType};
 
 pub fn run_operation<T>(d1: Vec<T>, d2: Vec<T>, operation: RunOperation) -> Vec<T>
 where
-    T: ValidTensorType + From<i32> + From<i64> + From<f32> + From<f64>,
+    T: ValidTensorType + Clone + Default,
 {
     if cfg!(feature = "cpu") {
         todo!()

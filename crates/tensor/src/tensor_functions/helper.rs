@@ -2,7 +2,7 @@ use crate::Tensor;
 
 impl<T> Tensor<T>
 where
-    T: util::ValidTensorType + From<i32> + From<i64> + From<f32> + From<f64> + Clone,
+    T: util::ValidTensorType + Clone,
 {
     // Helper method to calculate the flat index from multidimensional indices
     fn flatten_index(&self, indices: &[usize]) -> usize {

@@ -2,7 +2,7 @@ use crate::Tensor;
 
 impl<T> Tensor<T>
 where
-    T: util::ValidTensorType + Clone + Default + From<i32> + From<i64> + From<f32> + From<f64>,
+    T: util::ValidTensorType + Clone + Default,
 {
     pub fn with_num(num: T, shape: Vec<usize>) -> Tensor<T> {
         let size = shape.iter().product();
@@ -12,11 +12,11 @@ where
         }
     }
     pub fn zeros(shape: Vec<usize>) -> Tensor<T> {
-        Tensor::with_num(T::from(0), shape)
+        Tensor::with_num(T::to_self(0), shape)
     }
 
     pub fn ones(shape: Vec<usize>) -> Tensor<T> {
-        Tensor::with_num(T::from(1), shape)
+        Tensor::with_num(T::to_self(1), shape)
     }
 
     pub fn from_vec(data: Vec<T>, shape: Vec<usize>) -> Tensor<T> {

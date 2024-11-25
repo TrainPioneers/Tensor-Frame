@@ -1,4 +1,6 @@
-use std::process::{Command, exit, Output};
+use std::process::{Command, Output};
+extern crate wgpu;
+extern crate pollster;
 
 fn main() {
     let prefer_cpu =  std::env::var("CARGO_FEATURE_PREFER_CPU_OVER_WGPU").is_ok();
@@ -45,6 +47,7 @@ fn has_gpu() -> bool {
     let instance = wgpu::Instance::default();
     let adapter = pollster::block_on(instance.request_adapter(&wgpu::RequestAdapterOptions {
         power_preference: wgpu::PowerPreference::LowPower,
+        force_fallback_adapter: false,
         compatible_surface: None,
     }));
     adapter.is_some()
