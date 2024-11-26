@@ -6,7 +6,7 @@ build = "build/main_build.rs"
 repository = "https://github.com/TrainPioneers/fast_tensor"
 authors = ["Artur arturmisiurev@gmail.com"]
 include = ["/instructions/", "/crates/", "/build/"]
-description = ""
+description = "Creates a tensor utilizing arrays that can then be manipulated by math operations."
 
 [dependencies]
 tensor = { path = "crates/tensor" }
