@@ -18,4 +18,5 @@ cuda = ["cuda_vm"]
 wgpu = ["wgpu_vm"]
 ocl = ["ocl_vm"]
 hip = ["hip_vm"]
+pcog = []
 

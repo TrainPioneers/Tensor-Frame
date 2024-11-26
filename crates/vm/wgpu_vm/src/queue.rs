@@ -8,11 +8,11 @@ pub async fn submit_to_queue(
     queue: &Queue,
     mut encoder: CommandEncoder,
     staging_buffer: &Buffer,
-) -> (Receiver,BufferSlice) {
+) -> (Receiver, &BufferSlice) {
     queue.submit(Some(encoder.finish()));
     let buffer_slice = staging_buffer.slice(..);
     let (sender, receiver) = oneshot_channel();
     buffer_slice.map_async(MapMode::Read, move |v| sender.send(v).unwrap());
     device.poll(Maintain::Wait);
-    (receiver, buffer_slice)
+    (receiver, &buffer_slice)
 }

@@ -24,7 +24,7 @@ pub async fn create_result_buffer (device: &Device, size: u64) -> Buffer{
     })
 }
 
-pub async fn create_staging_buffer(device: &Device) -> Buffer {
+pub async fn create_staging_buffer(device: &Device, size: u64) -> Buffer {
     device.create_buffer(&BufferDescriptor {
         label: Some("Staging Buffer"),
         size,

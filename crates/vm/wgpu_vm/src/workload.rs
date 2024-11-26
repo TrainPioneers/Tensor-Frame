@@ -10,7 +10,6 @@ pub async fn create_workload(
     d1: &Vec<f32>,
     d2: &Vec<f32>
 ) -> (Receiver,BufferSlice) {
-    let size = (d1.len() * std::mem::size_of::<f32>()) as u64;
     let encoder_future = create_encoder(&device);
     let buffer_a_future = create_buffer(&device, d1.clone());
     let buffer_b_future = create_buffer(&device, d2.clone());

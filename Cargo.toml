@@ -2,7 +2,6 @@
 name = "tensor_frame"
 version = "0.1.1"
 edition = "2021"
-build = "build/main_build.rs"
 repository = "https://github.com/TrainPioneers/fast_tensor"
 authors = ["Artur arturmisiurev@gmail.com"]
 include = ["/instructions/", "/crates/", "/build/"]
@@ -13,13 +12,13 @@ tensor = { path = "crates/tensor" }
 device_config = { path = "crates/device_config" }
 util = { path = "crates/util" }
 
-[build-dependencies]
-# Only for detecting if use has gpu
-wgpu = { version = "23.0.1" }
-pollster = "0.4.0"
-
 [features]
-prefer-cpu-over-wgpu = []
+default = ["device_config/cpu"]
+hip = ["device_config/hip"]
+cpu = ["device_config/cpu"]
+wgpu = ["device_config/wgpu"]
+ocl = ["device_config/ocl"]
+cuda = ["device_config/cuda"]
 
 [workspace]
 members = [

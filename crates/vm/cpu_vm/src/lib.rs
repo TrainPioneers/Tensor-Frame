@@ -10,14 +10,14 @@ use add::*;
 use mul::*;
 use sub::*;
 use div::*;
-
+use std::ops::{Add, Sub, Div, Mul};
 pub fn run_vector_operation<T>(
     a: Vec<T>,
     b: Vec<T>,
     function_name: &str,
 ) -> Result<Vec<T>, Box<dyn Error>>
 where
-    T: ValidTensorType,
+    T: ValidTensorType + Add + Sub + Mul + Div,
 {
     Ok(
         match function_name {

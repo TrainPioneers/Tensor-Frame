@@ -31,9 +31,9 @@ async fn run_vector_operation<T>(
     shader_code: &str,
 ) -> Result<Vec<T>, Box<dyn Error>>
 where
-    T: ValidTensorType,
+    T: ValidTensorType + Clone,
 {
-    let setup: impl Future<Output=(Device, Queue)> = setup_wgpu();
+    let setup = setup_wgpu();
     assert_eq!(a.len(), b.len(), "Incorrect shape");
     let t1_workload_future = break_vec(a.clone());
     let t2_workload_future = break_vec(b.clone());
@@ -45,7 +45,7 @@ where
 
     let t1_workload = t1_workload_future.await;
     let length = t1_workload.len();
-    let mut receivers_future: impl Future<Output=Vec<(Receiver,BufferSlice)>> = Vec::with_capacity(length);
+    let mut receivers_future = Vec::with_capacity(length);
     let t2_workload = t2_workload_future.await;
     let pipeline_future = create_pipeline(&device, shader.await);
 
