@@ -6,8 +6,12 @@ mod add;
 mod mul;
 mod sub;
 mod div;
+use add::*;
+use mul::*;
+use sub::*;
+use div::*;
 
-fn run_vector_operation<T>(
+pub fn run_vector_operation<T>(
     a: Vec<T>,
     b: Vec<T>,
     function_name: &str,
