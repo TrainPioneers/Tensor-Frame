@@ -4,7 +4,7 @@ use rayon::iter::IntoParallelRefIterator;
 
 use util::ValidTensorType;
 
-fn vector_sub<T>(a: Vec<T>, b: Vec<T>) -> Vec<T>
+pub fn vector_sub<T>(a: Vec<T>, b: Vec<T>) -> Vec<T>
 where
     T: ValidTensorType + Add<Output=T> + Sub<Output=T> + Mul<Output=T> + Div<Output=T> + Clone + Send + Sync,
 {
