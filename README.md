@@ -11,9 +11,9 @@ This framework leverages the following libraries, optimized for different hardwa
 *(Performance is hardware-dependent; rankings are relative.)*
 
 - **cust** - Low-level Rust bindings for CUDA, enabling GPU acceleration on NVIDIA GPUs (requires an NVIDIA GPU and CUDA toolkit installed).
-- **HIP** - Low-level framework for GPU acceleration, originally written in C/C++, designed for AMD GPUs with ROCm support (requires an AMD GPU and ROCm installation).
-- **OpenCL** - Cross-platform parallel computing framework that works on GPUs, CPUs, and other hardware (requires OpenCL drivers and runtime installation).
-- **WGPU** - High-level graphics and computation API in Rust built on Vulkan, Metal, DX12, and OpenGL, offering cross-platform GPU acceleration without requiring vendor-specific SDKs (only requires a GPU).
+- (Not available yet) **HIP** - Low-level framework for GPU acceleration, originally written in C/C++, designed for AMD GPUs with ROCm support (requires an AMD GPU and ROCm installation).
+- (Not available yet) **OpenCL** - Cross-platform parallel computing framework that works on GPUs, CPUs, and other hardware (requires OpenCL drivers and runtime installation).
+- (Not available yet) **WGPU** - High-level graphics and computation API in Rust built on Vulkan, Metal, DX12, and OpenGL, offering cross-platform GPU acceleration without requiring vendor-specific SDKs (only requires a GPU).
 - **rayon** - Data-parallelism library for Rust that enables easy, safe, and efficient parallel computations on multi-core CPUs.
 
 **Note: In many cases, Rayon outperforms wgpu due to GPU setup overhead (I hope to fix that in 0.1.2)**
@@ -25,7 +25,7 @@ This framework leverages the following libraries, optimized for different hardwa
 Add Tensor-Frame to your project
 `cargo add tensor_frame`
 or
-`tensor_frame = "0.1.1"`
+`tensor_frame = "0.2.0"`
 
 The `tensor_frame::prelude::*` module is imported to work with the Tensor struct and vector math functions.
 
