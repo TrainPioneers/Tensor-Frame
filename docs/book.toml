@@ -34,9 +34,6 @@ expand = true
 heading-split-level = 3
 
 [output.html.playground]
-# runnable = true # Maybe later i'll add support
+runnable = false # Maybe later i'll add support
 editable = true
 copyable = true
-
-[dependencies]
-tensor_frame = "0.0.1-alpha"

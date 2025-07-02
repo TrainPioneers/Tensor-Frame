@@ -6,7 +6,7 @@ This page provides detailed specifications for all tensor operations in Tensor F
 
 ### Element-wise Binary Operations
 
-Note: Currently, only addition supports automatic broadcasting. Other operations require tensors to have matching shapes.
+All arithmetic operations support automatic NumPy-style broadcasting, allowing operations between tensors of different but compatible shapes.
 
 #### Addition (`+`)
 
@@ -24,6 +24,11 @@ Computes element-wise addition: `output[i] = lhs[i] + rhs[i]`
 let a = Tensor::ones(vec![2, 3])?;
 let b = Tensor::ones(vec![2, 3])?;
 let c = a + b;  // All elements = 2.0
+
+// Broadcasting example
+let x = Tensor::from_vec(vec![1.0, 2.0], vec![2, 1])?;
+let y = Tensor::from_vec(vec![10.0, 20.0, 30.0], vec![1, 3])?;
+let z = x + y;  // Shape: [2, 3]
 ```
 
 #### Subtraction (`-`)
@@ -34,9 +39,21 @@ fn sub(lhs: &Tensor, rhs: &Tensor) -> Result<Tensor>
 
 Computes element-wise subtraction: `output[i] = lhs[i] - rhs[i]`
 
-**Broadcasting**: No (requires matching shapes)  
-**Supported shapes**: Must have identical shapes  
-**Error conditions**: Shape mismatch
+**Broadcasting**: Yes  
+**Supported shapes**: Any compatible shapes  
+**Error conditions**: Shape incompatibility
+
+```rust
+// Same shapes
+let a = Tensor::from_vec(vec![5.0, 6.0, 7.0, 8.0], vec![2, 2])?;
+let b = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2])?;
+let c = a - b;  // [4.0, 4.0, 4.0, 4.0]
+
+// With broadcasting
+let x = Tensor::from_vec(vec![10.0, 20.0], vec![2, 1])?;
+let y = Tensor::from_vec(vec![1.0, 2.0, 3.0], vec![1, 3])?;
+let z = x - y;  // Shape: [2, 3], values: [[9, 8, 7], [19, 18, 17]]
+```
 
 #### Multiplication (`*`)
 
@@ -46,11 +63,18 @@ fn mul(lhs: &Tensor, rhs: &Tensor) -> Result<Tensor>
 
 Computes element-wise multiplication: `output[i] = lhs[i] * rhs[i]`
 
-**Note**: This is element-wise multiplication, not matrix multiplication.
+**Note**: This is element-wise multiplication (Hadamard product), not matrix multiplication.
 
-**Broadcasting**: No (requires matching shapes)  
-**Supported shapes**: Must have identical shapes  
-**Error conditions**: Shape mismatch
+**Broadcasting**: Yes  
+**Supported shapes**: Any compatible shapes  
+**Error conditions**: Shape incompatibility
+
+```rust
+// Broadcasting with a row vector
+let matrix = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0], vec![2, 3])?;
+let row = Tensor::from_vec(vec![10.0, 20.0, 30.0], vec![3])?;
+let scaled = matrix * row;  // Each row multiplied by [10, 20, 30]
+```
 
 #### Division (`/`)
 
@@ -60,9 +84,21 @@ fn div(lhs: &Tensor, rhs: &Tensor) -> Result<Tensor>
 
 Computes element-wise division: `output[i] = lhs[i] / rhs[i]`
 
-**Broadcasting**: No (requires matching shapes)  
-**Supported shapes**: Must have identical shapes  
-**Error conditions**: Shape mismatch, division by zero
+**Broadcasting**: Yes  
+**Supported shapes**: Any compatible shapes  
+**Error conditions**: Shape incompatibility, division by zero
+
+```rust
+// Divide by scalar (broadcast)
+let tensor = Tensor::from_vec(vec![2.0, 4.0, 6.0, 8.0], vec![2, 2])?;
+let scalar = Tensor::from_vec(vec![2.0], vec![])?;  // Scalar tensor
+let result = tensor / scalar;  // [1.0, 2.0, 3.0, 4.0]
+
+// Broadcasting example
+let x = Tensor::from_vec(vec![100.0, 200.0], vec![2, 1])?;
+let y = Tensor::from_vec(vec![1.0, 2.0, 4.0], vec![1, 3])?;
+let z = x / y;  // Shape: [2, 3], values: [[100, 50, 25], [200, 100, 50]]
+```
 
 
 ## Reduction Operations

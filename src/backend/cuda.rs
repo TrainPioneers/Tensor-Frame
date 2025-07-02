@@ -1,22 +1,22 @@
 use super::{Backend, CudaStorage, Storage};
 use crate::error::{Result, TensorError};
 use crate::tensor::shape::Shape;
-#[cfg(feature = "cuda")]
+
 use cudarc::driver::{CudaContext, CudaFunction, LaunchConfig, PushKernelArg};
-#[cfg(feature = "cuda")]
+
 use std::collections::HashMap;
 
 #[derive(Debug)]
 pub struct CudaBackend {
-    #[cfg(feature = "cuda")]
+    
     context: std::sync::Arc<CudaContext>,
-    #[cfg(feature = "cuda")]
+    
     kernels: HashMap<String, CudaFunction>,
 }
 
 impl CudaBackend {
     pub fn new() -> Result<Self> {
-        #[cfg(feature = "cuda")]
+        
         {
             let context = CudaContext::new(0).map_err(|e| {
                 TensorError::BackendError(format!("Failed to initialize CUDA: {}", e))
@@ -31,7 +31,7 @@ impl CudaBackend {
         ))
     }
 
-    #[cfg(feature = "cuda")]
+    
     fn load_kernels(
         context: &std::sync::Arc<CudaContext>,
     ) -> Result<HashMap<String, CudaFunction>> {
@@ -97,7 +97,7 @@ impl CudaBackend {
         Ok(kernels)
     }
 
-    #[cfg(feature = "cuda")]
+    
     fn launch_binary_kernel(
         &self,
         kernel_name: &str,
@@ -141,7 +141,7 @@ impl CudaBackend {
 }
 
 pub fn is_available() -> bool {
-    #[cfg(feature = "cuda")]
+    
     {
         CudaContext::new(0).is_ok()
     }
@@ -157,7 +157,7 @@ impl Backend for CudaBackend {
     }
 
     fn zeros(&self, shape: &Shape) -> Result<Storage> {
-        #[cfg(feature = "cuda")]
+        
         {
             let size = shape.numel();
             let stream = self.context.default_stream();
@@ -175,7 +175,7 @@ impl Backend for CudaBackend {
     }
 
     fn ones(&self, shape: &Shape) -> Result<Storage> {
-        #[cfg(feature = "cuda")]
+        
         {
             let size = shape.numel();
             let stream = self.context.default_stream();
@@ -209,7 +209,7 @@ impl Backend for CudaBackend {
     }
 
     fn from_slice(&self, data: &[f32], shape: &Shape) -> Result<Storage> {
-        #[cfg(feature = "cuda")]
+        
         {
             if data.len() != shape.numel() {
                 return Err(TensorError::ShapeMismatch {
@@ -234,7 +234,7 @@ impl Backend for CudaBackend {
     }
 
     fn add(&self, lhs: &Storage, rhs: &Storage) -> Result<Storage> {
-        #[cfg(feature = "cuda")]
+        
         {
             // Convert to vec, then to CUDA storage if needed
             let lhs_data = self.to_vec_f32(lhs)?;
@@ -266,7 +266,7 @@ impl Backend for CudaBackend {
     }
 
     fn sub(&self, lhs: &Storage, rhs: &Storage) -> Result<Storage> {
-        #[cfg(feature = "cuda")]
+        
         {
             // Convert to vec, then to CUDA storage if needed
             let lhs_data = self.to_vec_f32(lhs)?;
@@ -298,7 +298,7 @@ impl Backend for CudaBackend {
     }
 
     fn mul(&self, lhs: &Storage, rhs: &Storage) -> Result<Storage> {
-        #[cfg(feature = "cuda")]
+        
         {
             // Convert to vec, then to CUDA storage if needed
             let lhs_data = self.to_vec_f32(lhs)?;
@@ -330,7 +330,7 @@ impl Backend for CudaBackend {
     }
 
     fn div(&self, lhs: &Storage, rhs: &Storage) -> Result<Storage> {
-        #[cfg(feature = "cuda")]
+        
         {
             // Convert to vec, then to CUDA storage if needed
             let lhs_data = self.to_vec_f32(lhs)?;
@@ -362,7 +362,7 @@ impl Backend for CudaBackend {
     }
 
     fn sum(&self, storage: &Storage, axis: Option<usize>) -> Result<Storage> {
-        #[cfg(feature = "cuda")]
+        
         {
             if axis.is_some() {
                 return Err(TensorError::BackendError(
@@ -417,7 +417,7 @@ impl Backend for CudaBackend {
     }
 
     fn mean(&self, storage: &Storage, axis: Option<usize>) -> Result<Storage> {
-        #[cfg(feature = "cuda")]
+        
         {
             if axis.is_some() {
                 return Err(TensorError::BackendError(
@@ -450,7 +450,7 @@ impl Backend for CudaBackend {
     }
 
     fn transpose(&self, storage: &Storage, shape: &Shape) -> Result<Storage> {
-        #[cfg(feature = "cuda")]
+        
         {
             let Storage::Cuda(cuda_storage) = storage;
             {
@@ -512,7 +512,7 @@ impl Backend for CudaBackend {
     }
 
     fn to_vec_f32(&self, storage: &Storage) -> Result<Vec<f32>> {
-        #[cfg(feature = "cuda")]
+        
         {
             match storage {
                 Storage::Cuda(cuda_storage) => {

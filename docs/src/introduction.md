@@ -10,7 +10,7 @@ Tensor Frame is a high-performance, PyTorch-like tensor library for Rust that su
   - CUDA backend for NVIDIA GPU acceleration
 - **PyTorch-like API**: Familiar tensor operations and broadcasting
 - **Dynamic Tensors**: Runtime shape and type flexibility
-- **Broadcasting Support**: Automatic shape broadcasting for operations
+- **Full Broadcasting Support**: NumPy-style automatic shape broadcasting for all arithmetic operations (+, -, *, /)
 - **Zero-Copy Operations**: Efficient memory management where possible
 - **Feature Flags**: Optional backends via Cargo features
 
@@ -20,16 +20,19 @@ Tensor Frame is a high-performance, PyTorch-like tensor library for Rust that su
 use tensor_frame::Tensor;
 
 // Create tensors (automatically uses the best available backend)
-let a = Tensor::ones(vec![2, 3])?;
-let b = Tensor::zeros(vec![2, 3])?;
+let a = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2])?;
+let b = Tensor::from_vec(vec![10.0, 20.0], vec![2, 1])?;
 
 // Perform operations with automatic broadcasting
-let c = (a + b)?;
-let d = c.sum(None)?; // Sum all elements
+let c = (a + b)?;  // Broadcasting: [2,2] + [2,1] -> [2,2]
+println!("Result: {:?}", c.to_vec()?); // [11.0, 12.0, 23.0, 24.0]
 
-// Convert back to Vec for inspection
-let result = d.to_vec()?;
-println!("Result: {:?}", result);
+// All operations support broadcasting
+let scalar = Tensor::from_vec(vec![2.0], vec![])?;
+let scaled = (c / scalar)?;  // Divide by scalar
+let sum = scaled.sum(None)?; // Sum all elements
+
+println!("Sum: {:?}", sum.to_vec()?);
 ```
 
 ## Backend Priority

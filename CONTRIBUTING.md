@@ -20,9 +20,6 @@ source ~/.cargo/env
 
 3. **Install development dependencies**:
 ```bash
-# For documentation building
-cargo install mdbook
-
 # For benchmarking
 cargo install criterion
 

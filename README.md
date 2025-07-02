@@ -10,7 +10,7 @@ A high-performance, PyTorch-like tensor library for Rust with support for multip
 
 - 🚀 **Multiple Backends**: CPU (Rayon), WGPU, and CUDA support
 - 🔄 **Automatic Backend Selection**: Falls back to best available backend
-- 📐 **Broadcasting**: NumPy/PyTorch-style automatic broadcasting
+- 📐 **Full Broadcasting**: NumPy/PyTorch-style automatic broadcasting for all arithmetic operations
 - 🎯 **Type Safety**: Rust's type system for memory safety
 - ⚡ **Zero-Copy Operations**: Efficient memory management
 - 🎛️ **Feature Flags**: Optional dependencies for different backends
@@ -33,12 +33,13 @@ Basic usage:
 use tensor_frame::Tensor;
 
 // Create tensors (automatically uses best backend)
-let a = Tensor::ones(vec![2, 3])?;
-let b = Tensor::zeros(vec![2, 3])?;
+let a = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2])?;
+let b = Tensor::from_vec(vec![10.0, 20.0], vec![2, 1])?;
 
-// Operations with broadcasting
-let c = (a + b)?;
-let sum = c.sum(None)?;
+// All operations support broadcasting: +, -, *, /
+let c = (a + b)?;  // Broadcasting: [2,2] + [2,1] -> [2,2]
+let d = (c * b)?;  // Element-wise multiplication with broadcasting
+let sum = d.sum(None)?;
 
 println!("Result: {:?}", sum.to_vec()?);
 ```

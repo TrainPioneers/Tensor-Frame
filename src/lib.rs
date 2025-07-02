@@ -1,9 +1,90 @@
-pub mod backend;
-pub mod error;
-pub mod tensor;
+//! # Tensor Frame
+//! 
+//! A PyTorch-like tensor library for Rust with support for multiple backends including CPU, WGPU, and CUDA.
+//! 
+//! ## Overview
+//! 
+//! Tensor Frame provides a flexible and efficient tensor computation framework that allows you to:
+//! - Create and manipulate multi-dimensional arrays (tensors)
+//! - Perform element-wise operations with automatic broadcasting
+//! - Use different compute backends (CPU, GPU via WGPU, or CUDA)
+//! - Seamlessly switch between backends based on your hardware capabilities
+//! 
+//! ## Quick Start
+//! 
+//! ```rust
+//! use tensor_frame::{Tensor, TensorOps};
+//! 
+//! // Create tensors
+//! let a = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2]).unwrap();
+//! let b = Tensor::ones(vec![2, 2]).unwrap();
+//! 
+//! // Perform operations
+//! let c = (a + b).unwrap();
+//! let sum = c.sum(None).unwrap();
+//! 
+//! println!("Result: {:?}", c.to_vec().unwrap());
+//! ```
+//! 
+//! ## Features
+//! 
+//! - **Multiple Backends**: Choose between CPU (with Rayon parallelization), WGPU (WebGPU), or CUDA
+//! - **Broadcasting**: Automatic shape broadcasting for element-wise operations
+//! - **Rich Operations**: Addition, subtraction, multiplication, division, reductions (sum, mean)
+//! - **Shape Manipulation**: Reshape and transpose operations
+//! - **Type Safety**: Strong typing with comprehensive error handling
+//! 
+//! ## Backend Selection
+//! 
+//! Enable different backends through Cargo features:
+//! 
+//! ```toml
+//! # CPU backend (default)
+//! tensor_frame = "0.0.1-alpha"
+//! 
+//! # WGPU backend
+//! tensor_frame = { version = "0.0.1-alpha", features = ["wgpu"] }
+//! 
+//! # CUDA backend
+//! tensor_frame = { version = "0.0.1-alpha", features = ["cuda"] }
+//! ```
+//! 
+//! ## Examples
+//! 
+//! ### Creating Tensors
+//! 
+//! ```rust
+//! use tensor_frame::Tensor;
+//! 
+//! // From a vector with shape
+//! let tensor = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2]).unwrap();
+//! 
+//! // Zeros tensor
+//! let zeros = Tensor::zeros(vec![3, 3]).unwrap();
+//! 
+//! // Ones tensor
+//! let ones = Tensor::ones(vec![2, 4]).unwrap();
+//! ```
+//! 
+//! ### Operations with Broadcasting
+//! 
+//! ```rust
+//! use tensor_frame::Tensor;
+//! 
+//! let a = Tensor::ones(vec![2, 1]).unwrap();  // Shape: [2, 1]
+//! let b = Tensor::ones(vec![1, 3]).unwrap();  // Shape: [1, 3]
+//! let c = (a + b).unwrap();                   // Shape: [2, 3] via broadcasting
+//! ```
 
+mod backend;
+mod error;
+mod tensor;
+
+/// The backend trait for tensor operations
 pub use backend::Backend;
+/// Error types and Result alias for the library
 pub use error::{Result, TensorError};
+/// Core tensor types and operations
 pub use tensor::{ops::TensorOps, shape::Shape, Tensor};
 
 #[cfg(test)]

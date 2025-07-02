@@ -4,7 +4,6 @@
 
 | Issue | Location | Description |
 |-------|----------|-------------|
-| Broadcasting | `src/tensor/mod.rs:185-267` | Only Add supports broadcasting; Sub, Mul, Div need it |
 | Shape Validation | `src/tensor/shape.rs:9-11` | No validation for invalid shapes (e.g., zero dims) |
 | Division by Zero | `src/backend/cpu.rs:92-109` | No check for division by zero |
 | Axis Reductions | `src/backend/cpu.rs:111-134` | CPU backend missing axis-specific sum/mean |

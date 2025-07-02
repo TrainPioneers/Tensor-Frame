@@ -3,7 +3,7 @@ use crate::error::{Result, TensorError};
 use crate::tensor::shape::Shape;
 use std::sync::Arc;
 
-#[cfg(feature = "wgpu")]
+
 use {
     bytemuck, futures, tokio,
     wgpu::{Buffer, BufferUsages, Device, Queue},
@@ -11,11 +11,11 @@ use {
 
 #[derive(Debug)]
 pub struct WgpuStorage {
-    #[cfg(feature = "wgpu")]
+    
     pub buffer: Arc<Buffer>,
-    #[cfg(feature = "wgpu")]
+    
     pub device: Arc<Device>,
-    #[cfg(feature = "wgpu")]
+    
     pub queue: Arc<Queue>,
     pub size: usize,
 }
@@ -23,11 +23,11 @@ pub struct WgpuStorage {
 impl Clone for WgpuStorage {
     fn clone(&self) -> Self {
         WgpuStorage {
-            #[cfg(feature = "wgpu")]
+            
             buffer: self.buffer.clone(),
-            #[cfg(feature = "wgpu")]
+            
             device: self.device.clone(),
-            #[cfg(feature = "wgpu")]
+            
             queue: self.queue.clone(),
             size: self.size,
         }
@@ -36,15 +36,15 @@ impl Clone for WgpuStorage {
 
 #[derive(Debug)]
 pub struct WgpuBackend {
-    #[cfg(feature = "wgpu")]
+    
     device: Arc<Device>,
-    #[cfg(feature = "wgpu")]
+    
     queue: Arc<Queue>,
 }
 
 impl WgpuBackend {
     pub fn new_blocking() -> Result<Self> {
-        #[cfg(feature = "wgpu")]
+        
         {
             let rt = tokio::runtime::Runtime::new().map_err(|e| {
                 TensorError::BackendError(format!("Failed to create tokio runtime: {}", e))
@@ -57,7 +57,7 @@ impl WgpuBackend {
         ))
     }
 
-    #[cfg(feature = "wgpu")]
+    
     pub async fn new() -> Result<Self> {
         let instance = wgpu::Instance::default();
 
@@ -89,7 +89,7 @@ impl WgpuBackend {
         })
     }
 
-    #[cfg(feature = "wgpu")]
+    
     fn create_buffer(&self, data: &[f32]) -> Result<Buffer> {
         use wgpu::util::DeviceExt;
 
@@ -115,7 +115,7 @@ impl WgpuBackend {
         Ok(buffer)
     }
 
-    #[cfg(feature = "wgpu")]
+    
     fn create_staging_buffer(&self, size: usize) -> Buffer {
         let buffer_size = if size == 0 {
             4 // Minimum buffer size
@@ -131,7 +131,7 @@ impl WgpuBackend {
         })
     }
 
-    #[cfg(feature = "wgpu")]
+    
     fn read_buffer(&self, buffer: &Buffer, size: usize) -> Result<Vec<f32>> {
         // Handle empty tensors
         if size == 0 {
@@ -184,7 +184,7 @@ impl WgpuBackend {
         Ok(result)
     }
 
-    #[cfg(feature = "wgpu")]
+    
     fn create_compute_pipeline(
         &self,
         shader_source: &str,
@@ -211,7 +211,7 @@ impl WgpuBackend {
         Ok(compute_pipeline)
     }
 
-    #[cfg(feature = "wgpu")]
+    
     fn binary_operation(
         &self,
         lhs: &WgpuStorage,
@@ -313,7 +313,7 @@ impl WgpuBackend {
 }
 
 pub fn is_available() -> bool {
-    #[cfg(feature = "wgpu")]
+    
     {
         // Try to create a WGPU instance
         let instance = wgpu::Instance::default();
@@ -339,7 +339,7 @@ impl Backend for WgpuBackend {
     }
 
     fn zeros(&self, shape: &Shape) -> Result<Storage> {
-        #[cfg(feature = "wgpu")]
+        
         {
             let size = shape.numel();
             let data = vec![0.0f32; size];
@@ -359,7 +359,7 @@ impl Backend for WgpuBackend {
     }
 
     fn ones(&self, shape: &Shape) -> Result<Storage> {
-        #[cfg(feature = "wgpu")]
+        
         {
             let size = shape.numel();
             let data = vec![1.0f32; size];
@@ -379,7 +379,7 @@ impl Backend for WgpuBackend {
     }
 
     fn from_slice(&self, data: &[f32], shape: &Shape) -> Result<Storage> {
-        #[cfg(feature = "wgpu")]
+        
         {
             if data.len() != shape.numel() {
                 return Err(TensorError::ShapeMismatch {
@@ -404,7 +404,7 @@ impl Backend for WgpuBackend {
     }
 
     fn add(&self, lhs: &Storage, rhs: &Storage) -> Result<Storage> {
-        #[cfg(feature = "wgpu")]
+        
         {
             // Convert storage to WGPU storage if needed
             let lhs_data = self.to_vec_f32(lhs)?;
@@ -432,7 +432,7 @@ impl Backend for WgpuBackend {
     }
 
     fn sub(&self, lhs: &Storage, rhs: &Storage) -> Result<Storage> {
-        #[cfg(feature = "wgpu")]
+        
         {
             let lhs_data = self.to_vec_f32(lhs)?;
             let rhs_data = self.to_vec_f32(rhs)?;
@@ -458,7 +458,7 @@ impl Backend for WgpuBackend {
     }
 
     fn mul(&self, lhs: &Storage, rhs: &Storage) -> Result<Storage> {
-        #[cfg(feature = "wgpu")]
+        
         {
             let lhs_data = self.to_vec_f32(lhs)?;
             let rhs_data = self.to_vec_f32(rhs)?;
@@ -484,7 +484,7 @@ impl Backend for WgpuBackend {
     }
 
     fn div(&self, lhs: &Storage, rhs: &Storage) -> Result<Storage> {
-        #[cfg(feature = "wgpu")]
+        
         {
             let lhs_data = self.to_vec_f32(lhs)?;
             let rhs_data = self.to_vec_f32(rhs)?;
@@ -510,7 +510,7 @@ impl Backend for WgpuBackend {
     }
 
     fn sum(&self, storage: &Storage, axis: Option<usize>) -> Result<Storage> {
-        #[cfg(feature = "wgpu")]
+        
         {
             if axis.is_some() {
                 return Err(TensorError::BackendError(
@@ -536,7 +536,7 @@ impl Backend for WgpuBackend {
     }
 
     fn mean(&self, storage: &Storage, axis: Option<usize>) -> Result<Storage> {
-        #[cfg(feature = "wgpu")]
+        
         {
             if axis.is_some() {
                 return Err(TensorError::BackendError(
@@ -563,7 +563,7 @@ impl Backend for WgpuBackend {
     }
 
     fn transpose(&self, storage: &Storage, shape: &Shape) -> Result<Storage> {
-        #[cfg(feature = "wgpu")]
+        
         {
             let dims = shape.dims();
             if dims.len() != 2 {
@@ -600,7 +600,7 @@ impl Backend for WgpuBackend {
 
     fn to_vec_f32(&self, storage: &Storage) -> Result<Vec<f32>> {
         match storage {
-            #[cfg(feature = "wgpu")]
+            
             Storage::Wgpu(wgpu_storage) => {
                 self.read_buffer(&wgpu_storage.buffer, wgpu_storage.size)
             }

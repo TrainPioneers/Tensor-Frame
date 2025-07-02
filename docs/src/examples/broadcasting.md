@@ -19,21 +19,25 @@ Tensor Frame follows NumPy/PyTorch broadcasting rules:
 use tensor_frame::{Tensor, Result};
 
 fn scalar_broadcasting() -> Result<()> {
-    // Scalar broadcasts to all elements
-    let tensor = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2])?;
+    // Create a base tensor
+    let tensor = Tensor::from_vec(vec![2.0, 4.0, 6.0, 8.0], vec![2, 2])?;
     println!("Original tensor:\n{}\n", tensor);
     
-    // Scalar addition
-    let add_scalar = &tensor + 5.0;
-    println!("Tensor + 5.0:\n{}\n", add_scalar);
+    // Scalar tensor for broadcasting
+    let scalar = Tensor::from_vec(vec![2.0], vec![])?;
     
-    // Scalar multiplication
-    let mul_scalar = &tensor * 2.0;
-    println!("Tensor * 2.0:\n{}\n", mul_scalar);
+    // All operations support broadcasting
+    let add_result = (tensor.clone() + scalar.clone())?;
+    println!("Tensor + 2.0:\n{}\n", add_result);
     
-    // Complex scalar operation
-    let complex = (&tensor * 2.0) + 1.0;
-    println!("(Tensor * 2.0) + 1.0:\n{}\n", complex);
+    let sub_result = (tensor.clone() - scalar.clone())?;
+    println!("Tensor - 2.0:\n{}\n", sub_result);
+    
+    let mul_result = (tensor.clone() * scalar.clone())?;
+    println!("Tensor * 2.0:\n{}\n", mul_result);
+    
+    let div_result = (tensor.clone() / scalar.clone())?;
+    println!("Tensor / 2.0:\n{}\n", div_result);
     
     Ok(())
 }
@@ -53,19 +57,25 @@ fn vector_broadcasting() -> Result<()> {
     println!("Matrix (2x3):\n{}\n", matrix);
     println!("Vector (3,):\n{}\n", vector);
     
-    // Vector broadcasts across matrix rows
-    let result = &matrix + &vector;
-    println!("Matrix + Vector:\n{}\n", result);
+    // All arithmetic operations support broadcasting
+    let add_result = (matrix.clone() + vector.clone())?;
+    println!("Matrix + Vector:\n{}\n", add_result);
+    
+    let mul_result = (matrix.clone() * vector.clone())?;
+    println!("Matrix * Vector (element-wise):\n{}\n", mul_result);
     
     // Row vector broadcasting
-    let row_vector = Tensor::from_vec(vec![100.0, 200.0, 300.0], vec![1, 3])?;
-    let row_result = &matrix + &row_vector;
-    println!("Matrix + Row Vector (1x3):\n{}\n", row_result);
+    let row_vector = Tensor::from_vec(vec![100.0, 200.0], vec![2, 1])?;
+    let row_add = (matrix.clone() + row_vector.clone())?;
+    let row_sub = (matrix.clone() - row_vector.clone())?;
+    println!("Matrix + Row Vector (2x1):\n{}\n", row_add);
+    println!("Matrix - Row Vector (2x1):\n{}\n", row_sub);
     
-    // Column vector broadcasting  
-    let col_vector = Tensor::from_vec(vec![10.0, 20.0], vec![2, 1])?;
-    let col_result = &matrix + &col_vector;
-    println!("Matrix + Column Vector (2x1):\n{}\n", col_result);
+    // Complex broadcasting example
+    let a = Tensor::from_vec(vec![10.0, 20.0], vec![2, 1])?;
+    let b = Tensor::from_vec(vec![1.0, 2.0, 3.0], vec![1, 3])?;
+    let complex_result = (a / b)?;  // Broadcasting: [2,1] / [1,3] -> [2,3]
+    println!("Complex broadcasting [2,1] / [1,3]:\n{}\n", complex_result);
     
     Ok(())
 }
