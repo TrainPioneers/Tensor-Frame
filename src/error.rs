@@ -1,18 +1,18 @@
 //! Error types for tensor operations.
-//! 
+//!
 //! This module defines the error types that can occur during tensor operations,
 //! including shape mismatches, invalid indices, and backend-specific errors.
 
 use std::fmt;
 
 /// The main error type for tensor operations.
-/// 
+///
 /// This enum encompasses all possible errors that can occur when working with tensors,
 /// from shape mismatches to backend-specific errors.
 #[derive(Debug, Clone)]
 pub enum TensorError {
     /// Occurs when tensor shapes don't match for an operation.
-    /// 
+    ///
     /// # Example
     /// ```
     /// # use tensor_frame::{Tensor, TensorError};
@@ -27,9 +27,9 @@ pub enum TensorError {
         /// The actual shape encountered
         got: Vec<usize>,
     },
-    
+
     /// Occurs when an invalid shape is provided for tensor creation or reshaping.
-    /// 
+    ///
     /// # Example
     /// ```
     /// # use tensor_frame::Tensor;
@@ -37,7 +37,7 @@ pub enum TensorError {
     /// let result = Tensor::from_vec(vec![1.0, 2.0, 3.0], vec![2, 2]);
     /// ```
     InvalidShape(String),
-    
+
     /// Occurs when trying to access a tensor element with an out-of-bounds index.
     InvalidIndex {
         /// The index that was attempted
@@ -45,22 +45,22 @@ pub enum TensorError {
         /// The shape of the tensor
         shape: Vec<usize>,
     },
-    
+
     /// Errors specific to the compute backend (CPU, WGPU, CUDA).
-    /// 
+    ///
     /// These errors can include device initialization failures, memory allocation
     /// errors, or kernel execution failures.
     BackendError(String),
-    
+
     /// Occurs when broadcasting rules cannot be satisfied.
-    /// 
+    ///
     /// Broadcasting follows NumPy-style rules where dimensions are compatible if:
     /// - They are equal, or
     /// - One of them is 1
     BroadcastError(String),
-    
+
     /// Occurs when an operation expects a specific number of dimensions.
-    /// 
+    ///
     /// # Example
     /// ```
     /// # use tensor_frame::{Tensor, TensorOps};
@@ -98,6 +98,6 @@ impl fmt::Display for TensorError {
 impl std::error::Error for TensorError {}
 
 /// A type alias for `Result<T, TensorError>`.
-/// 
+///
 /// This is the standard result type used throughout the tensor library.
 pub type Result<T> = std::result::Result<T, TensorError>;

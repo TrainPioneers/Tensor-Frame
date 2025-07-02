@@ -1,5 +1,5 @@
 //! Shape representation and broadcasting functionality for tensors.
-//! 
+//!
 //! This module provides the [`Shape`] struct which represents the dimensions
 //! of a tensor and implements broadcasting logic compatible with NumPy-style
 //! broadcasting rules.
@@ -7,21 +7,21 @@
 use crate::error::Result;
 
 /// Represents the shape (dimensions) of a tensor.
-/// 
+///
 /// A shape is essentially a list of dimension sizes. For example:
 /// - A scalar has shape `[]`
 /// - A vector of length 5 has shape `[5]`
 /// - A 3x4 matrix has shape `[3, 4]`
 /// - A 3D tensor might have shape `[2, 3, 4]`
-/// 
+///
 /// The `Shape` struct also provides methods for checking broadcasting compatibility
 /// and computing the result shape of broadcasted operations.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```
 /// use tensor_frame::Shape;
-/// 
+///
 /// let shape = Shape::new(vec![2, 3, 4]).unwrap();
 /// assert_eq!(shape.ndim(), 3);
 /// assert_eq!(shape.numel(), 24);
@@ -33,32 +33,32 @@ pub struct Shape {
 
 impl Shape {
     /// Creates a new shape from a vector of dimensions.
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `dims` - A vector of dimension sizes. Each dimension must be greater than 0.
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// A `Result` containing the new shape or an error if any dimension is invalid.
-    /// 
+    ///
     /// # Errors
-    /// 
+    ///
     /// Returns `TensorError::InvalidShape` if:
     /// - The shape would result in more than `usize::MAX` elements
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use tensor_frame::Shape;
-    /// 
+    ///
     /// let shape = Shape::new(vec![2, 3]).unwrap();
     /// assert_eq!(shape.dims(), &[2, 3]);
-    /// 
+    ///
     /// // Empty tensors are allowed
     /// let empty_shape = Shape::new(vec![0]).unwrap();
     /// assert_eq!(empty_shape.numel(), 0);
-    /// 
+    ///
     /// // Very large shapes will overflow
     /// assert!(Shape::new(vec![usize::MAX, 2]).is_err());
     /// ```
@@ -71,23 +71,24 @@ impl Shape {
                 if let Some(new_total) = total.checked_mul(dim) {
                     total = new_total;
                 } else {
-                    return Err(crate::error::TensorError::InvalidShape(
-                        format!("Shape {:?} would overflow (too many elements)", dims)
-                    ));
+                    return Err(crate::error::TensorError::InvalidShape(format!(
+                        "Shape {:?} would overflow (too many elements)",
+                        dims
+                    )));
                 }
             }
         }
-        
+
         Ok(Shape { dims })
     }
 
     /// Creates a scalar shape (empty dimensions).
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use tensor_frame::Shape;
-    /// 
+    ///
     /// let shape = Shape::scalar();
     /// assert_eq!(shape.dims(), &[] as &[usize]);
     /// assert_eq!(shape.numel(), 1);
@@ -102,12 +103,12 @@ impl Shape {
     }
 
     /// Returns the number of dimensions (rank) of the shape.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use tensor_frame::Shape;
-    /// 
+    ///
     /// assert_eq!(Shape::scalar().ndim(), 0);
     /// assert_eq!(Shape::new(vec![5]).unwrap().ndim(), 1);
     /// assert_eq!(Shape::new(vec![2, 3]).unwrap().ndim(), 2);
@@ -117,15 +118,15 @@ impl Shape {
     }
 
     /// Returns the total number of elements represented by this shape.
-    /// 
+    ///
     /// For a scalar (empty shape), this returns 1.
     /// For other shapes, it's the product of all dimensions.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use tensor_frame::Shape;
-    /// 
+    ///
     /// assert_eq!(Shape::scalar().numel(), 1);
     /// assert_eq!(Shape::new(vec![2, 3, 4]).unwrap().numel(), 24);
     /// ```
@@ -138,25 +139,25 @@ impl Shape {
     }
 
     /// Checks if this shape can be broadcast to another shape.
-    /// 
+    ///
     /// Broadcasting follows NumPy-style rules:
     /// 1. If the shapes have different numbers of dimensions, the smaller shape
     ///    is padded with ones on the left.
     /// 2. Two dimensions are compatible when they are equal, or one of them is 1.
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `other` - The target shape to check broadcasting compatibility with
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use tensor_frame::Shape;
-    /// 
+    ///
     /// let shape1 = Shape::new(vec![1, 3]).unwrap();
     /// let shape2 = Shape::new(vec![2, 3]).unwrap();
     /// assert!(shape1.can_broadcast_to(&shape2));
-    /// 
+    ///
     /// let shape3 = Shape::new(vec![3]).unwrap();
     /// let shape4 = Shape::new(vec![2, 3]).unwrap();
     /// assert!(shape3.can_broadcast_to(&shape4));
@@ -182,28 +183,28 @@ impl Shape {
     }
 
     /// Computes the shape that would result from broadcasting two shapes together.
-    /// 
+    ///
     /// Returns `None` if the shapes are not compatible for broadcasting.
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `other` - The other shape to broadcast with
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// * `Some(Shape)` - The resulting broadcast shape if compatible
     /// * `None` - If the shapes cannot be broadcast together
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use tensor_frame::Shape;
-    /// 
+    ///
     /// let shape1 = Shape::new(vec![2, 1]).unwrap();
     /// let shape2 = Shape::new(vec![1, 3]).unwrap();
     /// let result = shape1.broadcast_shape(&shape2).unwrap();
     /// assert_eq!(result.dims(), &[2, 3]);
-    /// 
+    ///
     /// let shape3 = Shape::new(vec![3]).unwrap();
     /// let shape4 = Shape::new(vec![2, 3]).unwrap();
     /// let result = shape3.broadcast_shape(&shape4).unwrap();

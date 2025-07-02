@@ -1,10 +1,9 @@
 use super::{Backend, Storage};
 use crate::error::{Result, TensorError};
 use crate::tensor::shape::Shape;
-use std::sync::Arc;
 use std::fs;
 use std::path::PathBuf;
-
+use std::sync::Arc;
 
 use {
     bytemuck, futures, tokio,
@@ -13,11 +12,10 @@ use {
 
 #[derive(Debug)]
 pub struct WgpuStorage {
-    
     pub buffer: Arc<Buffer>,
-    
+
     pub device: Arc<Device>,
-    
+
     pub queue: Arc<Queue>,
     pub size: usize,
 }
@@ -25,11 +23,10 @@ pub struct WgpuStorage {
 impl Clone for WgpuStorage {
     fn clone(&self) -> Self {
         WgpuStorage {
-            
             buffer: self.buffer.clone(),
-            
+
             device: self.device.clone(),
-            
+
             queue: self.queue.clone(),
             size: self.size,
         }
@@ -38,15 +35,13 @@ impl Clone for WgpuStorage {
 
 #[derive(Debug)]
 pub struct WgpuBackend {
-    
     device: Arc<Device>,
-    
+
     queue: Arc<Queue>,
 }
 
 impl WgpuBackend {
     pub fn new_blocking() -> Result<Self> {
-        
         {
             let rt = tokio::runtime::Runtime::new().map_err(|e| {
                 TensorError::BackendError(format!("Failed to create tokio runtime: {}", e))
@@ -59,7 +54,6 @@ impl WgpuBackend {
         ))
     }
 
-    
     pub async fn new() -> Result<Self> {
         let instance = wgpu::Instance::default();
 
@@ -91,7 +85,6 @@ impl WgpuBackend {
         })
     }
 
-    
     fn create_buffer(&self, data: &[f32]) -> Result<Buffer> {
         use wgpu::util::DeviceExt;
 
@@ -117,7 +110,6 @@ impl WgpuBackend {
         Ok(buffer)
     }
 
-    
     fn create_staging_buffer(&self, size: usize) -> Buffer {
         let buffer_size = if size == 0 {
             4 // Minimum buffer size
@@ -133,7 +125,6 @@ impl WgpuBackend {
         })
     }
 
-    
     fn read_buffer(&self, buffer: &Buffer, size: usize) -> Result<Vec<f32>> {
         // Handle empty tensors
         if size == 0 {
@@ -186,7 +177,6 @@ impl WgpuBackend {
         Ok(result)
     }
 
-    
     fn create_compute_pipeline(
         &self,
         shader_source: &str,
@@ -213,7 +203,6 @@ impl WgpuBackend {
         Ok(compute_pipeline)
     }
 
-    
     fn binary_operation(
         &self,
         lhs: &WgpuStorage,
@@ -313,7 +302,6 @@ impl WgpuBackend {
 }
 
 pub fn is_available() -> bool {
-    
     {
         // Try to create a WGPU instance
         let instance = wgpu::Instance::default();
@@ -339,7 +327,6 @@ impl Backend for WgpuBackend {
     }
 
     fn zeros(&self, shape: &Shape) -> Result<Storage> {
-        
         {
             let size = shape.numel();
             let data = vec![0.0f32; size];
@@ -359,7 +346,6 @@ impl Backend for WgpuBackend {
     }
 
     fn ones(&self, shape: &Shape) -> Result<Storage> {
-        
         {
             let size = shape.numel();
             let data = vec![1.0f32; size];
@@ -379,7 +365,6 @@ impl Backend for WgpuBackend {
     }
 
     fn from_slice(&self, data: &[f32], shape: &Shape) -> Result<Storage> {
-        
         {
             if data.len() != shape.numel() {
                 return Err(TensorError::ShapeMismatch {
@@ -404,7 +389,6 @@ impl Backend for WgpuBackend {
     }
 
     fn add(&self, lhs: &Storage, rhs: &Storage) -> Result<Storage> {
-        
         {
             // Convert storage to WGPU storage if needed
             let lhs_data = self.to_vec_f32(lhs)?;
@@ -434,7 +418,6 @@ impl Backend for WgpuBackend {
     }
 
     fn sub(&self, lhs: &Storage, rhs: &Storage) -> Result<Storage> {
-        
         {
             let lhs_data = self.to_vec_f32(lhs)?;
             let rhs_data = self.to_vec_f32(rhs)?;
@@ -462,7 +445,6 @@ impl Backend for WgpuBackend {
     }
 
     fn mul(&self, lhs: &Storage, rhs: &Storage) -> Result<Storage> {
-        
         {
             let lhs_data = self.to_vec_f32(lhs)?;
             let rhs_data = self.to_vec_f32(rhs)?;
@@ -490,7 +472,6 @@ impl Backend for WgpuBackend {
     }
 
     fn div(&self, lhs: &Storage, rhs: &Storage) -> Result<Storage> {
-        
         {
             let lhs_data = self.to_vec_f32(lhs)?;
             let rhs_data = self.to_vec_f32(rhs)?;
@@ -521,7 +502,7 @@ impl Backend for WgpuBackend {
         #[cfg(feature = "wgpu")]
         {
             let data = self.to_vec_f32(storage)?;
-            
+
             match axis {
                 None => {
                     // Sum all elements
@@ -539,24 +520,30 @@ impl Backend for WgpuBackend {
                     // Sum along specific axis
                     let dims = shape.dims();
                     if axis_idx >= dims.len() {
-                        return Err(TensorError::InvalidShape(
-                            format!("Axis {} is out of bounds for tensor with {} dimensions", axis_idx, dims.len())
-                        ));
+                        return Err(TensorError::InvalidShape(format!(
+                            "Axis {} is out of bounds for tensor with {} dimensions",
+                            axis_idx,
+                            dims.len()
+                        )));
                     }
-                    
+
                     // Calculate result shape (remove the summed axis)
                     let mut result_shape = dims.to_vec();
                     result_shape.remove(axis_idx);
-                    let result_size = if result_shape.is_empty() { 1 } else { result_shape.iter().product() };
-                    
+                    let result_size = if result_shape.is_empty() {
+                        1
+                    } else {
+                        result_shape.iter().product()
+                    };
+
                     // Calculate strides for the original tensor
                     let mut strides = vec![1; dims.len()];
-                    for i in (0..dims.len()-1).rev() {
+                    for i in (0..dims.len() - 1).rev() {
                         strides[i] = strides[i + 1] * dims[i + 1];
                     }
-                    
+
                     let mut result = vec![0.0; result_size];
-                    
+
                     // Iterate through all elements and accumulate along the specified axis
                     for (linear_idx, &value) in data.iter().enumerate() {
                         // Convert linear index to multi-dimensional coordinates
@@ -566,26 +553,26 @@ impl Backend for WgpuBackend {
                             coords[i] = temp_idx / stride;
                             temp_idx %= stride;
                         }
-                        
+
                         // Calculate result index by removing the summed axis coordinate
                         let mut result_coords = coords.clone();
                         result_coords.remove(axis_idx);
-                        
+
                         // Convert result coordinates to linear index
                         let mut result_idx = 0;
                         if !result_coords.is_empty() {
                             let mut result_strides = vec![1; result_coords.len()];
-                            for i in (0..result_coords.len()-1).rev() {
+                            for i in (0..result_coords.len() - 1).rev() {
                                 result_strides[i] = result_strides[i + 1] * result_shape[i + 1];
                             }
                             for (i, &coord) in result_coords.iter().enumerate() {
                                 result_idx += coord * result_strides[i];
                             }
                         }
-                        
+
                         result[result_idx] += value;
                     }
-                    
+
                     let buffer = self.create_buffer(&result)?;
                     Ok(Storage::Wgpu(WgpuStorage {
                         buffer: Arc::new(buffer),
@@ -624,17 +611,19 @@ impl Backend for WgpuBackend {
                     // Mean along specific axis
                     let dims = shape.dims();
                     if axis_idx >= dims.len() {
-                        return Err(TensorError::InvalidShape(
-                            format!("Axis {} is out of bounds for tensor with {} dimensions", axis_idx, dims.len())
-                        ));
+                        return Err(TensorError::InvalidShape(format!(
+                            "Axis {} is out of bounds for tensor with {} dimensions",
+                            axis_idx,
+                            dims.len()
+                        )));
                     }
-                    
+
                     // First calculate sum, then divide by axis size
                     let sum_result = self.sum(storage, shape, Some(axis_idx))?;
                     let sum_data = self.to_vec_f32(&sum_result)?;
                     let axis_size = dims[axis_idx] as f32;
                     let result: Vec<f32> = sum_data.iter().map(|&sum| sum / axis_size).collect();
-                    
+
                     let buffer = self.create_buffer(&result)?;
                     Ok(Storage::Wgpu(WgpuStorage {
                         buffer: Arc::new(buffer),
@@ -652,7 +641,6 @@ impl Backend for WgpuBackend {
     }
 
     fn transpose(&self, storage: &Storage, shape: &Shape) -> Result<Storage> {
-        
         {
             let dims = shape.dims();
             if dims.len() != 2 {
@@ -689,7 +677,6 @@ impl Backend for WgpuBackend {
 
     fn to_vec_f32(&self, storage: &Storage) -> Result<Vec<f32>> {
         match storage {
-            
             Storage::Wgpu(wgpu_storage) => {
                 self.read_buffer(&wgpu_storage.buffer, wgpu_storage.size)
             }

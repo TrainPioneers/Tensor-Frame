@@ -1,5 +1,5 @@
 //! The main tensor module containing the core tensor type and its implementations.
-//! 
+//!
 //! This module provides the [`Tensor`] struct which is the central data structure
 //! in the library, along with its associated operations and traits.
 
@@ -16,23 +16,23 @@ use std::fmt;
 use std::ops::{Add, Div, Mul, Sub};
 
 /// A multi-dimensional array with support for various backends and operations.
-/// 
+///
 /// The `Tensor` struct is the core data structure of this library. It consists of:
 /// - `storage`: Backend-specific storage for the tensor data
 /// - `shape`: The dimensions of the tensor
-/// 
+///
 /// Tensors support various operations including element-wise arithmetic, broadcasting,
 /// reductions, and shape manipulation. The actual computation is delegated to the
 /// available backends (CPU, WGPU, or CUDA).
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```
 /// use tensor_frame::Tensor;
-/// 
+///
 /// // Create a 2x3 tensor of ones
 /// let tensor = Tensor::ones(vec![2, 3]).unwrap();
-/// 
+///
 /// // Create from data
 /// let data = vec![1.0, 2.0, 3.0, 4.0];
 /// let tensor = Tensor::from_vec(data, vec![2, 2]).unwrap();
@@ -45,20 +45,20 @@ pub struct Tensor {
 
 impl Tensor {
     /// Creates a new tensor filled with zeros.
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `shape` - The shape of the tensor to create
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// A `Result` containing the new tensor or an error if no backend could create it.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use tensor_frame::Tensor;
-    /// 
+    ///
     /// let zeros = Tensor::zeros(vec![3, 4]).unwrap();
     /// assert_eq!(zeros.shape().dims(), &[3, 4]);
     /// ```
@@ -76,20 +76,20 @@ impl Tensor {
     }
 
     /// Creates a new tensor filled with ones.
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `shape` - The shape of the tensor to create
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// A `Result` containing the new tensor or an error if no backend could create it.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use tensor_frame::Tensor;
-    /// 
+    ///
     /// let ones = Tensor::ones(vec![2, 2]).unwrap();
     /// assert_eq!(ones.to_vec().unwrap(), vec![1.0, 1.0, 1.0, 1.0]);
     /// ```
@@ -107,23 +107,23 @@ impl Tensor {
     }
 
     /// Creates a new tensor from a vector of data with the specified shape.
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `data` - The data to fill the tensor with
     /// * `shape` - The shape of the tensor
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// A `Result` containing the new tensor or an error if:
     /// - The data length doesn't match the shape
     /// - No backend could create the tensor
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use tensor_frame::Tensor;
-    /// 
+    ///
     /// let data = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
     /// let tensor = Tensor::from_vec(data, vec![2, 3]).unwrap();
     /// assert_eq!(tensor.shape().dims(), &[2, 3]);
@@ -153,12 +153,12 @@ impl Tensor {
     }
 
     /// Returns the number of dimensions of the tensor.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use tensor_frame::Tensor;
-    /// 
+    ///
     /// let tensor = Tensor::ones(vec![2, 3, 4]).unwrap();
     /// assert_eq!(tensor.ndim(), 3);
     /// ```
@@ -167,12 +167,12 @@ impl Tensor {
     }
 
     /// Returns the total number of elements in the tensor.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use tensor_frame::Tensor;
-    /// 
+    ///
     /// let tensor = Tensor::ones(vec![2, 3, 4]).unwrap();
     /// assert_eq!(tensor.numel(), 24);  // 2 * 3 * 4
     /// ```
@@ -181,23 +181,23 @@ impl Tensor {
     }
 
     /// Creates a new tensor with explicit shape validation.
-    /// 
+    ///
     /// This method validates the shape before creating the tensor, allowing for
     /// better error handling than the `From` trait implementations.
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `data` - The data to fill the tensor with
     /// * `dims` - The dimensions of the tensor (will be validated)
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use tensor_frame::Tensor;
-    /// 
+    ///
     /// let tensor = Tensor::from_vec_with_shape(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2]).unwrap();
     /// assert_eq!(tensor.shape().dims(), &[2, 2]);
-    /// 
+    ///
     /// // This will fail with proper error handling
     /// let result = Tensor::from_vec_with_shape(vec![1.0, 2.0], vec![0, 2]);
     /// assert!(result.is_err());
@@ -208,19 +208,19 @@ impl Tensor {
     }
 
     /// Converts the tensor to a vector of f32 values.
-    /// 
+    ///
     /// The data is returned in row-major (C-style) order.
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// A `Result` containing the data as a vector or an error if no backend
     /// could perform the conversion.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use tensor_frame::Tensor;
-    /// 
+    ///
     /// let tensor = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2]).unwrap();
     /// let data = tensor.to_vec().unwrap();
     /// assert_eq!(data, vec![1.0, 2.0, 3.0, 4.0]);
@@ -535,9 +535,11 @@ impl TensorOps for Tensor {
             Some(axis_idx) => {
                 let dims = self.shape.dims();
                 if axis_idx >= dims.len() {
-                    return Err(TensorError::InvalidShape(
-                        format!("Axis {} is out of bounds for tensor with {} dimensions", axis_idx, dims.len())
-                    ));
+                    return Err(TensorError::InvalidShape(format!(
+                        "Axis {} is out of bounds for tensor with {} dimensions",
+                        axis_idx,
+                        dims.len()
+                    )));
                 }
                 // Remove the summed axis from the shape
                 let mut result_dims = dims.to_vec();
@@ -549,7 +551,10 @@ impl TensorOps for Tensor {
         for backend in &BACKENDS[0..] {
             match backend.sum(&self.storage, &self.shape, axis) {
                 Ok(storage) => {
-                    return Ok(Tensor { storage, shape: result_shape });
+                    return Ok(Tensor {
+                        storage,
+                        shape: result_shape,
+                    });
                 }
                 Err(_) => continue,
             }
@@ -566,9 +571,11 @@ impl TensorOps for Tensor {
             Some(axis_idx) => {
                 let dims = self.shape.dims();
                 if axis_idx >= dims.len() {
-                    return Err(TensorError::InvalidShape(
-                        format!("Axis {} is out of bounds for tensor with {} dimensions", axis_idx, dims.len())
-                    ));
+                    return Err(TensorError::InvalidShape(format!(
+                        "Axis {} is out of bounds for tensor with {} dimensions",
+                        axis_idx,
+                        dims.len()
+                    )));
                 }
                 // Remove the averaged axis from the shape
                 let mut result_dims = dims.to_vec();
@@ -580,7 +587,10 @@ impl TensorOps for Tensor {
         for backend in &BACKENDS[0..] {
             match backend.mean(&self.storage, &self.shape, axis) {
                 Ok(storage) => {
-                    return Ok(Tensor { storage, shape: result_shape });
+                    return Ok(Tensor {
+                        storage,
+                        shape: result_shape,
+                    });
                 }
                 Err(_) => continue,
             }

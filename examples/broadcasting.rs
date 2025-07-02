@@ -43,7 +43,7 @@ fn main() -> Result<()> {
     println!("   Row vector (3): {}", row);
     let result = (matrix.clone() * row.clone())?;
     println!("   Matrix * Row (broadcasted): {}", result);
-    
+
     // More complex broadcasting example
     println!("\n5. Complex Broadcasting Example:");
     let a = Tensor::from_vec(vec![1.0, 2.0, 3.0], vec![3, 1])?;
@@ -52,7 +52,7 @@ fn main() -> Result<()> {
     println!("   B (1x2): {}", b);
     let result = (a.clone() + b.clone())?;
     println!("   A + B (3x2): {}", result);
-    
+
     // Test all operations
     println!("\n6. All Operations with Broadcasting:");
     let x = Tensor::from_vec(vec![100.0, 200.0], vec![2, 1])?;
