@@ -68,4 +68,7 @@ clean:
 	cargo clean
 	rm -rf docs/book
 
-.PHONY: test test-wgpu test-cuda test-cpu fmt clippy docs docs-book docs-serve docs-test publish-check publish check-all clean
+connect-githooks:
+	git config core.hooksPath .githooks
+
+.PHONY: test test-wgpu test-cuda test-cpu fmt clippy docs docs-book docs-serve docs-test publish-check publish check-all clean connect-githooks

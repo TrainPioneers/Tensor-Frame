@@ -1,0 +1,18 @@
+cd "$(dirname "$0")/.."
+
+echo "Running pre-commit checks..."
+
+make test
+make check-examples
+
+if [ $? -ne 0 ]; then
+    echo "Pre-commit checks failed. Please fix the issues before committing."
+    exit 1
+fi
+
+make fmt
+
+if [ $? -ne 0 ]; then
+    echo "Formatting failed. Please run 'make fmt' to format your code."
+    exit 1
+fi
