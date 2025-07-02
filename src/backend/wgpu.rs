@@ -2,6 +2,8 @@ use super::{Backend, Storage};
 use crate::error::{Result, TensorError};
 use crate::tensor::shape::Shape;
 use std::sync::Arc;
+use std::fs;
+use std::path::PathBuf;
 
 
 use {
@@ -225,34 +227,32 @@ impl WgpuBackend {
             });
         }
 
-        let shader_source = format!(
-            r#"
-            @group(0) @binding(0) var<storage, read> input_a: array<f32>;
-            @group(0) @binding(1) var<storage, read> input_b: array<f32>;
-            @group(0) @binding(2) var<storage, read_write> output: array<f32>;
-
-            @compute @workgroup_size(64)
-            fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {{
-                let index = global_id.x;
-                if (index >= arrayLength(&output)) {{
-                    return;
-                }}
-                
-                output[index] = input_a[index] {} input_b[index];
-            }}
-        "#,
-            match operation {
-                "add" => "+",
-                "sub" => "-",
-                "mul" => "*",
-                "div" => "/",
-                _ =>
-                    return Err(TensorError::BackendError(format!(
-                        "Unknown operation: {}",
-                        operation
-                    ))),
+        // Read WGSL shader source from file based on operation
+        let shader_filename = match operation {
+            "add" => "add.wgsl",
+            "sub" => "sub.wgsl",
+            "mul" => "mul.wgsl",
+            "div" => "div.wgsl",
+            _ => {
+                return Err(TensorError::BackendError(format!(
+                    "Unknown operation: {}",
+                    operation
+                )))
             }
-        );
+        };
+
+        let mut shader_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        shader_path.push("src");
+        shader_path.push("shaders");
+        shader_path.push(shader_filename);
+
+        let shader_source = fs::read_to_string(&shader_path).map_err(|e| {
+            TensorError::BackendError(format!(
+                "Failed to read shader file {}: {}",
+                shader_path.display(),
+                e
+            ))
+        })?;
 
         let pipeline = self.create_compute_pipeline(&shader_source, "main")?;
 
@@ -422,7 +422,9 @@ impl Backend for WgpuBackend {
             let lhs_storage = self.from_slice(&lhs_data, &shape)?;
             let rhs_storage = self.from_slice(&rhs_data, &shape)?;
 
-            let (Storage::Wgpu(a), Storage::Wgpu(b)) = (&lhs_storage, &rhs_storage);
+            let (Storage::Wgpu(a), Storage::Wgpu(b)) = (&lhs_storage, &rhs_storage) else {
+                unreachable!("WGPU backend should always create WGPU storage")
+            };
             self.binary_operation(a, b, "add")
         }
         #[cfg(not(feature = "wgpu"))]
@@ -448,7 +450,9 @@ impl Backend for WgpuBackend {
             let lhs_storage = self.from_slice(&lhs_data, &shape)?;
             let rhs_storage = self.from_slice(&rhs_data, &shape)?;
 
-            let (Storage::Wgpu(a), Storage::Wgpu(b)) = (&lhs_storage, &rhs_storage);
+            let (Storage::Wgpu(a), Storage::Wgpu(b)) = (&lhs_storage, &rhs_storage) else {
+                unreachable!("WGPU backend should always create WGPU storage")
+            };
             self.binary_operation(a, b, "sub")
         }
         #[cfg(not(feature = "wgpu"))]
@@ -474,7 +478,9 @@ impl Backend for WgpuBackend {
             let lhs_storage = self.from_slice(&lhs_data, &shape)?;
             let rhs_storage = self.from_slice(&rhs_data, &shape)?;
 
-            let (Storage::Wgpu(a), Storage::Wgpu(b)) = (&lhs_storage, &rhs_storage);
+            let (Storage::Wgpu(a), Storage::Wgpu(b)) = (&lhs_storage, &rhs_storage) else {
+                unreachable!("WGPU backend should always create WGPU storage")
+            };
             self.binary_operation(a, b, "mul")
         }
         #[cfg(not(feature = "wgpu"))]
@@ -500,7 +506,9 @@ impl Backend for WgpuBackend {
             let lhs_storage = self.from_slice(&lhs_data, &shape)?;
             let rhs_storage = self.from_slice(&rhs_data, &shape)?;
 
-            let (Storage::Wgpu(a), Storage::Wgpu(b)) = (&lhs_storage, &rhs_storage);
+            let (Storage::Wgpu(a), Storage::Wgpu(b)) = (&lhs_storage, &rhs_storage) else {
+                unreachable!("WGPU backend should always create WGPU storage")
+            };
             self.binary_operation(a, b, "div")
         }
         #[cfg(not(feature = "wgpu"))]
@@ -509,25 +517,84 @@ impl Backend for WgpuBackend {
         ))
     }
 
-    fn sum(&self, storage: &Storage, axis: Option<usize>) -> Result<Storage> {
-        
+    fn sum(&self, storage: &Storage, shape: &Shape, axis: Option<usize>) -> Result<Storage> {
+        #[cfg(feature = "wgpu")]
         {
-            if axis.is_some() {
-                return Err(TensorError::BackendError(
-                    "Axis sum not yet implemented".to_string(),
-                ));
-            }
-
             let data = self.to_vec_f32(storage)?;
-            let sum: f32 = data.iter().sum();
-            let buffer = self.create_buffer(&[sum])?;
+            
+            match axis {
+                None => {
+                    // Sum all elements
+                    let sum: f32 = data.iter().sum();
+                    let buffer = self.create_buffer(&[sum])?;
 
-            Ok(Storage::Wgpu(WgpuStorage {
-                buffer: Arc::new(buffer),
-                device: self.device.clone(),
-                queue: self.queue.clone(),
-                size: 1,
-            }))
+                    Ok(Storage::Wgpu(WgpuStorage {
+                        buffer: Arc::new(buffer),
+                        device: self.device.clone(),
+                        queue: self.queue.clone(),
+                        size: 1,
+                    }))
+                }
+                Some(axis_idx) => {
+                    // Sum along specific axis
+                    let dims = shape.dims();
+                    if axis_idx >= dims.len() {
+                        return Err(TensorError::InvalidShape(
+                            format!("Axis {} is out of bounds for tensor with {} dimensions", axis_idx, dims.len())
+                        ));
+                    }
+                    
+                    // Calculate result shape (remove the summed axis)
+                    let mut result_shape = dims.to_vec();
+                    result_shape.remove(axis_idx);
+                    let result_size = if result_shape.is_empty() { 1 } else { result_shape.iter().product() };
+                    
+                    // Calculate strides for the original tensor
+                    let mut strides = vec![1; dims.len()];
+                    for i in (0..dims.len()-1).rev() {
+                        strides[i] = strides[i + 1] * dims[i + 1];
+                    }
+                    
+                    let mut result = vec![0.0; result_size];
+                    
+                    // Iterate through all elements and accumulate along the specified axis
+                    for (linear_idx, &value) in data.iter().enumerate() {
+                        // Convert linear index to multi-dimensional coordinates
+                        let mut coords = vec![0; dims.len()];
+                        let mut temp_idx = linear_idx;
+                        for (i, &stride) in strides.iter().enumerate() {
+                            coords[i] = temp_idx / stride;
+                            temp_idx %= stride;
+                        }
+                        
+                        // Calculate result index by removing the summed axis coordinate
+                        let mut result_coords = coords.clone();
+                        result_coords.remove(axis_idx);
+                        
+                        // Convert result coordinates to linear index
+                        let mut result_idx = 0;
+                        if !result_coords.is_empty() {
+                            let mut result_strides = vec![1; result_coords.len()];
+                            for i in (0..result_coords.len()-1).rev() {
+                                result_strides[i] = result_strides[i + 1] * result_shape[i + 1];
+                            }
+                            for (i, &coord) in result_coords.iter().enumerate() {
+                                result_idx += coord * result_strides[i];
+                            }
+                        }
+                        
+                        result[result_idx] += value;
+                    }
+                    
+                    let buffer = self.create_buffer(&result)?;
+                    Ok(Storage::Wgpu(WgpuStorage {
+                        buffer: Arc::new(buffer),
+                        device: self.device.clone(),
+                        queue: self.queue.clone(),
+                        size: result_size,
+                    }))
+                }
+            }
         }
         #[cfg(not(feature = "wgpu"))]
         Err(TensorError::BackendError(
@@ -535,26 +602,48 @@ impl Backend for WgpuBackend {
         ))
     }
 
-    fn mean(&self, storage: &Storage, axis: Option<usize>) -> Result<Storage> {
-        
+    fn mean(&self, storage: &Storage, shape: &Shape, axis: Option<usize>) -> Result<Storage> {
+        #[cfg(feature = "wgpu")]
         {
-            if axis.is_some() {
-                return Err(TensorError::BackendError(
-                    "Axis mean not yet implemented".to_string(),
-                ));
+            match axis {
+                None => {
+                    // Mean of all elements
+                    let data = self.to_vec_f32(storage)?;
+                    let sum: f32 = data.iter().sum();
+                    let mean = sum / data.len() as f32;
+                    let buffer = self.create_buffer(&[mean])?;
+
+                    Ok(Storage::Wgpu(WgpuStorage {
+                        buffer: Arc::new(buffer),
+                        device: self.device.clone(),
+                        queue: self.queue.clone(),
+                        size: 1,
+                    }))
+                }
+                Some(axis_idx) => {
+                    // Mean along specific axis
+                    let dims = shape.dims();
+                    if axis_idx >= dims.len() {
+                        return Err(TensorError::InvalidShape(
+                            format!("Axis {} is out of bounds for tensor with {} dimensions", axis_idx, dims.len())
+                        ));
+                    }
+                    
+                    // First calculate sum, then divide by axis size
+                    let sum_result = self.sum(storage, shape, Some(axis_idx))?;
+                    let sum_data = self.to_vec_f32(&sum_result)?;
+                    let axis_size = dims[axis_idx] as f32;
+                    let result: Vec<f32> = sum_data.iter().map(|&sum| sum / axis_size).collect();
+                    
+                    let buffer = self.create_buffer(&result)?;
+                    Ok(Storage::Wgpu(WgpuStorage {
+                        buffer: Arc::new(buffer),
+                        device: self.device.clone(),
+                        queue: self.queue.clone(),
+                        size: result.len(),
+                    }))
+                }
             }
-
-            let data = self.to_vec_f32(storage)?;
-            let sum: f32 = data.iter().sum();
-            let mean = sum / data.len() as f32;
-            let buffer = self.create_buffer(&[mean])?;
-
-            Ok(Storage::Wgpu(WgpuStorage {
-                buffer: Arc::new(buffer),
-                device: self.device.clone(),
-                queue: self.queue.clone(),
-                size: 1,
-            }))
         }
         #[cfg(not(feature = "wgpu"))]
         Err(TensorError::BackendError(

@@ -86,7 +86,11 @@ Computes element-wise division: `output[i] = lhs[i] / rhs[i]`
 
 **Broadcasting**: Yes  
 **Supported shapes**: Any compatible shapes  
-**Error conditions**: Shape incompatibility, division by zero
+**Error conditions**: Shape incompatibility  
+**Special handling**: Division by zero follows IEEE 754 standards:
+- `x/0.0` where `x > 0` → `+∞`
+- `x/0.0` where `x < 0` → `-∞`  
+- `0.0/0.0` → `NaN`
 
 ```rust
 // Divide by scalar (broadcast)
@@ -116,18 +120,20 @@ Computes sum along specified axis or all elements.
 - `axis: Some(i)` - Sum along axis `i`, reduce that dimension
 
 **Supported shapes**: Any  
-**Error conditions**: Axis-specific reductions not yet implemented in CPU backend
+**Backend support**: 
+- CPU: Full native support for axis-specific reductions
+- WGPU: Full support for axis-specific reductions (CPU fallback)
+- CUDA: Full support for axis-specific reductions (CPU fallback)
 
 ```rust
 let tensor = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2])?;
 
-// Sum all elements
+// Sum all elements (all backends)
 let total = tensor.sum(None)?;          // Result: [10.0] (scalar)
 
-// Axis-specific sums not yet implemented
-// These will be available in future versions:
-// let col_sums = tensor.sum(Some(0))?;    // Future: [4.0, 6.0]
-// let row_sums = tensor.sum(Some(1))?;    // Future: [3.0, 7.0]
+// Axis-specific sums (all backends)
+let col_sums = tensor.sum(Some(0))?;    // Result: [4.0, 6.0] (shape: [2])
+let row_sums = tensor.sum(Some(1))?;    // Result: [3.0, 7.0] (shape: [2])
 ```
 
 ### Mean
@@ -143,17 +149,20 @@ Computes arithmetic mean along specified axis or all elements.
 - `axis: Some(i)` - Mean along axis `i`, reduce that dimension
 
 **Supported shapes**: Any  
-**Error conditions**: Axis-specific reductions not yet implemented in CPU backend
+**Backend support**: 
+- CPU: Full native support for axis-specific reductions
+- WGPU: Full support for axis-specific reductions (CPU fallback)
+- CUDA: Full support for axis-specific reductions (CPU fallback)
 
 ```rust
 let tensor = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2])?;
 
-// Mean of all elements
+// Mean of all elements (all backends)
 let average = tensor.mean(None)?;       // Result: [2.5] (scalar)
 
-// Axis-specific means not yet implemented
-// This will be available in future versions:
-// let col_means = tensor.mean(Some(0))?;  // Future: [2.0, 3.0]
+// Axis-specific means (all backends)
+let col_means = tensor.mean(Some(0))?;  // Result: [2.0, 3.0] (shape: [2])
+let row_means = tensor.mean(Some(1))?;  // Result: [1.5, 3.5] (shape: [2])
 ```
 
 ## Shape Manipulation

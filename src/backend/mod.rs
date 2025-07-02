@@ -72,10 +72,10 @@ pub trait Backend: Debug + Send + Sync {
     fn div(&self, lhs: &Storage, rhs: &Storage) -> Result<Storage>;
 
     /// Computes the sum of elements along an optional axis.
-    fn sum(&self, storage: &Storage, axis: Option<usize>) -> Result<Storage>;
+    fn sum(&self, storage: &Storage, shape: &Shape, axis: Option<usize>) -> Result<Storage>;
     
     /// Computes the mean of elements along an optional axis.
-    fn mean(&self, storage: &Storage, axis: Option<usize>) -> Result<Storage>;
+    fn mean(&self, storage: &Storage, shape: &Shape, axis: Option<usize>) -> Result<Storage>;
     
     /// Transposes a 2D tensor.
     fn transpose(&self, storage: &Storage, shape: &Shape) -> Result<Storage>;

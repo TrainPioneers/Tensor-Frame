@@ -61,10 +61,15 @@ pub struct WgpuStorage {
 - **Synchronization**: Automatic via command queue
 
 ### Compute Shaders
-Operations are implemented as WGSL compute shaders:
+Operations are implemented as WGSL compute shaders loaded from external files in `src/shaders/`:
+
+- `add.wgsl` - Element-wise addition
+- `sub.wgsl` - Element-wise subtraction  
+- `mul.wgsl` - Element-wise multiplication
+- `div.wgsl` - Element-wise division with IEEE 754 compliance
 
 ```wgsl
-// Element-wise addition shader
+// Example: Element-wise addition shader (add.wgsl)
 @group(0) @binding(0) var<storage, read> input_a: array<f32>;
 @group(0) @binding(1) var<storage, read> input_b: array<f32>;
 @group(0) @binding(2) var<storage, read_write> output: array<f32>;

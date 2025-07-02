@@ -376,4 +376,179 @@ mod tests {
         // Just ensure it doesn't panic and produces some output
         assert!(!display_str.is_empty());
     }
+
+    // ==== SHAPE VALIDATION TESTS ====
+
+    #[test]
+    fn test_shape_validation() {
+        use crate::tensor::shape::Shape;
+        
+        // These should all succeed - zero dimensions represent empty tensors
+        assert!(Shape::new(vec![0]).is_ok());
+        assert!(Shape::new(vec![2, 0]).is_ok());
+        assert!(Shape::new(vec![0, 3]).is_ok());
+        assert!(Shape::new(vec![2, 0, 3]).is_ok());
+        
+        // These should also succeed
+        assert!(Shape::new(vec![1]).is_ok());
+        assert!(Shape::new(vec![2, 3]).is_ok());
+        assert!(Shape::new(vec![]).is_ok()); // Scalar is allowed
+        
+        // Test numel calculation with empty tensors
+        let empty = Shape::new(vec![0]).unwrap();
+        assert_eq!(empty.numel(), 0);
+        
+        let empty2 = Shape::new(vec![2, 0, 3]).unwrap();
+        assert_eq!(empty2.numel(), 0);
+    }
+
+    #[test]
+    fn test_overflow_protection() {
+        use crate::tensor::shape::Shape;
+        
+        // This should fail due to overflow
+        let huge_dims = vec![usize::MAX, 2];
+        assert!(Shape::new(huge_dims).is_err());
+        
+        // This should also fail - 10^18 elements is way too many
+        let large_dims = vec![1000000, 1000000, 1000000];
+        let result = Shape::new(large_dims);
+        // On some systems this might not overflow, so let's be more specific
+        if result.is_ok() {
+            // If it didn't overflow, try an even larger size
+            let huge_dims = vec![usize::MAX / 2, usize::MAX / 2];
+            assert!(Shape::new(huge_dims).is_err());
+        } else {
+            assert!(result.is_err());
+        }
+    }
+
+    #[test]
+    fn test_tensor_creation_with_mismatched_data() {
+        // Data size doesn't match shape - should fail
+        let result = Tensor::from_vec_with_shape(vec![1.0, 2.0], vec![3, 2]);
+        assert!(result.is_err());
+        
+        // Empty tensor creation should work
+        let result2 = Tensor::from_vec_with_shape(Vec::new(), vec![0]);
+        assert!(result2.is_ok());
+        
+        // Valid shape should work
+        let result3 = Tensor::from_vec_with_shape(vec![1.0, 2.0], vec![1, 2]);
+        assert!(result3.is_ok());
+    }
+
+    // ==== DIVISION BY ZERO TESTS ====
+
+    #[test]
+    fn test_division_by_zero_handling() {
+        // Test different division by zero cases
+        let numerator = Tensor::from_vec(vec![1.0, -1.0, 0.0, 5.0], vec![4]).unwrap();
+        let denominator = Tensor::from_vec(vec![0.0, 0.0, 0.0, 2.0], vec![4]).unwrap();
+        
+        let result = (numerator / denominator).unwrap();
+        let values = result.to_vec().unwrap();
+        
+        // Check that we get the expected IEEE floating point results
+        assert!(values[0].is_infinite() && values[0].is_sign_positive()); // 1.0/0.0 = +inf
+        assert!(values[1].is_infinite() && values[1].is_sign_negative()); // -1.0/0.0 = -inf
+        assert!(values[2].is_nan()); // 0.0/0.0 = NaN
+        assert_eq!(values[3], 2.5); // 5.0/2.0 = 2.5 (normal division)
+    }
+
+    #[test]
+    fn test_division_by_near_zero() {
+        // Test division by very small numbers (should not trigger special handling)
+        let numerator = Tensor::from_vec(vec![1.0, 2.0], vec![2]).unwrap();
+        let denominator = Tensor::from_vec(vec![1e-10, 1e-20], vec![2]).unwrap();
+        
+        let result = (numerator / denominator).unwrap();
+        let values = result.to_vec().unwrap();
+        
+        // These should be very large but finite numbers, not infinity
+        assert!(values[0].is_finite());
+        assert!(values[1].is_finite());
+        assert!(values[0] > 1e9); // Should be approximately 1e10
+        assert!(values[1] > 1e19); // Should be approximately 2e20
+    }
+
+    // ==== AXIS-SPECIFIC REDUCTION TESTS ====
+
+    #[test]
+    fn test_axis_specific_sum() {
+        use crate::tensor::ops::TensorOps;
+        
+        // Create a 2x3 tensor: [[1, 2, 3], [4, 5, 6]]
+        let tensor = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0], vec![2, 3]).unwrap();
+        
+        // Sum along axis 0 (columns): should give [5, 7, 9] with shape [3]
+        let sum_axis_0 = tensor.sum(Some(0)).unwrap();
+        let result_0 = sum_axis_0.to_vec().unwrap();
+        assert_eq!(result_0, vec![5.0, 7.0, 9.0]);
+        assert_eq!(sum_axis_0.shape().dims(), &[3]);
+        
+        // Sum along axis 1 (rows): should give [6, 15] with shape [2]
+        let sum_axis_1 = tensor.sum(Some(1)).unwrap();
+        let result_1 = sum_axis_1.to_vec().unwrap();
+        assert_eq!(result_1, vec![6.0, 15.0]);
+        assert_eq!(sum_axis_1.shape().dims(), &[2]);
+        
+        // Sum all elements: should give [21] with shape []
+        let sum_all = tensor.sum(None).unwrap();
+        let result_all = sum_all.to_vec().unwrap();
+        assert_eq!(result_all, vec![21.0]);
+        assert_eq!(sum_all.shape().dims(), &[] as &[usize]);
+    }
+
+    #[test]
+    fn test_axis_specific_mean() {
+        use crate::tensor::ops::TensorOps;
+        
+        // Create a 2x3 tensor: [[1, 2, 3], [4, 5, 6]]
+        let tensor = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0], vec![2, 3]).unwrap();
+        
+        // Mean along axis 0 (columns): should give [2.5, 3.5, 4.5] with shape [3]
+        let mean_axis_0 = tensor.mean(Some(0)).unwrap();
+        let result_0 = mean_axis_0.to_vec().unwrap();
+        assert_eq!(result_0, vec![2.5, 3.5, 4.5]);
+        assert_eq!(mean_axis_0.shape().dims(), &[3]);
+        
+        // Mean along axis 1 (rows): should give [2, 5] with shape [2]
+        let mean_axis_1 = tensor.mean(Some(1)).unwrap();
+        let result_1 = mean_axis_1.to_vec().unwrap();
+        assert_eq!(result_1, vec![2.0, 5.0]);
+        assert_eq!(mean_axis_1.shape().dims(), &[2]);
+        
+        // Mean all elements: should give [3.5] with shape []
+        let mean_all = tensor.mean(None).unwrap();
+        let result_all = mean_all.to_vec().unwrap();
+        assert_eq!(result_all, vec![3.5]);
+        assert_eq!(mean_all.shape().dims(), &[] as &[usize]);
+    }
+
+    #[test]
+    fn test_axis_sum_3d_tensor() {
+        use crate::tensor::ops::TensorOps;
+        
+        // Create a 2x2x2 tensor
+        let tensor = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0], vec![2, 2, 2]).unwrap();
+        
+        // Sum along axis 0: shape [2, 2] -> [2, 2]
+        let sum_axis_0 = tensor.sum(Some(0)).unwrap();
+        assert_eq!(sum_axis_0.shape().dims(), &[2, 2]);
+        let result_0 = sum_axis_0.to_vec().unwrap();
+        assert_eq!(result_0, vec![6.0, 8.0, 10.0, 12.0]); // [1+5, 2+6, 3+7, 4+8]
+        
+        // Sum along axis 1: shape [2, 2] -> [2, 2]
+        let sum_axis_1 = tensor.sum(Some(1)).unwrap();
+        assert_eq!(sum_axis_1.shape().dims(), &[2, 2]);
+        let result_1 = sum_axis_1.to_vec().unwrap();
+        assert_eq!(result_1, vec![4.0, 6.0, 12.0, 14.0]); // [1+3, 2+4, 5+7, 6+8]
+        
+        // Sum along axis 2: shape [2, 2] -> [2, 2]
+        let sum_axis_2 = tensor.sum(Some(2)).unwrap();
+        assert_eq!(sum_axis_2.shape().dims(), &[2, 2]);
+        let result_2 = sum_axis_2.to_vec().unwrap();
+        assert_eq!(result_2, vec![3.0, 7.0, 11.0, 15.0]); // [1+2, 3+4, 5+6, 7+8]
+    }
 }

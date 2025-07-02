@@ -180,6 +180,33 @@ impl Tensor {
         self.shape.numel()
     }
 
+    /// Creates a new tensor with explicit shape validation.
+    /// 
+    /// This method validates the shape before creating the tensor, allowing for
+    /// better error handling than the `From` trait implementations.
+    /// 
+    /// # Arguments
+    /// 
+    /// * `data` - The data to fill the tensor with
+    /// * `dims` - The dimensions of the tensor (will be validated)
+    /// 
+    /// # Examples
+    /// 
+    /// ```
+    /// use tensor_frame::Tensor;
+    /// 
+    /// let tensor = Tensor::from_vec_with_shape(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2]).unwrap();
+    /// assert_eq!(tensor.shape().dims(), &[2, 2]);
+    /// 
+    /// // This will fail with proper error handling
+    /// let result = Tensor::from_vec_with_shape(vec![1.0, 2.0], vec![0, 2]);
+    /// assert!(result.is_err());
+    /// ```
+    pub fn from_vec_with_shape(data: Vec<f32>, dims: Vec<usize>) -> Result<Self> {
+        let shape = Shape::new(dims)?;
+        Self::from_vec(data, shape)
+    }
+
     /// Converts the tensor to a vector of f32 values.
     /// 
     /// The data is returned in row-major (C-style) order.
@@ -502,15 +529,27 @@ impl Div for Tensor {
 
 impl TensorOps for Tensor {
     fn sum(&self, axis: Option<usize>) -> Result<Self> {
+        // Calculate the result shape
+        let result_shape = match axis {
+            None => Shape::scalar(),
+            Some(axis_idx) => {
+                let dims = self.shape.dims();
+                if axis_idx >= dims.len() {
+                    return Err(TensorError::InvalidShape(
+                        format!("Axis {} is out of bounds for tensor with {} dimensions", axis_idx, dims.len())
+                    ));
+                }
+                // Remove the summed axis from the shape
+                let mut result_dims = dims.to_vec();
+                result_dims.remove(axis_idx);
+                Shape::new(result_dims)?
+            }
+        };
+
         for backend in &BACKENDS[0..] {
-            match backend.sum(&self.storage, axis) {
+            match backend.sum(&self.storage, &self.shape, axis) {
                 Ok(storage) => {
-                    let shape = if axis.is_none() {
-                        Shape::scalar()
-                    } else {
-                        self.shape.clone()
-                    };
-                    return Ok(Tensor { storage, shape });
+                    return Ok(Tensor { storage, shape: result_shape });
                 }
                 Err(_) => continue,
             }
@@ -521,15 +560,27 @@ impl TensorOps for Tensor {
     }
 
     fn mean(&self, axis: Option<usize>) -> Result<Self> {
+        // Calculate the result shape (same logic as sum)
+        let result_shape = match axis {
+            None => Shape::scalar(),
+            Some(axis_idx) => {
+                let dims = self.shape.dims();
+                if axis_idx >= dims.len() {
+                    return Err(TensorError::InvalidShape(
+                        format!("Axis {} is out of bounds for tensor with {} dimensions", axis_idx, dims.len())
+                    ));
+                }
+                // Remove the averaged axis from the shape
+                let mut result_dims = dims.to_vec();
+                result_dims.remove(axis_idx);
+                Shape::new(result_dims)?
+            }
+        };
+
         for backend in &BACKENDS[0..] {
-            match backend.mean(&self.storage, axis) {
+            match backend.mean(&self.storage, &self.shape, axis) {
                 Ok(storage) => {
-                    let shape = if axis.is_none() {
-                        Shape::scalar()
-                    } else {
-                        self.shape.clone()
-                    };
-                    return Ok(Tensor { storage, shape });
+                    return Ok(Tensor { storage, shape: result_shape });
                 }
                 Err(_) => continue,
             }

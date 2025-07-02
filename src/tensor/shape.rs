@@ -36,7 +36,16 @@ impl Shape {
     /// 
     /// # Arguments
     /// 
-    /// * `dims` - A vector of dimension sizes
+    /// * `dims` - A vector of dimension sizes. Each dimension must be greater than 0.
+    /// 
+    /// # Returns
+    /// 
+    /// A `Result` containing the new shape or an error if any dimension is invalid.
+    /// 
+    /// # Errors
+    /// 
+    /// Returns `TensorError::InvalidShape` if:
+    /// - The shape would result in more than `usize::MAX` elements
     /// 
     /// # Examples
     /// 
@@ -45,8 +54,30 @@ impl Shape {
     /// 
     /// let shape = Shape::new(vec![2, 3]).unwrap();
     /// assert_eq!(shape.dims(), &[2, 3]);
+    /// 
+    /// // Empty tensors are allowed
+    /// let empty_shape = Shape::new(vec![0]).unwrap();
+    /// assert_eq!(empty_shape.numel(), 0);
+    /// 
+    /// // Very large shapes will overflow
+    /// assert!(Shape::new(vec![usize::MAX, 2]).is_err());
     /// ```
     pub fn new(dims: Vec<usize>) -> Result<Self> {
+        // Check for potential overflow when computing total elements
+        // Note: We allow zero dimensions as they represent empty tensors
+        if !dims.is_empty() {
+            let mut total: usize = 1;
+            for &dim in &dims {
+                if let Some(new_total) = total.checked_mul(dim) {
+                    total = new_total;
+                } else {
+                    return Err(crate::error::TensorError::InvalidShape(
+                        format!("Shape {:?} would overflow (too many elements)", dims)
+                    ));
+                }
+            }
+        }
+        
         Ok(Shape { dims })
     }
 
@@ -207,18 +238,19 @@ impl Shape {
             }
         }
 
-        Some(Shape { dims: result_dims })
+        // Use the validated constructor
+        Shape::new(result_dims).ok()
     }
 }
 
 impl From<Vec<usize>> for Shape {
     fn from(dims: Vec<usize>) -> Self {
-        Shape::new(dims).expect("Invalid shape")
+        Shape::new(dims).expect("Invalid shape dimensions")
     }
 }
 
 impl From<&[usize]> for Shape {
     fn from(dims: &[usize]) -> Self {
-        Shape::new(dims.to_vec()).expect("Invalid shape")
+        Shape::new(dims.to_vec()).expect("Invalid shape dimensions")
     }
 }

@@ -13,5 +13,11 @@ fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
     if (index >= arrayLength(&input_a)) {
         return;
     }
-    output[index] = input_a[index] / input_b[index];
+    
+    let x = input_a[index];
+    let y = input_b[index];
+    
+    // Simple division - let the GPU hardware handle IEEE 754 behavior
+    // This will naturally produce NaN, +inf, and -inf as expected
+    output[index] = x / y;
 }
