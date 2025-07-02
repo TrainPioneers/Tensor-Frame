@@ -26,7 +26,8 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  Setup:
+  setup:
+    name: Setup Environment
     runs-on: [self-hosted, gpu-testing]
     outputs:
       cache-key: ${{ steps.cache-key.outputs.key }}
@@ -43,7 +44,8 @@ jobs:
         id: cache-key
         uses: Swatinem/rust-cache@v2
 
-  Check format:
+  check-format:
+    name: Check Code Format
     needs: setup
     runs-on: [self-hosted, gpu-testing]
     steps:
@@ -58,7 +60,8 @@ jobs:
       - name: Check code format
         run: make fmt-check
 
-  Test CPU:
+  test-cpu:
+    name: Run CPU Tests
     needs: setup
     runs-on: [self-hosted, gpu-testing]
     steps:
@@ -73,7 +76,8 @@ jobs:
       - name: Run cpu tests
         run: make test-cpu
 
-  Test WGPU:
+  test-wgpu:
+    name: Run WGPU Tests
     needs: setup
     runs-on: [self-hosted, gpu-testing]
     steps:
@@ -88,7 +92,8 @@ jobs:
       - name: Run wgpu tests
         run: make test-wgpu
 
-  Test CUDA:
+  test-cuda:
+    name: Run CUDA Tests
     needs: setup
     runs-on: [self-hosted, gpu-testing]
     steps:
@@ -103,7 +108,8 @@ jobs:
       - name: Run cuda tests
         run: make test-cuda
 
-  Check examples:
+  check-examples:
+    name: Check Examples for Errors
     needs: setup
     runs-on: [self-hosted, gpu-testing]
     steps:
