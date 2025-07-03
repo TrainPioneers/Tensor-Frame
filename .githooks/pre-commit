@@ -10,9 +10,10 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-make fmt
-
-if [ $? -ne 0 ]; then
-    echo "Formatting failed. Please run 'make fmt' to format your code."
+# Check if formatting is needed
+if ! make fmt-check; then
+    echo "Code needs formatting. Running 'make fmt'..."
+    make fmt
+    echo "Code was reformatted. Please review and re-stage your changes."
     exit 1
 fi

@@ -272,6 +272,7 @@ cargo doc --all-features
 
 ### Pull Request Checklist
 
+- [ ] Did I use the .githooks to see if my code passes tests?
 - [ ] My code follows the project's code style
 - [ ] I have added tests that prove my fix/feature works
 - [ ] All tests pass locally
