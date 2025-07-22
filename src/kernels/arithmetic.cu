@@ -25,11 +25,15 @@ __global__ void mul_kernel(const float* a, const float* b, float* result, int si
     }
 }
 
-// Element-wise division
+// Element-wise division with division by zero check
 __global__ void div_kernel(const float* a, const float* b, float* result, int size) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < size) {
-        result[idx] = a[idx] / b[idx];
+        if (b[idx] == 0.0f) {
+            result[idx] = INFINITY; // Set to infinity for division by zero
+        } else {
+            result[idx] = a[idx] / b[idx];
+        }
     }
 }
 

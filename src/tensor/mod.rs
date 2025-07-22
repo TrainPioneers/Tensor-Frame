@@ -232,6 +232,8 @@ impl Div for Tensor {
                 got: other.shape.dims().to_vec(),
             });
         }
+        
+        let mut last_error = None;
         for backend in &BACKENDS[0..] {
             match backend.div(&self.storage, &other.storage) {
                 Ok(storage) => {
@@ -240,13 +242,23 @@ impl Div for Tensor {
                         shape: self.shape,
                     })
                 }
-                Err(_) => continue,
+                Err(e) => {
+                    // Store division by zero errors specifically
+                    if let TensorError::BackendError(msg) = &e {
+                        if msg.contains("Division by zero") {
+                            return Err(e);
+                        }
+                    }
+                    last_error = Some(e);
+                    continue;
+                }
             }
         }
 
-        Err(TensorError::BackendError(
+        // Return the last error if available, otherwise generic message
+        Err(last_error.unwrap_or_else(|| TensorError::BackendError(
             "No backend could perform div operation".to_string(),
-        ))
+        )))
     }
 }
 

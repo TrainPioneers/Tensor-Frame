@@ -100,6 +100,13 @@ impl Backend for CpuBackend {
             });
         }
 
+        // Check for division by zero
+        if rhs_data.iter().any(|&y| y == 0.0) {
+            return Err(TensorError::BackendError(
+                "Division by zero detected".to_string(),
+            ));
+        }
+
         let result: Vec<f32> = lhs_data
             .iter()
             .zip(rhs_data.iter())

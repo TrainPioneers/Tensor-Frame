@@ -7,6 +7,13 @@ pub struct Shape {
 
 impl Shape {
     pub fn new(dims: Vec<usize>) -> Result<Self> {
+        // Validate that no dimension is zero (except for empty tensors)
+        if dims.iter().any(|&dim| dim == 0) {
+            return Err(crate::error::TensorError::InvalidShape(format!(
+                "Shape dimensions cannot be zero: {:?}",
+                dims
+            )));
+        }
         Ok(Shape { dims })
     }
 
@@ -85,12 +92,20 @@ impl Shape {
 
 impl From<Vec<usize>> for Shape {
     fn from(dims: Vec<usize>) -> Self {
-        Shape::new(dims).expect("Invalid shape")
+        Shape::new(dims).unwrap_or_else(|_| {
+            // For backwards compatibility, create empty tensor shape for invalid shapes
+            // This prevents panics but should be avoided in new code
+            Shape { dims: vec![0] }
+        })
     }
 }
 
 impl From<&[usize]> for Shape {
     fn from(dims: &[usize]) -> Self {
-        Shape::new(dims.to_vec()).expect("Invalid shape")
+        Shape::new(dims.to_vec()).unwrap_or_else(|_| {
+            // For backwards compatibility, create empty tensor shape for invalid shapes
+            // This prevents panics but should be avoided in new code
+            Shape { dims: vec![0] }
+        })
     }
 }

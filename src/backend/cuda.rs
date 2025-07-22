@@ -343,6 +343,13 @@ impl Backend for CudaBackend {
                 });
             }
 
+            // Check for division by zero
+            if rhs_data.iter().any(|&y| y == 0.0) {
+                return Err(TensorError::BackendError(
+                    "Division by zero detected".to_string(),
+                ));
+            }
+
             // Create CUDA storage from the data
             let shape = Shape::new(vec![lhs_data.len()])?;
             let lhs_storage = self.from_slice(&lhs_data, &shape)?;

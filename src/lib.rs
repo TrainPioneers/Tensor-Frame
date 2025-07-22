@@ -295,4 +295,32 @@ mod tests {
         // Just ensure it doesn't panic and produces some output
         assert!(!display_str.is_empty());
     }
+
+    #[test]
+    fn test_division_by_zero() {
+        let a = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2]).unwrap();
+        let b = Tensor::from_vec(vec![1.0, 0.0, 3.0, 4.0], vec![2, 2]).unwrap(); // Contains zero
+        
+        let result = a / b;
+        assert!(result.is_err());
+        if let Err(e) = result {
+            assert!(e.to_string().contains("Division by zero"));
+        }
+    }
+
+    #[test]
+    fn test_invalid_shape_creation() {
+        use crate::tensor::shape::Shape;
+        
+        // Test that zero dimensions are rejected
+        let result = Shape::new(vec![2, 0, 3]);
+        assert!(result.is_err());
+        
+        let result = Shape::new(vec![0]);
+        assert!(result.is_err());
+        
+        // Valid shapes should still work
+        let result = Shape::new(vec![2, 3, 4]);
+        assert!(result.is_ok());
+    }
 }
