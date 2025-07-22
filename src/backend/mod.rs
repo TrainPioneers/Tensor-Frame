@@ -32,6 +32,15 @@ pub trait Backend: Debug + Send + Sync {
     fn to_vec_f32(&self, storage: &Storage) -> Result<Vec<f32>>;
 
     fn matmul(&self, lhs: &Storage, rhs: &Storage, lhs_shape: &Shape, rhs_shape: &Shape) -> Result<Storage>;
+
+    // Math operations
+    fn exp(&self, storage: &Storage) -> Result<Storage>;
+    fn log(&self, storage: &Storage) -> Result<Storage>;
+    fn sqrt(&self, storage: &Storage) -> Result<Storage>;
+    fn sin(&self, storage: &Storage) -> Result<Storage>;
+    fn cos(&self, storage: &Storage) -> Result<Storage>;
+    fn relu(&self, storage: &Storage) -> Result<Storage>;
+    fn sigmoid(&self, storage: &Storage) -> Result<Storage>;
 }
 
 #[derive(Debug, Clone)]

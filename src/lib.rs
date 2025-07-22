@@ -407,4 +407,43 @@ mod tests {
         let result = a.matmul(&b);
         assert!(result.is_err());
     }
+
+    #[test]
+    fn test_math_operations() {
+        let tensor = Tensor::from_vec(vec![0.0, 1.0, 2.0, 3.0], vec![4]).unwrap();
+        
+        // Test exp
+        let exp_result = tensor.exp();
+        assert!(exp_result.is_ok());
+        if let Ok(exp_tensor) = exp_result {
+            let data = exp_tensor.to_vec().unwrap();
+            // exp(0) = 1, exp(1) ≈ 2.718, exp(2) ≈ 7.389, exp(3) ≈ 20.086
+            assert!((data[0] - 1.0).abs() < 0.01);
+            assert!((data[1] - 2.718).abs() < 0.01);
+        }
+        
+        // Test relu
+        let negative_tensor = Tensor::from_vec(vec![-2.0, -1.0, 0.0, 1.0, 2.0], vec![5]).unwrap();
+        let relu_result = negative_tensor.relu();
+        assert!(relu_result.is_ok());
+        if let Ok(relu_tensor) = relu_result {
+            let data = relu_tensor.to_vec().unwrap();
+            assert_eq!(data, vec![0.0, 0.0, 0.0, 1.0, 2.0]);
+        }
+    }
+
+    #[test]
+    fn test_sigmoid_operation() {
+        let tensor = Tensor::from_vec(vec![0.0, 1.0, -1.0], vec![3]).unwrap();
+        
+        let sigmoid_result = tensor.sigmoid();
+        assert!(sigmoid_result.is_ok());
+        if let Ok(sigmoid_tensor) = sigmoid_result {
+            let data = sigmoid_tensor.to_vec().unwrap();
+            // sigmoid(0) = 0.5, sigmoid(1) ≈ 0.731, sigmoid(-1) ≈ 0.269
+            assert!((data[0] - 0.5).abs() < 0.01);
+            assert!((data[1] - 0.731).abs() < 0.01);
+            assert!((data[2] - 0.269).abs() < 0.01);
+        }
+    }
 }

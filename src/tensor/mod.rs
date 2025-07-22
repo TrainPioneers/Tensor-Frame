@@ -212,6 +212,126 @@ impl Tensor {
             "No backend could perform matmul operation".to_string(),
         ))
     }
+
+    // Math operations
+    pub fn exp(&self) -> Result<Self> {
+        for backend in &BACKENDS[0..] {
+            match backend.exp(&self.storage) {
+                Ok(storage) => {
+                    return Ok(Tensor {
+                        storage,
+                        shape: self.shape.clone(),
+                    })
+                }
+                Err(_) => continue,
+            }
+        }
+        Err(TensorError::BackendError(
+            "No backend could perform exp operation".to_string(),
+        ))
+    }
+
+    pub fn log(&self) -> Result<Self> {
+        for backend in &BACKENDS[0..] {
+            match backend.log(&self.storage) {
+                Ok(storage) => {
+                    return Ok(Tensor {
+                        storage,
+                        shape: self.shape.clone(),
+                    })
+                }
+                Err(_) => continue,
+            }
+        }
+        Err(TensorError::BackendError(
+            "No backend could perform log operation".to_string(),
+        ))
+    }
+
+    pub fn sqrt(&self) -> Result<Self> {
+        for backend in &BACKENDS[0..] {
+            match backend.sqrt(&self.storage) {
+                Ok(storage) => {
+                    return Ok(Tensor {
+                        storage,
+                        shape: self.shape.clone(),
+                    })
+                }
+                Err(_) => continue,
+            }
+        }
+        Err(TensorError::BackendError(
+            "No backend could perform sqrt operation".to_string(),
+        ))
+    }
+
+    pub fn sin(&self) -> Result<Self> {
+        for backend in &BACKENDS[0..] {
+            match backend.sin(&self.storage) {
+                Ok(storage) => {
+                    return Ok(Tensor {
+                        storage,
+                        shape: self.shape.clone(),
+                    })
+                }
+                Err(_) => continue,
+            }
+        }
+        Err(TensorError::BackendError(
+            "No backend could perform sin operation".to_string(),
+        ))
+    }
+
+    pub fn cos(&self) -> Result<Self> {
+        for backend in &BACKENDS[0..] {
+            match backend.cos(&self.storage) {
+                Ok(storage) => {
+                    return Ok(Tensor {
+                        storage,
+                        shape: self.shape.clone(),
+                    })
+                }
+                Err(_) => continue,
+            }
+        }
+        Err(TensorError::BackendError(
+            "No backend could perform cos operation".to_string(),
+        ))
+    }
+
+    pub fn relu(&self) -> Result<Self> {
+        for backend in &BACKENDS[0..] {
+            match backend.relu(&self.storage) {
+                Ok(storage) => {
+                    return Ok(Tensor {
+                        storage,
+                        shape: self.shape.clone(),
+                    })
+                }
+                Err(_) => continue,
+            }
+        }
+        Err(TensorError::BackendError(
+            "No backend could perform relu operation".to_string(),
+        ))
+    }
+
+    pub fn sigmoid(&self) -> Result<Self> {
+        for backend in &BACKENDS[0..] {
+            match backend.sigmoid(&self.storage) {
+                Ok(storage) => {
+                    return Ok(Tensor {
+                        storage,
+                        shape: self.shape.clone(),
+                    })
+                }
+                Err(_) => continue,
+            }
+        }
+        Err(TensorError::BackendError(
+            "No backend could perform sigmoid operation".to_string(),
+        ))
+    }
 }
 
 impl Add for Tensor {

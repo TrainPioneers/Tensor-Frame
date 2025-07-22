@@ -655,4 +655,48 @@ impl Backend for WgpuBackend {
         // Convert result back to WGPU storage
         self.from_slice(&result, &Shape::new(vec![m, n])?)
     }
+
+    // Math operations (fallback to CPU for now)
+    fn exp(&self, storage: &Storage) -> Result<Storage> {
+        let data = self.to_vec_f32(storage)?;
+        let result: Vec<f32> = data.iter().map(|x| x.exp()).collect();
+        self.from_slice(&result, &Shape::new(vec![data.len()])?)
+    }
+
+    fn log(&self, storage: &Storage) -> Result<Storage> {
+        let data = self.to_vec_f32(storage)?;
+        let result: Vec<f32> = data.iter().map(|x| x.ln()).collect();
+        self.from_slice(&result, &Shape::new(vec![data.len()])?)
+    }
+
+    fn sqrt(&self, storage: &Storage) -> Result<Storage> {
+        let data = self.to_vec_f32(storage)?;
+        let result: Vec<f32> = data.iter().map(|x| x.sqrt()).collect();
+        self.from_slice(&result, &Shape::new(vec![data.len()])?)
+    }
+
+    fn sin(&self, storage: &Storage) -> Result<Storage> {
+        let data = self.to_vec_f32(storage)?;
+        let result: Vec<f32> = data.iter().map(|x| x.sin()).collect();
+        self.from_slice(&result, &Shape::new(vec![data.len()])?)
+    }
+
+    fn cos(&self, storage: &Storage) -> Result<Storage> {
+        let data = self.to_vec_f32(storage)?;
+        let result: Vec<f32> = data.iter().map(|x| x.cos()).collect();
+        self.from_slice(&result, &Shape::new(vec![data.len()])?)
+    }
+
+    fn relu(&self, storage: &Storage) -> Result<Storage> {
+        let data = self.to_vec_f32(storage)?;
+        let result: Vec<f32> = data.iter().map(|x| x.max(0.0)).collect();
+        self.from_slice(&result, &Shape::new(vec![data.len()])?)
+    }
+
+    fn sigmoid(&self, storage: &Storage) -> Result<Storage> {
+        let data = self.to_vec_f32(storage)?;
+        let result: Vec<f32> = data.iter().map(|x| 1.0 / (1.0 + (-x).exp())).collect();
+        self.from_slice(&result, &Shape::new(vec![data.len()])?)
+    }
+    }
 }

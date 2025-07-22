@@ -64,6 +64,11 @@ impl CudaBackend {
                 include_str!("../kernels/matmul.cu"),
                 vec!["matmul_kernel", "matmul_shared_kernel"],
             ),
+            (
+                "math",
+                include_str!("../kernels/math.cu"),
+                vec!["exp_kernel", "log_kernel", "sqrt_kernel", "sin_kernel", "cos_kernel", "relu_kernel", "sigmoid_kernel"],
+            ),
         ];
 
         for (module_name, kernel_source, kernel_names) in &kernel_files {
@@ -131,6 +136,39 @@ impl CudaBackend {
         let mut builder = stream.launch_builder(kernel);
         builder.arg(a.buffer.as_ref());
         builder.arg(b.buffer.as_ref());
+        builder.arg(&mut result_buf);
+        let size_arg = size as i32;
+        builder.arg(&size_arg);
+
+        unsafe { builder.launch(cfg) }.map_err(|e| {
+            TensorError::BackendError(format!("Failed to launch {} kernel: {}", kernel_name, e))
+        })?;
+
+        Ok(Storage::Cuda(CudaStorage {
+            buffer: std::sync::Arc::new(result_buf),
+        }))
+    }
+
+    #[cfg(feature = "cuda")]
+    fn launch_unary_kernel(
+        &self,
+        kernel_name: &str,
+        input: &CudaStorage,
+    ) -> Result<Storage> {
+        let stream = self.context.default_stream();
+        let mut result_buf = stream.alloc_zeros::<f32>(input.buffer.len()).map_err(|e| {
+            TensorError::BackendError(format!("Failed to allocate CUDA result buffer: {}", e))
+        })?;
+
+        let kernel = self.kernels.get(kernel_name).ok_or_else(|| {
+            TensorError::BackendError(format!("Kernel {} not found", kernel_name))
+        })?;
+
+        let size = input.buffer.len();
+        let cfg = LaunchConfig::for_num_elems(size as u32);
+
+        let mut builder = stream.launch_builder(kernel);
+        builder.arg(input.buffer.as_ref());
         builder.arg(&mut result_buf);
         let size_arg = size as i32;
         builder.arg(&size_arg);
@@ -650,6 +688,169 @@ impl Backend for CudaBackend {
             Ok(Storage::Cuda(CudaStorage {
                 buffer: std::sync::Arc::new(result_buf),
             }))
+        }
+        #[cfg(not(feature = "cuda"))]
+        Err(TensorError::BackendError(
+            "CUDA support not compiled in".to_string(),
+        ))
+    }
+
+    // Math operations implementations
+    fn exp(&self, storage: &Storage) -> Result<Storage> {
+        #[cfg(feature = "cuda")]
+        {
+            match storage {
+                Storage::Cuda(cuda_storage) => {
+                    self.launch_unary_kernel("exp_kernel", cuda_storage)
+                }
+                _ => {
+                    // Convert to CUDA storage first
+                    let data = self.to_vec_f32(storage)?;
+                    let cuda_storage = self.from_slice(&data, &Shape::new(vec![data.len()])?)?;
+                    match cuda_storage {
+                        Storage::Cuda(cuda_storage) => self.launch_unary_kernel("exp_kernel", &cuda_storage),
+                        _ => Err(TensorError::BackendError("Failed to create CUDA storage".to_string())),
+                    }
+                }
+            }
+        }
+        #[cfg(not(feature = "cuda"))]
+        Err(TensorError::BackendError(
+            "CUDA support not compiled in".to_string(),
+        ))
+    }
+
+    fn log(&self, storage: &Storage) -> Result<Storage> {
+        #[cfg(feature = "cuda")]
+        {
+            match storage {
+                Storage::Cuda(cuda_storage) => {
+                    self.launch_unary_kernel("log_kernel", cuda_storage)
+                }
+                _ => {
+                    let data = self.to_vec_f32(storage)?;
+                    let cuda_storage = self.from_slice(&data, &Shape::new(vec![data.len()])?)?;
+                    match cuda_storage {
+                        Storage::Cuda(cuda_storage) => self.launch_unary_kernel("log_kernel", &cuda_storage),
+                        _ => Err(TensorError::BackendError("Failed to create CUDA storage".to_string())),
+                    }
+                }
+            }
+        }
+        #[cfg(not(feature = "cuda"))]
+        Err(TensorError::BackendError(
+            "CUDA support not compiled in".to_string(),
+        ))
+    }
+
+    fn sqrt(&self, storage: &Storage) -> Result<Storage> {
+        #[cfg(feature = "cuda")]
+        {
+            match storage {
+                Storage::Cuda(cuda_storage) => {
+                    self.launch_unary_kernel("sqrt_kernel", cuda_storage)
+                }
+                _ => {
+                    let data = self.to_vec_f32(storage)?;
+                    let cuda_storage = self.from_slice(&data, &Shape::new(vec![data.len()])?)?;
+                    match cuda_storage {
+                        Storage::Cuda(cuda_storage) => self.launch_unary_kernel("sqrt_kernel", &cuda_storage),
+                        _ => Err(TensorError::BackendError("Failed to create CUDA storage".to_string())),
+                    }
+                }
+            }
+        }
+        #[cfg(not(feature = "cuda"))]
+        Err(TensorError::BackendError(
+            "CUDA support not compiled in".to_string(),
+        ))
+    }
+
+    fn sin(&self, storage: &Storage) -> Result<Storage> {
+        #[cfg(feature = "cuda")]
+        {
+            match storage {
+                Storage::Cuda(cuda_storage) => {
+                    self.launch_unary_kernel("sin_kernel", cuda_storage)
+                }
+                _ => {
+                    let data = self.to_vec_f32(storage)?;
+                    let cuda_storage = self.from_slice(&data, &Shape::new(vec![data.len()])?)?;
+                    match cuda_storage {
+                        Storage::Cuda(cuda_storage) => self.launch_unary_kernel("sin_kernel", &cuda_storage),
+                        _ => Err(TensorError::BackendError("Failed to create CUDA storage".to_string())),
+                    }
+                }
+            }
+        }
+        #[cfg(not(feature = "cuda"))]
+        Err(TensorError::BackendError(
+            "CUDA support not compiled in".to_string(),
+        ))
+    }
+
+    fn cos(&self, storage: &Storage) -> Result<Storage> {
+        #[cfg(feature = "cuda")]
+        {
+            match storage {
+                Storage::Cuda(cuda_storage) => {
+                    self.launch_unary_kernel("cos_kernel", cuda_storage)
+                }
+                _ => {
+                    let data = self.to_vec_f32(storage)?;
+                    let cuda_storage = self.from_slice(&data, &Shape::new(vec![data.len()])?)?;
+                    match cuda_storage {
+                        Storage::Cuda(cuda_storage) => self.launch_unary_kernel("cos_kernel", &cuda_storage),
+                        _ => Err(TensorError::BackendError("Failed to create CUDA storage".to_string())),
+                    }
+                }
+            }
+        }
+        #[cfg(not(feature = "cuda"))]
+        Err(TensorError::BackendError(
+            "CUDA support not compiled in".to_string(),
+        ))
+    }
+
+    fn relu(&self, storage: &Storage) -> Result<Storage> {
+        #[cfg(feature = "cuda")]
+        {
+            match storage {
+                Storage::Cuda(cuda_storage) => {
+                    self.launch_unary_kernel("relu_kernel", cuda_storage)
+                }
+                _ => {
+                    let data = self.to_vec_f32(storage)?;
+                    let cuda_storage = self.from_slice(&data, &Shape::new(vec![data.len()])?)?;
+                    match cuda_storage {
+                        Storage::Cuda(cuda_storage) => self.launch_unary_kernel("relu_kernel", &cuda_storage),
+                        _ => Err(TensorError::BackendError("Failed to create CUDA storage".to_string())),
+                    }
+                }
+            }
+        }
+        #[cfg(not(feature = "cuda"))]
+        Err(TensorError::BackendError(
+            "CUDA support not compiled in".to_string(),
+        ))
+    }
+
+    fn sigmoid(&self, storage: &Storage) -> Result<Storage> {
+        #[cfg(feature = "cuda")]
+        {
+            match storage {
+                Storage::Cuda(cuda_storage) => {
+                    self.launch_unary_kernel("sigmoid_kernel", cuda_storage)
+                }
+                _ => {
+                    let data = self.to_vec_f32(storage)?;
+                    let cuda_storage = self.from_slice(&data, &Shape::new(vec![data.len()])?)?;
+                    match cuda_storage {
+                        Storage::Cuda(cuda_storage) => self.launch_unary_kernel("sigmoid_kernel", &cuda_storage),
+                        _ => Err(TensorError::BackendError("Failed to create CUDA storage".to_string())),
+                    }
+                }
+            }
         }
         #[cfg(not(feature = "cuda"))]
         Err(TensorError::BackendError(

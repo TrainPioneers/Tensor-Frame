@@ -237,4 +237,47 @@ impl Backend for CpuBackend {
 
         Ok(Storage::Cpu(result))
     }
+
+    // Math operations implementations
+    fn exp(&self, storage: &Storage) -> Result<Storage> {
+        let data = self.to_vec_f32(storage)?;
+        let result: Vec<f32> = data.iter().map(|x| x.exp()).collect();
+        Ok(Storage::Cpu(result))
+    }
+
+    fn log(&self, storage: &Storage) -> Result<Storage> {
+        let data = self.to_vec_f32(storage)?;
+        let result: Vec<f32> = data.iter().map(|x| x.ln()).collect();
+        Ok(Storage::Cpu(result))
+    }
+
+    fn sqrt(&self, storage: &Storage) -> Result<Storage> {
+        let data = self.to_vec_f32(storage)?;
+        let result: Vec<f32> = data.iter().map(|x| x.sqrt()).collect();
+        Ok(Storage::Cpu(result))
+    }
+
+    fn sin(&self, storage: &Storage) -> Result<Storage> {
+        let data = self.to_vec_f32(storage)?;
+        let result: Vec<f32> = data.iter().map(|x| x.sin()).collect();
+        Ok(Storage::Cpu(result))
+    }
+
+    fn cos(&self, storage: &Storage) -> Result<Storage> {
+        let data = self.to_vec_f32(storage)?;
+        let result: Vec<f32> = data.iter().map(|x| x.cos()).collect();
+        Ok(Storage::Cpu(result))
+    }
+
+    fn relu(&self, storage: &Storage) -> Result<Storage> {
+        let data = self.to_vec_f32(storage)?;
+        let result: Vec<f32> = data.iter().map(|x| x.max(0.0)).collect();
+        Ok(Storage::Cpu(result))
+    }
+
+    fn sigmoid(&self, storage: &Storage) -> Result<Storage> {
+        let data = self.to_vec_f32(storage)?;
+        let result: Vec<f32> = data.iter().map(|x| 1.0 / (1.0 + (-x).exp())).collect();
+        Ok(Storage::Cpu(result))
+    }
 }
