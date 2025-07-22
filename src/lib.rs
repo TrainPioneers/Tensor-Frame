@@ -323,4 +323,44 @@ mod tests {
         let result = Shape::new(vec![2, 3, 4]);
         assert!(result.is_ok());
     }
+
+    #[test]
+    fn test_broadcasting_subtraction() {
+        let a = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2]).unwrap();
+        let b = Tensor::from_vec(vec![1.0, 2.0], vec![2]).unwrap(); // 1D tensor to broadcast
+        
+        let result = a - b;
+        assert!(result.is_ok());
+        if let Ok(tensor) = result {
+            let data = tensor.to_vec().unwrap();
+            // Broadcasting: [[1,2],[3,4]] - [1,2] = [[0,0],[2,2]]
+            assert_eq!(data, vec![0.0, 0.0, 2.0, 2.0]);
+        }
+    }
+
+    #[test]
+    fn test_broadcasting_multiplication() {
+        let a = Tensor::from_vec(vec![2.0, 3.0, 4.0, 5.0], vec![2, 2]).unwrap();
+        let b = Tensor::from_vec(vec![2.0], vec![1]).unwrap(); // Scalar to broadcast
+        
+        let result = a * b;
+        assert!(result.is_ok());
+        if let Ok(tensor) = result {
+            let data = tensor.to_vec().unwrap();
+            assert_eq!(data, vec![4.0, 6.0, 8.0, 10.0]);
+        }
+    }
+
+    #[test]
+    fn test_broadcasting_division() {
+        let a = Tensor::from_vec(vec![4.0, 6.0, 8.0, 10.0], vec![2, 2]).unwrap();
+        let b = Tensor::from_vec(vec![2.0], vec![1]).unwrap(); // Scalar to broadcast
+        
+        let result = a / b;
+        assert!(result.is_ok());
+        if let Ok(tensor) = result {
+            let data = tensor.to_vec().unwrap();
+            assert_eq!(data, vec![2.0, 3.0, 4.0, 5.0]);
+        }
+    }
 }

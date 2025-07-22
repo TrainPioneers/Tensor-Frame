@@ -85,84 +85,99 @@ impl Tensor {
             "No backend could convert storage to Vec<f32>".to_string(),
         ))
     }
-}
 
-impl Add for Tensor {
-    type Output = Result<Tensor>;
-
-    fn add(self, other: Self) -> Self::Output {
-        // Check if shapes are compatible for broadcasting
-        let result_shape = if self.shape == other.shape {
-            self.shape.clone()
-        } else if let Some(broadcasted_shape) = self.shape.broadcast_shape(&other.shape) {
-            broadcasted_shape
-        } else {
-            return Err(TensorError::ShapeMismatch {
-                expected: self.shape.dims().to_vec(),
-                got: other.shape.dims().to_vec(),
-            });
+    // Helper function for binary operations with broadcasting support
+    fn binary_op_with_broadcast<F>(self, other: Self, op_name: &str, backend_op: F) -> Result<Self>
+    where
+        F: Fn(&dyn crate::backend::Backend, &Storage, &Storage) -> Result<Storage>,
+    {
+        // Try to find a compatible broadcast shape
+        let result_shape = match self.shape.broadcast_shape(&other.shape) {
+            Some(shape) => shape,
+            None => {
+                return Err(TensorError::BroadcastError(format!(
+                    "Cannot broadcast shapes {:?} and {:?}",
+                    self.shape.dims(),
+                    other.shape.dims()
+                )));
+            }
         };
 
-        #[cfg(feature = "debug")]
-        {
-            println!(
-                "Adding tensors with shapes {:?} and {:?}",
-                self.shape, other.shape
-            );
-            println!("Backend length: {}", BACKENDS.len());
-        }
-
-        // If shapes are the same, try backends directly
+        // If shapes are the same, use direct operation
         if self.shape == other.shape {
             for backend in &BACKENDS[0..] {
-                match backend.add(&self.storage, &other.storage) {
+                match backend_op(backend.as_ref(), &self.storage, &other.storage) {
                     Ok(storage) => {
                         return Ok(Tensor {
                             storage,
                             shape: self.shape,
                         })
                     }
-                    Err(_) => continue,
-                }
-            }
-        }
-
-        // Handle broadcasting by converting to CPU and using broadcast_data
-        let self_data = self.to_vec()?;
-        let other_data = other.to_vec()?;
-
-        let (lhs_broadcasted, rhs_broadcasted) = broadcast_data(
-            &self_data,
-            &self.shape,
-            &other_data,
-            &other.shape,
-            &result_shape,
-        )?;
-
-        // Create tensors with broadcasted data and try backends
-        for backend in &BACKENDS[0..] {
-            match (
-                backend.from_slice(&lhs_broadcasted, &result_shape),
-                backend.from_slice(&rhs_broadcasted, &result_shape),
-            ) {
-                (Ok(lhs_storage), Ok(rhs_storage)) => {
-                    match backend.add(&lhs_storage, &rhs_storage) {
-                        Ok(storage) => {
-                            return Ok(Tensor {
-                                storage,
-                                shape: result_shape,
-                            })
+                    Err(e) => {
+                        // Propagate division by zero and similar critical errors immediately
+                        if let TensorError::BackendError(msg) = &e {
+                            if msg.contains("Division by zero") {
+                                return Err(e);
+                            }
                         }
-                        Err(_) => continue,
+                        continue;
                     }
                 }
-                _ => continue,
+            }
+        } else {
+            // Handle broadcasting by converting to CPU and using broadcast_data
+            let self_data = self.to_vec()?;
+            let other_data = other.to_vec()?;
+
+            let (lhs_broadcasted, rhs_broadcasted) = broadcast_data(
+                &self_data,
+                &self.shape,
+                &other_data,
+                &other.shape,
+                &result_shape,
+            )?;
+
+            // Create tensors with broadcasted data and try backends
+            for backend in &BACKENDS[0..] {
+                match (
+                    backend.from_slice(&lhs_broadcasted, &result_shape),
+                    backend.from_slice(&rhs_broadcasted, &result_shape),
+                ) {
+                    (Ok(lhs_storage), Ok(rhs_storage)) => {
+                        match backend_op(backend.as_ref(), &lhs_storage, &rhs_storage) {
+                            Ok(storage) => {
+                                return Ok(Tensor {
+                                    storage,
+                                    shape: result_shape,
+                                })
+                            }
+                            Err(e) => {
+                                // Propagate division by zero and similar critical errors immediately
+                                if let TensorError::BackendError(msg) = &e {
+                                    if msg.contains("Division by zero") {
+                                        return Err(e);
+                                    }
+                                }
+                                continue;
+                            }
+                        }
+                    }
+                    _ => continue,
+                }
             }
         }
 
-        Err(TensorError::BackendError(
-            "No backend could perform add operation".to_string(),
-        ))
+        Err(TensorError::BackendError(format!(
+            "No backend could perform {} operation", op_name
+        )))
+    }
+}
+
+impl Add for Tensor {
+    type Output = Result<Tensor>;
+
+    fn add(self, other: Self) -> Self::Output {
+        self.binary_op_with_broadcast(other, "add", |backend, lhs, rhs| backend.add(lhs, rhs))
     }
 }
 
@@ -170,27 +185,7 @@ impl Sub for Tensor {
     type Output = Result<Tensor>;
 
     fn sub(self, other: Self) -> Self::Output {
-        if self.shape != other.shape {
-            return Err(TensorError::ShapeMismatch {
-                expected: self.shape.dims().to_vec(),
-                got: other.shape.dims().to_vec(),
-            });
-        }
-        for backend in &BACKENDS[0..] {
-            match backend.sub(&self.storage, &other.storage) {
-                Ok(storage) => {
-                    return Ok(Tensor {
-                        storage,
-                        shape: self.shape,
-                    })
-                }
-                Err(_) => continue,
-            }
-        }
-
-        Err(TensorError::BackendError(
-            "No backend could perform sub operation".to_string(),
-        ))
+        self.binary_op_with_broadcast(other, "sub", |backend, lhs, rhs| backend.sub(lhs, rhs))
     }
 }
 
@@ -198,27 +193,7 @@ impl Mul for Tensor {
     type Output = Result<Tensor>;
 
     fn mul(self, other: Self) -> Self::Output {
-        if self.shape != other.shape {
-            return Err(TensorError::ShapeMismatch {
-                expected: self.shape.dims().to_vec(),
-                got: other.shape.dims().to_vec(),
-            });
-        }
-        for backend in &BACKENDS[0..] {
-            match backend.mul(&self.storage, &other.storage) {
-                Ok(storage) => {
-                    return Ok(Tensor {
-                        storage,
-                        shape: self.shape,
-                    })
-                }
-                Err(_) => continue,
-            }
-        }
-
-        Err(TensorError::BackendError(
-            "No backend could perform mul operation".to_string(),
-        ))
+        self.binary_op_with_broadcast(other, "mul", |backend, lhs, rhs| backend.mul(lhs, rhs))
     }
 }
 
@@ -226,39 +201,7 @@ impl Div for Tensor {
     type Output = Result<Tensor>;
 
     fn div(self, other: Self) -> Self::Output {
-        if self.shape != other.shape {
-            return Err(TensorError::ShapeMismatch {
-                expected: self.shape.dims().to_vec(),
-                got: other.shape.dims().to_vec(),
-            });
-        }
-        
-        let mut last_error = None;
-        for backend in &BACKENDS[0..] {
-            match backend.div(&self.storage, &other.storage) {
-                Ok(storage) => {
-                    return Ok(Tensor {
-                        storage,
-                        shape: self.shape,
-                    })
-                }
-                Err(e) => {
-                    // Store division by zero errors specifically
-                    if let TensorError::BackendError(msg) = &e {
-                        if msg.contains("Division by zero") {
-                            return Err(e);
-                        }
-                    }
-                    last_error = Some(e);
-                    continue;
-                }
-            }
-        }
-
-        // Return the last error if available, otherwise generic message
-        Err(last_error.unwrap_or_else(|| TensorError::BackendError(
-            "No backend could perform div operation".to_string(),
-        )))
+        self.binary_op_with_broadcast(other, "div", |backend, lhs, rhs| backend.div(lhs, rhs))
     }
 }
 
