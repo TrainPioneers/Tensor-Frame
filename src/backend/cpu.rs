@@ -116,25 +116,29 @@ impl Backend for CpuBackend {
     }
 
     fn sum(&self, storage: &Storage, axis: Option<usize>) -> Result<Storage> {
-        if axis.is_some() {
+        let data = self.to_vec_f32(storage)?;
+        
+        if let Some(_axis_dim) = axis {
+            // For now, return an error for axis-specific operations - need shape info
             return Err(TensorError::BackendError(
-                "Axis sum not yet implemented".to_string(),
+                "Axis-specific sum requires shape information - use tensor method instead".to_string(),
             ));
         }
-
-        let data = self.to_vec_f32(storage)?;
+        
         let sum: f32 = data.iter().sum();
         Ok(Storage::Cpu(vec![sum]))
     }
 
     fn mean(&self, storage: &Storage, axis: Option<usize>) -> Result<Storage> {
-        if axis.is_some() {
+        let data = self.to_vec_f32(storage)?;
+        
+        if let Some(_axis_dim) = axis {
+            // For now, return an error for axis-specific operations - need shape info
             return Err(TensorError::BackendError(
-                "Axis mean not yet implemented".to_string(),
+                "Axis-specific mean requires shape information - use tensor method instead".to_string(),
             ));
         }
 
-        let data = self.to_vec_f32(storage)?;
         let sum: f32 = data.iter().sum();
         let mean = sum / data.len() as f32;
         Ok(Storage::Cpu(vec![mean]))

@@ -332,6 +332,128 @@ impl Tensor {
             "No backend could perform sigmoid operation".to_string(),
         ))
     }
+
+    // Axis-specific reductions
+    pub fn sum_axis(&self, axis: usize) -> Result<Self> {
+        let dims = self.shape.dims();
+        if axis >= dims.len() {
+            return Err(TensorError::InvalidIndex {
+                index: vec![axis],
+                shape: dims.to_vec(),
+            });
+        }
+
+        // Calculate the result shape (removing the specified axis)
+        let mut result_dims: Vec<usize> = dims.iter()
+            .enumerate()
+            .filter_map(|(i, &dim)| if i != axis { Some(dim) } else { None })
+            .collect();
+        
+        // Handle empty result (scalar case when reducing 1D tensor)
+        if result_dims.is_empty() {
+            result_dims.push(1);
+        }
+        
+        let result_shape = Shape::new(result_dims)?;
+        let result_size = result_shape.numel();
+
+        // Get the data and perform axis reduction
+        let data = self.to_vec()?;
+        let mut result = vec![0.0; result_size];
+
+        // Calculate strides for the original tensor
+        let mut strides = vec![1; dims.len()];
+        for i in (0..dims.len() - 1).rev() {
+            strides[i] = strides[i + 1] * dims[i + 1];
+        }
+
+        // Sum along the specified axis
+        for (flat_idx, &value) in data.iter().enumerate() {
+            // Convert flat index to multi-dimensional coordinates
+            let mut coords = vec![0; dims.len()];
+            let mut temp_idx = flat_idx;
+            for i in 0..dims.len() {
+                coords[i] = temp_idx / strides[i];
+                temp_idx %= strides[i];
+            }
+
+            // Calculate the result index by removing the axis coordinate
+            let mut result_coords: Vec<usize> = coords.iter()
+                .enumerate()
+                .filter_map(|(i, &coord)| if i != axis { Some(coord) } else { None })
+                .collect();
+            
+            // Handle scalar result case
+            if result_coords.is_empty() {
+                result_coords.push(0);
+            }
+
+            // Convert result coordinates to flat index
+            let mut result_idx = 0;
+            let mut stride = 1;
+            let result_dims = result_shape.dims();
+            for i in (0..result_coords.len()).rev() {
+                result_idx += result_coords[i] * stride;
+                if i > 0 {
+                    stride *= result_dims[i];
+                }
+            }
+
+            result[result_idx] += value;
+        }
+
+        // Create tensor with the computed result
+        for backend in &BACKENDS[0..] {
+            match backend.from_slice(&result, &result_shape) {
+                Ok(storage) => {
+                    return Ok(Tensor {
+                        storage,
+                        shape: result_shape,
+                    })
+                }
+                Err(_) => continue,
+            }
+        }
+
+        Err(TensorError::BackendError(
+            "No backend could create result tensor".to_string(),
+        ))
+    }
+
+    pub fn mean_axis(&self, axis: usize) -> Result<Self> {
+        let dims = self.shape.dims();
+        if axis >= dims.len() {
+            return Err(TensorError::InvalidIndex {
+                index: vec![axis],
+                shape: dims.to_vec(),
+            });
+        }
+
+        // First calculate the sum along the axis
+        let sum_tensor = self.sum_axis(axis)?;
+        
+        // Then divide by the size of the reduced dimension
+        let axis_size = dims[axis] as f32;
+        let sum_data = sum_tensor.to_vec()?;
+        let mean_data: Vec<f32> = sum_data.iter().map(|x| x / axis_size).collect();
+
+        // Create the result tensor
+        for backend in &BACKENDS[0..] {
+            match backend.from_slice(&mean_data, &sum_tensor.shape) {
+                Ok(storage) => {
+                    return Ok(Tensor {
+                        storage,
+                        shape: sum_tensor.shape,
+                    })
+                }
+                Err(_) => continue,
+            }
+        }
+
+        Err(TensorError::BackendError(
+            "No backend could create mean result tensor".to_string(),
+        ))
+    }
 }
 
 impl Add for Tensor {

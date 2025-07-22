@@ -446,4 +446,64 @@ mod tests {
             assert!((data[2] - 0.269).abs() < 0.01);
         }
     }
+
+    #[test]
+    fn test_axis_specific_sum() {
+        // Test 2D tensor: [[1, 2, 3], [4, 5, 6]]
+        let tensor = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0], vec![2, 3]).unwrap();
+        
+        // Sum along axis 0 (rows): should give [1+4, 2+5, 3+6] = [5, 7, 9]
+        let sum_axis0 = tensor.sum_axis(0);
+        assert!(sum_axis0.is_ok());
+        if let Ok(result) = sum_axis0 {
+            assert_eq!(result.shape().dims(), &[3]);
+            let data = result.to_vec().unwrap();
+            assert_eq!(data, vec![5.0, 7.0, 9.0]);
+        }
+        
+        // Sum along axis 1 (columns): should give [1+2+3, 4+5+6] = [6, 15]
+        let sum_axis1 = tensor.sum_axis(1);
+        assert!(sum_axis1.is_ok());
+        if let Ok(result) = sum_axis1 {
+            assert_eq!(result.shape().dims(), &[2]);
+            let data = result.to_vec().unwrap();
+            assert_eq!(data, vec![6.0, 15.0]);
+        }
+    }
+
+    #[test]
+    fn test_axis_specific_mean() {
+        // Test 2D tensor: [[2, 4], [6, 8]]
+        let tensor = Tensor::from_vec(vec![2.0, 4.0, 6.0, 8.0], vec![2, 2]).unwrap();
+        
+        // Mean along axis 0: should give [(2+6)/2, (4+8)/2] = [4, 6]
+        let mean_axis0 = tensor.mean_axis(0);
+        assert!(mean_axis0.is_ok());
+        if let Ok(result) = mean_axis0 {
+            assert_eq!(result.shape().dims(), &[2]);
+            let data = result.to_vec().unwrap();
+            assert_eq!(data, vec![4.0, 6.0]);
+        }
+        
+        // Mean along axis 1: should give [(2+4)/2, (6+8)/2] = [3, 7]
+        let mean_axis1 = tensor.mean_axis(1);
+        assert!(mean_axis1.is_ok());
+        if let Ok(result) = mean_axis1 {
+            assert_eq!(result.shape().dims(), &[2]);
+            let data = result.to_vec().unwrap();
+            assert_eq!(data, vec![3.0, 7.0]);
+        }
+    }
+
+    #[test]
+    fn test_axis_specific_invalid_axis() {
+        let tensor = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2]).unwrap();
+        
+        // Test invalid axis (axis 2 for 2D tensor)
+        let result = tensor.sum_axis(2);
+        assert!(result.is_err());
+        
+        let result = tensor.mean_axis(2);
+        assert!(result.is_err());
+    }
 }
