@@ -612,4 +612,47 @@ impl Backend for WgpuBackend {
             )),
         }
     }
+
+    fn matmul(&self, lhs: &Storage, rhs: &Storage, lhs_shape: &Shape, rhs_shape: &Shape) -> Result<Storage> {
+        // For now, fall back to CPU implementation
+        // TODO: Implement proper WGPU matmul compute shader
+        let lhs_data = self.to_vec_f32(lhs)?;
+        let rhs_data = self.to_vec_f32(rhs)?;
+
+        let lhs_dims = lhs_shape.dims();
+        let rhs_dims = rhs_shape.dims();
+
+        // Check dimensions for matrix multiplication
+        if lhs_dims.len() != 2 || rhs_dims.len() != 2 {
+            return Err(TensorError::BackendError(
+                "Matrix multiplication requires 2D tensors".to_string(),
+            ));
+        }
+
+        let m = lhs_dims[0]; // rows of A
+        let k = lhs_dims[1]; // cols of A (must equal rows of B)
+        let n = rhs_dims[1]; // cols of B
+
+        if k != rhs_dims[0] {
+            return Err(TensorError::DimensionMismatch {
+                expected: k,
+                got: rhs_dims[0],
+            });
+        }
+
+        // Perform matrix multiplication on CPU
+        let mut result = vec![0.0; m * n];
+        for i in 0..m {
+            for j in 0..n {
+                let mut sum = 0.0;
+                for k_idx in 0..k {
+                    sum += lhs_data[i * k + k_idx] * rhs_data[k_idx * n + j];
+                }
+                result[i * n + j] = sum;
+            }
+        }
+
+        // Convert result back to WGPU storage
+        self.from_slice(&result, &Shape::new(vec![m, n])?)
+    }
 }

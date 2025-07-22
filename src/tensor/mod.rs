@@ -171,6 +171,47 @@ impl Tensor {
             "No backend could perform {} operation", op_name
         )))
     }
+
+    pub fn matmul(&self, other: &Self) -> Result<Self> {
+        let self_dims = self.shape.dims();
+        let other_dims = other.shape.dims();
+
+        // Check dimensions for matrix multiplication
+        if self_dims.len() != 2 || other_dims.len() != 2 {
+            return Err(TensorError::BackendError(
+                "Matrix multiplication requires 2D tensors".to_string(),
+            ));
+        }
+
+        let m = self_dims[0]; // rows of A
+        let k = self_dims[1]; // cols of A (must equal rows of B)
+        let n = other_dims[1]; // cols of B
+
+        if k != other_dims[0] {
+            return Err(TensorError::DimensionMismatch {
+                expected: k,
+                got: other_dims[0],
+            });
+        }
+
+        let result_shape = Shape::new(vec![m, n])?;
+
+        for backend in &BACKENDS[0..] {
+            match backend.matmul(&self.storage, &other.storage, &self.shape, &other.shape) {
+                Ok(storage) => {
+                    return Ok(Tensor {
+                        storage,
+                        shape: result_shape,
+                    })
+                }
+                Err(_) => continue,
+            }
+        }
+
+        Err(TensorError::BackendError(
+            "No backend could perform matmul operation".to_string(),
+        ))
+    }
 }
 
 impl Add for Tensor {

@@ -30,6 +30,8 @@ pub trait Backend: Debug + Send + Sync {
     fn transpose(&self, storage: &Storage, shape: &Shape) -> Result<Storage>;
 
     fn to_vec_f32(&self, storage: &Storage) -> Result<Vec<f32>>;
+
+    fn matmul(&self, lhs: &Storage, rhs: &Storage, lhs_shape: &Shape, rhs_shape: &Shape) -> Result<Storage>;
 }
 
 #[derive(Debug, Clone)]

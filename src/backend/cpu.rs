@@ -176,4 +176,65 @@ impl Backend for CpuBackend {
             )),
         }
     }
+
+    fn matmul(&self, lhs: &Storage, rhs: &Storage, lhs_shape: &Shape, rhs_shape: &Shape) -> Result<Storage> {
+        let lhs_data = self.to_vec_f32(lhs)?;
+        let rhs_data = self.to_vec_f32(rhs)?;
+
+        let lhs_dims = lhs_shape.dims();
+        let rhs_dims = rhs_shape.dims();
+
+        // Check dimensions for matrix multiplication
+        if lhs_dims.len() != 2 || rhs_dims.len() != 2 {
+            return Err(TensorError::BackendError(
+                "Matrix multiplication requires 2D tensors".to_string(),
+            ));
+        }
+
+        let m = lhs_dims[0]; // rows of A
+        let k = lhs_dims[1]; // cols of A (must equal rows of B)
+        let n = rhs_dims[1]; // cols of B
+
+        if k != rhs_dims[0] {
+            return Err(TensorError::DimensionMismatch {
+                expected: k,
+                got: rhs_dims[0],
+            });
+        }
+
+        // Perform matrix multiplication: C = A * B
+        let mut result = vec![0.0; m * n];
+
+        #[cfg(feature = "cpu")]
+        {
+            use rayon::prelude::*;
+            
+            // Use parallel iteration for better performance
+            result.par_chunks_mut(n).enumerate().for_each(|(i, row)| {
+                for j in 0..n {
+                    let mut sum = 0.0;
+                    for k_idx in 0..k {
+                        sum += lhs_data[i * k + k_idx] * rhs_data[k_idx * n + j];
+                    }
+                    row[j] = sum;
+                }
+            });
+        }
+
+        #[cfg(not(feature = "cpu"))]
+        {
+            // Fallback without parallel processing
+            for i in 0..m {
+                for j in 0..n {
+                    let mut sum = 0.0;
+                    for k_idx in 0..k {
+                        sum += lhs_data[i * k + k_idx] * rhs_data[k_idx * n + j];
+                    }
+                    result[i * n + j] = sum;
+                }
+            }
+        }
+
+        Ok(Storage::Cpu(result))
+    }
 }

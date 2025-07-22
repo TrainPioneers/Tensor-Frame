@@ -363,4 +363,48 @@ mod tests {
             assert_eq!(data, vec![2.0, 3.0, 4.0, 5.0]);
         }
     }
+
+    #[test]
+    fn test_matrix_multiplication() {
+        // Test basic 2x2 * 2x2 matrix multiplication
+        let a = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2]).unwrap();
+        let b = Tensor::from_vec(vec![5.0, 6.0, 7.0, 8.0], vec![2, 2]).unwrap();
+        
+        let result = a.matmul(&b);
+        assert!(result.is_ok());
+        if let Ok(tensor) = result {
+            assert_eq!(tensor.shape().dims(), &[2, 2]);
+            let data = tensor.to_vec().unwrap();
+            // [1 2] * [5 6] = [19 22]
+            // [3 4]   [7 8]   [43 50]
+            assert_eq!(data, vec![19.0, 22.0, 43.0, 50.0]);
+        }
+    }
+
+    #[test]
+    fn test_matrix_multiplication_different_sizes() {
+        // Test 2x3 * 3x2 = 2x2
+        let a = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0], vec![2, 3]).unwrap();
+        let b = Tensor::from_vec(vec![7.0, 8.0, 9.0, 10.0, 11.0, 12.0], vec![3, 2]).unwrap();
+        
+        let result = a.matmul(&b);
+        assert!(result.is_ok());
+        if let Ok(tensor) = result {
+            assert_eq!(tensor.shape().dims(), &[2, 2]);
+            let data = tensor.to_vec().unwrap();
+            // [1 2 3] * [7  8 ] = [58  64]
+            // [4 5 6]   [9  10]   [139 154]
+            //           [11 12]
+            assert_eq!(data, vec![58.0, 64.0, 139.0, 154.0]);
+        }
+    }
+
+    #[test]
+    fn test_matrix_multiplication_incompatible_dimensions() {
+        let a = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2]).unwrap();
+        let b = Tensor::from_vec(vec![1.0, 2.0, 3.0], vec![3, 1]).unwrap(); // 3x1, incompatible with 2x2
+        
+        let result = a.matmul(&b);
+        assert!(result.is_err());
+    }
 }
