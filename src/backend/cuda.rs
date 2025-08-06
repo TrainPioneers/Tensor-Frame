@@ -56,6 +56,17 @@ impl CudaBackend {
                 include_str!("../kernels/transform.cu"),
                 vec!["transpose_2d_kernel"],
             ),
+            (
+                "matmul",
+                include_str!("../kernels/matmul.cu"),
+                vec!["matmul_kernel", "matmul_tiled_kernel", "bmm_kernel"],
+            ),
+            (
+                "math",
+                include_str!("../kernels/math.cu"),
+                vec!["exp_kernel", "log_kernel", "sqrt_kernel", "pow_kernel", 
+                     "sin_kernel", "cos_kernel", "relu_kernel", "sigmoid_kernel", "tanh_kernel"],
+            ),
         ];
 
         for (module_name, kernel_source, kernel_names) in &kernel_files {
@@ -133,6 +144,45 @@ impl CudaBackend {
         Ok(Storage::Cuda(CudaStorage {
             buffer: std::sync::Arc::new(result_buf),
         }))
+    }
+
+    fn launch_unary_math_kernel(&self, kernel_name: &str, storage: &Storage) -> Result<Storage> {
+        match storage {
+            Storage::Cuda(cuda_storage) => {
+                let stream = self.context.default_stream();
+                let mut result_buf = stream.alloc_zeros::<f32>(cuda_storage.buffer.len()).map_err(|e| {
+                    TensorError::BackendError(format!("Failed to allocate CUDA result buffer: {}", e))
+                })?;
+
+                let kernel = self.kernels.get(kernel_name).ok_or_else(|| {
+                    TensorError::BackendError(format!("{} not found", kernel_name))
+                })?;
+
+                let size = cuda_storage.buffer.len();
+                let cfg = LaunchConfig::for_num_elems(size as u32);
+
+                let mut builder = stream.launch_builder(kernel);
+                builder.arg(cuda_storage.buffer.as_ref());
+                builder.arg(&mut result_buf);
+                let size_arg = size as i32;
+                builder.arg(&size_arg);
+
+                unsafe { builder.launch(cfg) }.map_err(|e| {
+                    TensorError::BackendError(format!("Failed to launch {} kernel: {}", kernel_name, e))
+                })?;
+
+                Ok(Storage::Cuda(CudaStorage {
+                    buffer: std::sync::Arc::new(result_buf),
+                }))
+            }
+            _ => {
+                // Convert to CUDA and try again
+                let data = self.to_vec_f32(storage)?;
+                let shape = Shape::new(vec![data.len()])?;
+                let cuda_storage = self.from_slice(&data, &shape)?;
+                self.launch_unary_math_kernel(kernel_name, &cuda_storage)
+            }
+        }
     }
 }
 
@@ -615,6 +665,314 @@ impl Backend for CudaBackend {
                     "Cannot convert WGPU storage with CUDA backend".to_string(),
                 )),
             }
+        }
+        #[cfg(not(feature = "cuda"))]
+        Err(TensorError::BackendError(
+            "CUDA support not compiled in".to_string(),
+        ))
+    }
+
+    fn matmul(&self, lhs: &Storage, rhs: &Storage, lhs_shape: &Shape, rhs_shape: &Shape) -> Result<Storage> {
+        #[cfg(feature = "cuda")]
+        {
+            let lhs_dims = lhs_shape.dims();
+            let rhs_dims = rhs_shape.dims();
+
+            // Validate that tensors are 2D
+            if lhs_dims.len() != 2 || rhs_dims.len() != 2 {
+                return Err(TensorError::InvalidShape(
+                    "Matrix multiplication requires 2D tensors".to_string(),
+                ));
+            }
+
+            // Validate dimensions for matrix multiplication: (M, K) x (K, N) -> (M, N)
+            let (m, k1) = (lhs_dims[0], lhs_dims[1]);
+            let (k2, n) = (rhs_dims[0], rhs_dims[1]);
+
+            if k1 != k2 {
+                return Err(TensorError::ShapeMismatch {
+                    expected: vec![k1],
+                    got: vec![k2],
+                });
+            }
+
+            // Convert inputs to CUDA storage if needed
+            let lhs_data = self.to_vec_f32(lhs)?;
+            let rhs_data = self.to_vec_f32(rhs)?;
+            let lhs_shape_single = Shape::new(vec![lhs_data.len()])?;
+            let rhs_shape_single = Shape::new(vec![rhs_data.len()])?;
+            let lhs_storage = self.from_slice(&lhs_data, &lhs_shape_single)?;
+            let rhs_storage = self.from_slice(&rhs_data, &rhs_shape_single)?;
+
+            match (&lhs_storage, &rhs_storage) {
+                (Storage::Cuda(a), Storage::Cuda(b)) => {
+                    let stream = self.context.default_stream();
+                    let mut result_buf = stream.alloc_zeros::<f32>(m * n).map_err(|e| {
+                        TensorError::BackendError(format!("Failed to allocate CUDA result buffer: {}", e))
+                    })?;
+
+                    // Use tiled kernel for better performance
+                    let kernel = self.kernels.get("matmul_tiled_kernel").ok_or_else(|| {
+                        TensorError::BackendError("matmul_tiled_kernel not found".to_string())
+                    })?;
+
+                    let block_size = 16;
+                    let grid_x = (n + block_size - 1) / block_size;
+                    let grid_y = (m + block_size - 1) / block_size;
+
+                    let cfg = LaunchConfig {
+                        grid_dim: (grid_x as u32, grid_y as u32, 1),
+                        block_dim: (block_size as u32, block_size as u32, 1),
+                        shared_mem_bytes: 0,
+                    };
+
+                    let mut builder = stream.launch_builder(kernel);
+                    builder.arg(a.buffer.as_ref());
+                    builder.arg(b.buffer.as_ref());
+                    builder.arg(&mut result_buf);
+                    let m_arg = m as i32;
+                    let k_arg = k1 as i32;
+                    let n_arg = n as i32;
+                    builder.arg(&m_arg);
+                    builder.arg(&k_arg);
+                    builder.arg(&n_arg);
+
+                    unsafe { builder.launch(cfg) }.map_err(|e| {
+                        TensorError::BackendError(format!("Failed to launch matmul kernel: {}", e))
+                    })?;
+
+                    Ok(Storage::Cuda(CudaStorage {
+                        buffer: std::sync::Arc::new(result_buf),
+                    }))
+                }
+                _ => Err(TensorError::BackendError("Invalid storage types for CUDA matmul".to_string())),
+            }
+        }
+        #[cfg(not(feature = "cuda"))]
+        Err(TensorError::BackendError(
+            "CUDA support not compiled in".to_string(),
+        ))
+    }
+
+    fn bmm(&self, lhs: &Storage, rhs: &Storage, lhs_shape: &Shape, rhs_shape: &Shape) -> Result<Storage> {
+        #[cfg(feature = "cuda")]
+        {
+            let lhs_dims = lhs_shape.dims();
+            let rhs_dims = rhs_shape.dims();
+
+            // Validate that tensors are 3D
+            if lhs_dims.len() != 3 || rhs_dims.len() != 3 {
+                return Err(TensorError::InvalidShape(
+                    "Batched matrix multiplication requires 3D tensors".to_string(),
+                ));
+            }
+
+            // Validate dimensions: (B, M, K) x (B, K, N) -> (B, M, N)
+            let (b1, m, k1) = (lhs_dims[0], lhs_dims[1], lhs_dims[2]);
+            let (b2, k2, n) = (rhs_dims[0], rhs_dims[1], rhs_dims[2]);
+
+            if b1 != b2 {
+                return Err(TensorError::ShapeMismatch {
+                    expected: vec![b1],
+                    got: vec![b2],
+                });
+            }
+
+            if k1 != k2 {
+                return Err(TensorError::ShapeMismatch {
+                    expected: vec![k1],
+                    got: vec![k2],
+                });
+            }
+
+            // Convert inputs to CUDA storage if needed
+            let lhs_data = self.to_vec_f32(lhs)?;
+            let rhs_data = self.to_vec_f32(rhs)?;
+            let lhs_shape_single = Shape::new(vec![lhs_data.len()])?;
+            let rhs_shape_single = Shape::new(vec![rhs_data.len()])?;
+            let lhs_storage = self.from_slice(&lhs_data, &lhs_shape_single)?;
+            let rhs_storage = self.from_slice(&rhs_data, &rhs_shape_single)?;
+
+            match (&lhs_storage, &rhs_storage) {
+                (Storage::Cuda(a), Storage::Cuda(b)) => {
+                    let stream = self.context.default_stream();
+                    let mut result_buf = stream.alloc_zeros::<f32>(b1 * m * n).map_err(|e| {
+                        TensorError::BackendError(format!("Failed to allocate CUDA result buffer: {}", e))
+                    })?;
+
+                    let kernel = self.kernels.get("bmm_kernel").ok_or_else(|| {
+                        TensorError::BackendError("bmm_kernel not found".to_string())
+                    })?;
+
+                    let block_size = 16;
+                    let grid_x = (n + block_size - 1) / block_size;
+                    let grid_y = (m + block_size - 1) / block_size;
+                    let grid_z = b1;
+
+                    let cfg = LaunchConfig {
+                        grid_dim: (grid_x as u32, grid_y as u32, grid_z as u32),
+                        block_dim: (block_size as u32, block_size as u32, 1),
+                        shared_mem_bytes: 0,
+                    };
+
+                    let mut builder = stream.launch_builder(kernel);
+                    builder.arg(a.buffer.as_ref());
+                    builder.arg(b.buffer.as_ref());
+                    builder.arg(&mut result_buf);
+                    let batch_arg = b1 as i32;
+                    let m_arg = m as i32;
+                    let k_arg = k1 as i32;
+                    let n_arg = n as i32;
+                    builder.arg(&batch_arg);
+                    builder.arg(&m_arg);
+                    builder.arg(&k_arg);
+                    builder.arg(&n_arg);
+
+                    unsafe { builder.launch(cfg) }.map_err(|e| {
+                        TensorError::BackendError(format!("Failed to launch bmm kernel: {}", e))
+                    })?;
+
+                    Ok(Storage::Cuda(CudaStorage {
+                        buffer: std::sync::Arc::new(result_buf),
+                    }))
+                }
+                _ => Err(TensorError::BackendError("Invalid storage types for CUDA bmm".to_string())),
+            }
+        }
+        #[cfg(not(feature = "cuda"))]
+        Err(TensorError::BackendError(
+            "CUDA support not compiled in".to_string(),
+        ))
+    }
+
+    fn exp(&self, storage: &Storage) -> Result<Storage> {
+        #[cfg(feature = "cuda")]
+        {
+            self.launch_unary_math_kernel("exp_kernel", storage)
+        }
+        #[cfg(not(feature = "cuda"))]
+        Err(TensorError::BackendError(
+            "CUDA support not compiled in".to_string(),
+        ))
+    }
+
+    fn log(&self, storage: &Storage) -> Result<Storage> {
+        #[cfg(feature = "cuda")]
+        {
+            self.launch_unary_math_kernel("log_kernel", storage)
+        }
+        #[cfg(not(feature = "cuda"))]
+        Err(TensorError::BackendError(
+            "CUDA support not compiled in".to_string(),
+        ))
+    }
+
+    fn sqrt(&self, storage: &Storage) -> Result<Storage> {
+        #[cfg(feature = "cuda")]
+        {
+            self.launch_unary_math_kernel("sqrt_kernel", storage)
+        }
+        #[cfg(not(feature = "cuda"))]
+        Err(TensorError::BackendError(
+            "CUDA support not compiled in".to_string(),
+        ))
+    }
+
+    fn pow(&self, storage: &Storage, power: f32) -> Result<Storage> {
+        #[cfg(feature = "cuda")]
+        {
+            match storage {
+                Storage::Cuda(cuda_storage) => {
+                    let stream = self.context.default_stream();
+                    let mut result_buf = stream.alloc_zeros::<f32>(cuda_storage.buffer.len()).map_err(|e| {
+                        TensorError::BackendError(format!("Failed to allocate CUDA result buffer: {}", e))
+                    })?;
+
+                    let kernel = self.kernels.get("pow_kernel").ok_or_else(|| {
+                        TensorError::BackendError("pow_kernel not found".to_string())
+                    })?;
+
+                    let size = cuda_storage.buffer.len();
+                    let cfg = LaunchConfig::for_num_elems(size as u32);
+
+                    let mut builder = stream.launch_builder(kernel);
+                    builder.arg(cuda_storage.buffer.as_ref());
+                    builder.arg(&mut result_buf);
+                    builder.arg(&power);
+                    let size_arg = size as i32;
+                    builder.arg(&size_arg);
+
+                    unsafe { builder.launch(cfg) }.map_err(|e| {
+                        TensorError::BackendError(format!("Failed to launch pow kernel: {}", e))
+                    })?;
+
+                    Ok(Storage::Cuda(CudaStorage {
+                        buffer: std::sync::Arc::new(result_buf),
+                    }))
+                }
+                _ => {
+                    // Convert to CUDA and try again
+                    let data = self.to_vec_f32(storage)?;
+                    let shape = Shape::new(vec![data.len()])?;
+                    let cuda_storage = self.from_slice(&data, &shape)?;
+                    self.pow(&cuda_storage, power)
+                }
+            }
+        }
+        #[cfg(not(feature = "cuda"))]
+        Err(TensorError::BackendError(
+            "CUDA support not compiled in".to_string(),
+        ))
+    }
+
+    fn sin(&self, storage: &Storage) -> Result<Storage> {
+        #[cfg(feature = "cuda")]
+        {
+            self.launch_unary_math_kernel("sin_kernel", storage)
+        }
+        #[cfg(not(feature = "cuda"))]
+        Err(TensorError::BackendError(
+            "CUDA support not compiled in".to_string(),
+        ))
+    }
+
+    fn cos(&self, storage: &Storage) -> Result<Storage> {
+        #[cfg(feature = "cuda")]
+        {
+            self.launch_unary_math_kernel("cos_kernel", storage)
+        }
+        #[cfg(not(feature = "cuda"))]
+        Err(TensorError::BackendError(
+            "CUDA support not compiled in".to_string(),
+        ))
+    }
+
+    fn relu(&self, storage: &Storage) -> Result<Storage> {
+        #[cfg(feature = "cuda")]
+        {
+            self.launch_unary_math_kernel("relu_kernel", storage)
+        }
+        #[cfg(not(feature = "cuda"))]
+        Err(TensorError::BackendError(
+            "CUDA support not compiled in".to_string(),
+        ))
+    }
+
+    fn sigmoid(&self, storage: &Storage) -> Result<Storage> {
+        #[cfg(feature = "cuda")]
+        {
+            self.launch_unary_math_kernel("sigmoid_kernel", storage)
+        }
+        #[cfg(not(feature = "cuda"))]
+        Err(TensorError::BackendError(
+            "CUDA support not compiled in".to_string(),
+        ))
+    }
+
+    fn tanh(&self, storage: &Storage) -> Result<Storage> {
+        #[cfg(feature = "cuda")]
+        {
+            self.launch_unary_math_kernel("tanh_kernel", storage)
         }
         #[cfg(not(feature = "cuda"))]
         Err(TensorError::BackendError(

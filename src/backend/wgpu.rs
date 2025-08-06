@@ -688,4 +688,158 @@ impl Backend for WgpuBackend {
             )),
         }
     }
+
+    fn matmul(&self, _lhs: &Storage, _rhs: &Storage, _lhs_shape: &Shape, _rhs_shape: &Shape) -> Result<Storage> {
+        #[cfg(feature = "wgpu")]
+        {
+            // TODO: Implement WGPU matrix multiplication
+            Err(TensorError::BackendError(
+                "Matrix multiplication not yet implemented for WGPU backend".to_string(),
+            ))
+        }
+        #[cfg(not(feature = "wgpu"))]
+        Err(TensorError::BackendError(
+            "WGPU support not compiled in".to_string(),
+        ))
+    }
+
+    fn bmm(&self, _lhs: &Storage, _rhs: &Storage, _lhs_shape: &Shape, _rhs_shape: &Shape) -> Result<Storage> {
+        #[cfg(feature = "wgpu")]
+        {
+            // TODO: Implement WGPU batched matrix multiplication
+            Err(TensorError::BackendError(
+                "Batched matrix multiplication not yet implemented for WGPU backend".to_string(),
+            ))
+        }
+        #[cfg(not(feature = "wgpu"))]
+        Err(TensorError::BackendError(
+            "WGPU support not compiled in".to_string(),
+        ))
+    }
+
+    fn exp(&self, _storage: &Storage) -> Result<Storage> {
+        #[cfg(feature = "wgpu")]
+        {
+            // TODO: Implement WGPU exp function
+            Err(TensorError::BackendError(
+                "Exp function not yet implemented for WGPU backend".to_string(),
+            ))
+        }
+        #[cfg(not(feature = "wgpu"))]
+        Err(TensorError::BackendError(
+            "WGPU support not compiled in".to_string(),
+        ))
+    }
+
+    fn log(&self, _storage: &Storage) -> Result<Storage> {
+        #[cfg(feature = "wgpu")]
+        {
+            // TODO: Implement WGPU log function
+            Err(TensorError::BackendError(
+                "Log function not yet implemented for WGPU backend".to_string(),
+            ))
+        }
+        #[cfg(not(feature = "wgpu"))]
+        Err(TensorError::BackendError(
+            "WGPU support not compiled in".to_string(),
+        ))
+    }
+
+    fn sqrt(&self, _storage: &Storage) -> Result<Storage> {
+        #[cfg(feature = "wgpu")]
+        {
+            // TODO: Implement WGPU sqrt function
+            Err(TensorError::BackendError(
+                "Sqrt function not yet implemented for WGPU backend".to_string(),
+            ))
+        }
+        #[cfg(not(feature = "wgpu"))]
+        Err(TensorError::BackendError(
+            "WGPU support not compiled in".to_string(),
+        ))
+    }
+
+    fn pow(&self, _storage: &Storage, _power: f32) -> Result<Storage> {
+        #[cfg(feature = "wgpu")]
+        {
+            // TODO: Implement WGPU pow function
+            Err(TensorError::BackendError(
+                "Pow function not yet implemented for WGPU backend".to_string(),
+            ))
+        }
+        #[cfg(not(feature = "wgpu"))]
+        Err(TensorError::BackendError(
+            "WGPU support not compiled in".to_string(),
+        ))
+    }
+
+    fn sin(&self, _storage: &Storage) -> Result<Storage> {
+        #[cfg(feature = "wgpu")]
+        {
+            // TODO: Implement WGPU sin function
+            Err(TensorError::BackendError(
+                "Sin function not yet implemented for WGPU backend".to_string(),
+            ))
+        }
+        #[cfg(not(feature = "wgpu"))]
+        Err(TensorError::BackendError(
+            "WGPU support not compiled in".to_string(),
+        ))
+    }
+
+    fn cos(&self, _storage: &Storage) -> Result<Storage> {
+        #[cfg(feature = "wgpu")]
+        {
+            // TODO: Implement WGPU cos function
+            Err(TensorError::BackendError(
+                "Cos function not yet implemented for WGPU backend".to_string(),
+            ))
+        }
+        #[cfg(not(feature = "wgpu"))]
+        Err(TensorError::BackendError(
+            "WGPU support not compiled in".to_string(),
+        ))
+    }
+
+    fn relu(&self, _storage: &Storage) -> Result<Storage> {
+        #[cfg(feature = "wgpu")]
+        {
+            // TODO: Implement WGPU relu function
+            Err(TensorError::BackendError(
+                "ReLU function not yet implemented for WGPU backend".to_string(),
+            ))
+        }
+        #[cfg(not(feature = "wgpu"))]
+        Err(TensorError::BackendError(
+            "WGPU support not compiled in".to_string(),
+        ))
+    }
+
+    fn sigmoid(&self, _storage: &Storage) -> Result<Storage> {
+        #[cfg(feature = "wgpu")]
+        {
+            // TODO: Implement WGPU sigmoid function
+            Err(TensorError::BackendError(
+                "Sigmoid function not yet implemented for WGPU backend".to_string(),
+            ))
+        }
+        #[cfg(not(feature = "wgpu"))]
+        Err(TensorError::BackendError(
+            "WGPU support not compiled in".to_string(),
+        ))
+    }
+
+    fn tanh(&self, _storage: &Storage) -> Result<Storage> {
+        #[cfg(feature = "wgpu")]
+        {
+            // TODO: Implement WGPU tanh function
+            Err(TensorError::BackendError(
+                "Tanh function not yet implemented for WGPU backend".to_string(),
+            ))
+        }
+        #[cfg(not(feature = "wgpu"))]
+        Err(TensorError::BackendError(
+            "WGPU support not compiled in".to_string(),
+        ))
+    }
 }

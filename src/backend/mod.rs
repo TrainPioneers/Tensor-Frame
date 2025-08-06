@@ -82,6 +82,39 @@ pub trait Backend: Debug + Send + Sync {
 
     /// Converts the storage to a vector of f32 values.
     fn to_vec_f32(&self, storage: &Storage) -> Result<Vec<f32>>;
+
+    /// Matrix multiplication for 2D tensors.
+    fn matmul(&self, lhs: &Storage, rhs: &Storage, lhs_shape: &Shape, rhs_shape: &Shape) -> Result<Storage>;
+
+    /// Batched matrix multiplication for 3D tensors.
+    fn bmm(&self, lhs: &Storage, rhs: &Storage, lhs_shape: &Shape, rhs_shape: &Shape) -> Result<Storage>;
+
+    /// Element-wise exponential function.
+    fn exp(&self, storage: &Storage) -> Result<Storage>;
+
+    /// Element-wise natural logarithm.
+    fn log(&self, storage: &Storage) -> Result<Storage>;
+
+    /// Element-wise square root.
+    fn sqrt(&self, storage: &Storage) -> Result<Storage>;
+
+    /// Element-wise power function.
+    fn pow(&self, storage: &Storage, power: f32) -> Result<Storage>;
+
+    /// Element-wise sine function.
+    fn sin(&self, storage: &Storage) -> Result<Storage>;
+
+    /// Element-wise cosine function.
+    fn cos(&self, storage: &Storage) -> Result<Storage>;
+
+    /// Element-wise ReLU activation function.
+    fn relu(&self, storage: &Storage) -> Result<Storage>;
+
+    /// Element-wise sigmoid activation function.
+    fn sigmoid(&self, storage: &Storage) -> Result<Storage>;
+
+    /// Element-wise tanh activation function.
+    fn tanh(&self, storage: &Storage) -> Result<Storage>;
 }
 
 /// Backend-specific storage for tensor data.

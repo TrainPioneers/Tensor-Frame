@@ -236,6 +236,156 @@ impl Tensor {
             "No backend could convert storage to Vec<f32>".to_string(),
         ))
     }
+
+    /// Gets the backend type currently used by this tensor.
+    ///
+    /// # Returns
+    ///
+    /// A string identifying the backend type.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use tensor_frame::Tensor;
+    ///
+    /// let tensor = Tensor::ones(vec![2, 2]).unwrap();
+    /// let backend_type = tensor.backend_type();
+    /// // Returns "CPU", "CUDA", or "WGPU" depending on available backends
+    /// ```
+    pub fn backend_type(&self) -> &'static str {
+        match &self.storage {
+            #[cfg(feature = "cpu")]
+            Storage::Cpu(_) => "CPU",
+            #[cfg(feature = "cuda")]
+            Storage::Cuda(_) => "CUDA",
+            #[cfg(feature = "wgpu")]
+            Storage::Wgpu(_) => "WGPU",
+        }
+    }
+
+    /// Attempts to move this tensor to a specific backend.
+    ///
+    /// This method tries to convert the tensor to use the specified backend.
+    /// If the backend is not available or the conversion fails, returns an error.
+    ///
+    /// # Arguments
+    ///
+    /// * `backend_name` - The name of the target backend ("CPU", "CUDA", or "WGPU")
+    ///
+    /// # Returns
+    ///
+    /// A new tensor using the specified backend, or an error if conversion fails.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use tensor_frame::Tensor;
+    ///
+    /// let tensor = Tensor::ones(vec![2, 2]).unwrap();
+    /// // Try to move to CUDA backend (if available)
+    /// match tensor.to_backend("CUDA") {
+    ///     Ok(cuda_tensor) => println!("Successfully moved to CUDA"),
+    ///     Err(e) => println!("Could not move to CUDA: {}", e),
+    /// }
+    /// ```
+    pub fn to_backend(&self, backend_name: &str) -> Result<Self> {
+        // If already on the requested backend, return a clone
+        if self.backend_type() == backend_name {
+            return Ok(self.clone());
+        }
+
+        // Get the data from current backend
+        let data = self.to_vec()?;
+
+        // Find the requested backend and create tensor with it
+        for backend in &BACKENDS[0..] {
+            match backend_name {
+                "CPU" => {
+                    #[cfg(feature = "cpu")]
+                    if let Ok(storage) = backend.from_slice(&data, &self.shape) {
+                        if matches!(storage, Storage::Cpu(_)) {
+                            return Ok(Tensor {
+                                storage,
+                                shape: self.shape.clone(),
+                            });
+                        }
+                    }
+                    continue;
+                }
+                "CUDA" => {
+                    #[cfg(feature = "cuda")]
+                    if let Ok(storage) = backend.from_slice(&data, &self.shape) {
+                        if matches!(storage, Storage::Cuda(_)) {
+                            return Ok(Tensor {
+                                storage,
+                                shape: self.shape.clone(),
+                            });
+                        }
+                    }
+                    continue;
+                }
+                "WGPU" => {
+                    #[cfg(feature = "wgpu")]
+                    if let Ok(storage) = backend.from_slice(&data, &self.shape) {
+                        if matches!(storage, Storage::Wgpu(_)) {
+                            return Ok(Tensor {
+                                storage,
+                                shape: self.shape.clone(),
+                            });
+                        }
+                    }
+                    continue;
+                }
+                _ => {
+                    return Err(TensorError::BackendError(format!(
+                        "Unknown backend: {}. Supported backends: CPU, CUDA, WGPU",
+                        backend_name
+                    )));
+                }
+            }
+        }
+
+        Err(TensorError::BackendError(format!(
+            "Backend {} is not available or failed to create tensor",
+            backend_name
+        )))
+    }
+
+    /// Lists all available backends on the current system.
+    ///
+    /// # Returns
+    ///
+    /// A vector of backend names that are available and working.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use tensor_frame::Tensor;
+    ///
+    /// let available = Tensor::available_backends();
+    /// println!("Available backends: {:?}", available);
+    /// ```
+    pub fn available_backends() -> Vec<String> {
+        let mut available = Vec::new();
+        
+        for backend in &BACKENDS[0..] {
+            if backend.is_available() {
+                // Test create a small tensor to verify the backend works
+                if let Ok(storage) = backend.zeros(&Shape::new(vec![1]).unwrap()) {
+                    match storage {
+                        #[cfg(feature = "cpu")]
+                        Storage::Cpu(_) => available.push("CPU".to_string()),
+                        #[cfg(feature = "cuda")]
+                        Storage::Cuda(_) => available.push("CUDA".to_string()),
+                        #[cfg(feature = "wgpu")]
+                        Storage::Wgpu(_) => available.push("WGPU".to_string()),
+                    }
+                }
+            }
+        }
+        
+        available
+    }
 }
 
 impl Add for Tensor {
@@ -678,6 +828,238 @@ impl TensorOps for Tensor {
             storage: self.storage.clone(),
             shape: new_shape,
         })
+    }
+
+    fn matmul(&self, other: &Self) -> Result<Self> {
+        if self.ndim() != 2 || other.ndim() != 2 {
+            return Err(TensorError::InvalidShape(
+                "Matrix multiplication requires 2D tensors".to_string(),
+            ));
+        }
+
+        let self_dims = self.shape.dims();
+        let other_dims = other.shape.dims();
+        
+        // Validate dimensions: (M, K) × (K, N) → (M, N)
+        if self_dims[1] != other_dims[0] {
+            return Err(TensorError::ShapeMismatch {
+                expected: vec![self_dims[1]],
+                got: vec![other_dims[0]],
+            });
+        }
+
+        let result_shape = Shape::new(vec![self_dims[0], other_dims[1]])?;
+
+        for backend in &BACKENDS[0..] {
+            match backend.matmul(&self.storage, &other.storage, &self.shape, &other.shape) {
+                Ok(storage) => {
+                    return Ok(Tensor {
+                        storage,
+                        shape: result_shape,
+                    });
+                }
+                Err(_) => continue,
+            }
+        }
+        Err(TensorError::BackendError(
+            "No backend could perform matrix multiplication".to_string(),
+        ))
+    }
+
+    fn bmm(&self, other: &Self) -> Result<Self> {
+        if self.ndim() != 3 || other.ndim() != 3 {
+            return Err(TensorError::InvalidShape(
+                "Batched matrix multiplication requires 3D tensors".to_string(),
+            ));
+        }
+
+        let self_dims = self.shape.dims();
+        let other_dims = other.shape.dims();
+        
+        // Validate dimensions: (B, M, K) × (B, K, N) → (B, M, N)
+        if self_dims[0] != other_dims[0] {
+            return Err(TensorError::ShapeMismatch {
+                expected: vec![self_dims[0]],
+                got: vec![other_dims[0]],
+            });
+        }
+        
+        if self_dims[2] != other_dims[1] {
+            return Err(TensorError::ShapeMismatch {
+                expected: vec![self_dims[2]],
+                got: vec![other_dims[1]],
+            });
+        }
+
+        let result_shape = Shape::new(vec![self_dims[0], self_dims[1], other_dims[2]])?;
+
+        for backend in &BACKENDS[0..] {
+            match backend.bmm(&self.storage, &other.storage, &self.shape, &other.shape) {
+                Ok(storage) => {
+                    return Ok(Tensor {
+                        storage,
+                        shape: result_shape,
+                    });
+                }
+                Err(_) => continue,
+            }
+        }
+        Err(TensorError::BackendError(
+            "No backend could perform batched matrix multiplication".to_string(),
+        ))
+    }
+
+    fn exp(&self) -> Result<Self> {
+        for backend in &BACKENDS[0..] {
+            match backend.exp(&self.storage) {
+                Ok(storage) => {
+                    return Ok(Tensor {
+                        storage,
+                        shape: self.shape.clone(),
+                    });
+                }
+                Err(_) => continue,
+            }
+        }
+        Err(TensorError::BackendError(
+            "No backend could perform exp operation".to_string(),
+        ))
+    }
+
+    fn log(&self) -> Result<Self> {
+        for backend in &BACKENDS[0..] {
+            match backend.log(&self.storage) {
+                Ok(storage) => {
+                    return Ok(Tensor {
+                        storage,
+                        shape: self.shape.clone(),
+                    });
+                }
+                Err(_) => continue,
+            }
+        }
+        Err(TensorError::BackendError(
+            "No backend could perform log operation".to_string(),
+        ))
+    }
+
+    fn sqrt(&self) -> Result<Self> {
+        for backend in &BACKENDS[0..] {
+            match backend.sqrt(&self.storage) {
+                Ok(storage) => {
+                    return Ok(Tensor {
+                        storage,
+                        shape: self.shape.clone(),
+                    });
+                }
+                Err(_) => continue,
+            }
+        }
+        Err(TensorError::BackendError(
+            "No backend could perform sqrt operation".to_string(),
+        ))
+    }
+
+    fn pow(&self, power: f32) -> Result<Self> {
+        for backend in &BACKENDS[0..] {
+            match backend.pow(&self.storage, power) {
+                Ok(storage) => {
+                    return Ok(Tensor {
+                        storage,
+                        shape: self.shape.clone(),
+                    });
+                }
+                Err(_) => continue,
+            }
+        }
+        Err(TensorError::BackendError(
+            "No backend could perform pow operation".to_string(),
+        ))
+    }
+
+    fn sin(&self) -> Result<Self> {
+        for backend in &BACKENDS[0..] {
+            match backend.sin(&self.storage) {
+                Ok(storage) => {
+                    return Ok(Tensor {
+                        storage,
+                        shape: self.shape.clone(),
+                    });
+                }
+                Err(_) => continue,
+            }
+        }
+        Err(TensorError::BackendError(
+            "No backend could perform sin operation".to_string(),
+        ))
+    }
+
+    fn cos(&self) -> Result<Self> {
+        for backend in &BACKENDS[0..] {
+            match backend.cos(&self.storage) {
+                Ok(storage) => {
+                    return Ok(Tensor {
+                        storage,
+                        shape: self.shape.clone(),
+                    });
+                }
+                Err(_) => continue,
+            }
+        }
+        Err(TensorError::BackendError(
+            "No backend could perform cos operation".to_string(),
+        ))
+    }
+
+    fn relu(&self) -> Result<Self> {
+        for backend in &BACKENDS[0..] {
+            match backend.relu(&self.storage) {
+                Ok(storage) => {
+                    return Ok(Tensor {
+                        storage,
+                        shape: self.shape.clone(),
+                    });
+                }
+                Err(_) => continue,
+            }
+        }
+        Err(TensorError::BackendError(
+            "No backend could perform relu operation".to_string(),
+        ))
+    }
+
+    fn sigmoid(&self) -> Result<Self> {
+        for backend in &BACKENDS[0..] {
+            match backend.sigmoid(&self.storage) {
+                Ok(storage) => {
+                    return Ok(Tensor {
+                        storage,
+                        shape: self.shape.clone(),
+                    });
+                }
+                Err(_) => continue,
+            }
+        }
+        Err(TensorError::BackendError(
+            "No backend could perform sigmoid operation".to_string(),
+        ))
+    }
+
+    fn tanh(&self) -> Result<Self> {
+        for backend in &BACKENDS[0..] {
+            match backend.tanh(&self.storage) {
+                Ok(storage) => {
+                    return Ok(Tensor {
+                        storage,
+                        shape: self.shape.clone(),
+                    });
+                }
+                Err(_) => continue,
+            }
+        }
+        Err(TensorError::BackendError(
+            "No backend could perform tanh operation".to_string(),
+        ))
     }
 }
 

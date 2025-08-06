@@ -258,4 +258,149 @@ impl Backend for CpuBackend {
             )),
         }
     }
+
+    fn matmul(&self, lhs: &Storage, rhs: &Storage, lhs_shape: &Shape, rhs_shape: &Shape) -> Result<Storage> {
+        let lhs_dims = lhs_shape.dims();
+        let rhs_dims = rhs_shape.dims();
+
+        // Validate that tensors are 2D
+        if lhs_dims.len() != 2 || rhs_dims.len() != 2 {
+            return Err(TensorError::InvalidShape(
+                "Matrix multiplication requires 2D tensors".to_string(),
+            ));
+        }
+
+        // Validate dimensions for matrix multiplication: (M, K) x (K, N) -> (M, N)
+        let (m, k1) = (lhs_dims[0], lhs_dims[1]);
+        let (k2, n) = (rhs_dims[0], rhs_dims[1]);
+
+        if k1 != k2 {
+            return Err(TensorError::ShapeMismatch {
+                expected: vec![k1],
+                got: vec![k2],
+            });
+        }
+
+        let lhs_data = self.to_vec_f32(lhs)?;
+        let rhs_data = self.to_vec_f32(rhs)?;
+        let mut result = vec![0.0; m * n];
+
+        // Perform matrix multiplication: C[i][j] = sum(A[i][k] * B[k][j])
+        for i in 0..m {
+            for j in 0..n {
+                let mut sum = 0.0;
+                for k in 0..k1 {
+                    sum += lhs_data[i * k1 + k] * rhs_data[k * n + j];
+                }
+                result[i * n + j] = sum;
+            }
+        }
+
+        Ok(Storage::Cpu(result))
+    }
+
+    fn bmm(&self, lhs: &Storage, rhs: &Storage, lhs_shape: &Shape, rhs_shape: &Shape) -> Result<Storage> {
+        let lhs_dims = lhs_shape.dims();
+        let rhs_dims = rhs_shape.dims();
+
+        // Validate that tensors are 3D
+        if lhs_dims.len() != 3 || rhs_dims.len() != 3 {
+            return Err(TensorError::InvalidShape(
+                "Batched matrix multiplication requires 3D tensors".to_string(),
+            ));
+        }
+
+        // Validate dimensions: (B, M, K) x (B, K, N) -> (B, M, N)
+        let (b1, m, k1) = (lhs_dims[0], lhs_dims[1], lhs_dims[2]);
+        let (b2, k2, n) = (rhs_dims[0], rhs_dims[1], rhs_dims[2]);
+
+        if b1 != b2 {
+            return Err(TensorError::ShapeMismatch {
+                expected: vec![b1],
+                got: vec![b2],
+            });
+        }
+
+        if k1 != k2 {
+            return Err(TensorError::ShapeMismatch {
+                expected: vec![k1],
+                got: vec![k2],
+            });
+        }
+
+        let lhs_data = self.to_vec_f32(lhs)?;
+        let rhs_data = self.to_vec_f32(rhs)?;
+        let mut result = vec![0.0; b1 * m * n];
+
+        // Perform batched matrix multiplication
+        for b in 0..b1 {
+            for i in 0..m {
+                for j in 0..n {
+                    let mut sum = 0.0;
+                    for k in 0..k1 {
+                        let lhs_idx = b * m * k1 + i * k1 + k;
+                        let rhs_idx = b * k1 * n + k * n + j;
+                        sum += lhs_data[lhs_idx] * rhs_data[rhs_idx];
+                    }
+                    result[b * m * n + i * n + j] = sum;
+                }
+            }
+        }
+
+        Ok(Storage::Cpu(result))
+    }
+
+    fn exp(&self, storage: &Storage) -> Result<Storage> {
+        let data = self.to_vec_f32(storage)?;
+        let result: Vec<f32> = data.iter().map(|&x| x.exp()).collect();
+        Ok(Storage::Cpu(result))
+    }
+
+    fn log(&self, storage: &Storage) -> Result<Storage> {
+        let data = self.to_vec_f32(storage)?;
+        let result: Vec<f32> = data.iter().map(|&x| x.ln()).collect();
+        Ok(Storage::Cpu(result))
+    }
+
+    fn sqrt(&self, storage: &Storage) -> Result<Storage> {
+        let data = self.to_vec_f32(storage)?;
+        let result: Vec<f32> = data.iter().map(|&x| x.sqrt()).collect();
+        Ok(Storage::Cpu(result))
+    }
+
+    fn pow(&self, storage: &Storage, power: f32) -> Result<Storage> {
+        let data = self.to_vec_f32(storage)?;
+        let result: Vec<f32> = data.iter().map(|&x| x.powf(power)).collect();
+        Ok(Storage::Cpu(result))
+    }
+
+    fn sin(&self, storage: &Storage) -> Result<Storage> {
+        let data = self.to_vec_f32(storage)?;
+        let result: Vec<f32> = data.iter().map(|&x| x.sin()).collect();
+        Ok(Storage::Cpu(result))
+    }
+
+    fn cos(&self, storage: &Storage) -> Result<Storage> {
+        let data = self.to_vec_f32(storage)?;
+        let result: Vec<f32> = data.iter().map(|&x| x.cos()).collect();
+        Ok(Storage::Cpu(result))
+    }
+
+    fn relu(&self, storage: &Storage) -> Result<Storage> {
+        let data = self.to_vec_f32(storage)?;
+        let result: Vec<f32> = data.iter().map(|&x| x.max(0.0)).collect();
+        Ok(Storage::Cpu(result))
+    }
+
+    fn sigmoid(&self, storage: &Storage) -> Result<Storage> {
+        let data = self.to_vec_f32(storage)?;
+        let result: Vec<f32> = data.iter().map(|&x| 1.0 / (1.0 + (-x).exp())).collect();
+        Ok(Storage::Cpu(result))
+    }
+
+    fn tanh(&self, storage: &Storage) -> Result<Storage> {
+        let data = self.to_vec_f32(storage)?;
+        let result: Vec<f32> = data.iter().map(|&x| x.tanh()).collect();
+        Ok(Storage::Cpu(result))
+    }
 }
