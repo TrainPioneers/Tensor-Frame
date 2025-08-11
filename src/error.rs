@@ -80,16 +80,16 @@ impl fmt::Display for TensorError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             TensorError::ShapeMismatch { expected, got } => {
-                write!(f, "Shape mismatch: expected {:?}, got {:?}", expected, got)
+                write!(f, "Shape mismatch: expected {expected:?}, got {got:?}")
             }
-            TensorError::InvalidShape(msg) => write!(f, "Invalid shape: {}", msg),
+            TensorError::InvalidShape(msg) => write!(f, "Invalid shape: {msg}"),
             TensorError::InvalidIndex { index, shape } => {
-                write!(f, "Invalid index {:?} for shape {:?}", index, shape)
+                write!(f, "Invalid index {index:?} for shape {shape:?}")
             }
-            TensorError::BackendError(msg) => write!(f, "Backend error: {}", msg),
-            TensorError::BroadcastError(msg) => write!(f, "Broadcast error: {}", msg),
+            TensorError::BackendError(msg) => write!(f, "Backend error: {msg}"),
+            TensorError::BroadcastError(msg) => write!(f, "Broadcast error: {msg}"),
             TensorError::DimensionMismatch { expected, got } => {
-                write!(f, "Dimension mismatch: expected {}, got {}", expected, got)
+                write!(f, "Dimension mismatch: expected {expected}, got {got}")
             }
         }
     }

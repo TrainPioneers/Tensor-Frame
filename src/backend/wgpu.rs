@@ -689,7 +689,13 @@ impl Backend for WgpuBackend {
         }
     }
 
-    fn matmul(&self, _lhs: &Storage, _rhs: &Storage, _lhs_shape: &Shape, _rhs_shape: &Shape) -> Result<Storage> {
+    fn matmul(
+        &self,
+        _lhs: &Storage,
+        _rhs: &Storage,
+        _lhs_shape: &Shape,
+        _rhs_shape: &Shape,
+    ) -> Result<Storage> {
         #[cfg(feature = "wgpu")]
         {
             // TODO: Implement WGPU matrix multiplication
@@ -703,7 +709,13 @@ impl Backend for WgpuBackend {
         ))
     }
 
-    fn bmm(&self, _lhs: &Storage, _rhs: &Storage, _lhs_shape: &Shape, _rhs_shape: &Shape) -> Result<Storage> {
+    fn bmm(
+        &self,
+        _lhs: &Storage,
+        _rhs: &Storage,
+        _lhs_shape: &Shape,
+        _rhs_shape: &Shape,
+    ) -> Result<Storage> {
         #[cfg(feature = "wgpu")]
         {
             // TODO: Implement WGPU batched matrix multiplication

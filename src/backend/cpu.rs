@@ -259,7 +259,13 @@ impl Backend for CpuBackend {
         }
     }
 
-    fn matmul(&self, lhs: &Storage, rhs: &Storage, lhs_shape: &Shape, rhs_shape: &Shape) -> Result<Storage> {
+    fn matmul(
+        &self,
+        lhs: &Storage,
+        rhs: &Storage,
+        lhs_shape: &Shape,
+        rhs_shape: &Shape,
+    ) -> Result<Storage> {
         let lhs_dims = lhs_shape.dims();
         let rhs_dims = rhs_shape.dims();
 
@@ -299,7 +305,13 @@ impl Backend for CpuBackend {
         Ok(Storage::Cpu(result))
     }
 
-    fn bmm(&self, lhs: &Storage, rhs: &Storage, lhs_shape: &Shape, rhs_shape: &Shape) -> Result<Storage> {
+    fn bmm(
+        &self,
+        lhs: &Storage,
+        rhs: &Storage,
+        lhs_shape: &Shape,
+        rhs_shape: &Shape,
+    ) -> Result<Storage> {
         let lhs_dims = lhs_shape.dims();
         let rhs_dims = rhs_shape.dims();
 

@@ -57,6 +57,7 @@ pub trait Backend: Debug + Send + Sync {
     fn ones(&self, shape: &Shape) -> Result<Storage>;
 
     /// Creates a tensor from a slice of f32 values.
+    #[allow(clippy::wrong_self_convention)]
     fn from_slice(&self, data: &[f32], shape: &Shape) -> Result<Storage>;
 
     /// Performs element-wise addition.
@@ -84,10 +85,22 @@ pub trait Backend: Debug + Send + Sync {
     fn to_vec_f32(&self, storage: &Storage) -> Result<Vec<f32>>;
 
     /// Matrix multiplication for 2D tensors.
-    fn matmul(&self, lhs: &Storage, rhs: &Storage, lhs_shape: &Shape, rhs_shape: &Shape) -> Result<Storage>;
+    fn matmul(
+        &self,
+        lhs: &Storage,
+        rhs: &Storage,
+        lhs_shape: &Shape,
+        rhs_shape: &Shape,
+    ) -> Result<Storage>;
 
     /// Batched matrix multiplication for 3D tensors.
-    fn bmm(&self, lhs: &Storage, rhs: &Storage, lhs_shape: &Shape, rhs_shape: &Shape) -> Result<Storage>;
+    fn bmm(
+        &self,
+        lhs: &Storage,
+        rhs: &Storage,
+        lhs_shape: &Shape,
+        rhs_shape: &Shape,
+    ) -> Result<Storage>;
 
     /// Element-wise exponential function.
     fn exp(&self, storage: &Storage) -> Result<Storage>;

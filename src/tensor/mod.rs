@@ -338,16 +338,14 @@ impl Tensor {
                 }
                 _ => {
                     return Err(TensorError::BackendError(format!(
-                        "Unknown backend: {}. Supported backends: CPU, CUDA, WGPU",
-                        backend_name
+                        "Unknown backend: {backend_name}. Supported backends: CPU, CUDA, WGPU"
                     )));
                 }
             }
         }
 
         Err(TensorError::BackendError(format!(
-            "Backend {} is not available or failed to create tensor",
-            backend_name
+            "Backend {backend_name} is not available or failed to create tensor"
         )))
     }
 
@@ -367,7 +365,7 @@ impl Tensor {
     /// ```
     pub fn available_backends() -> Vec<String> {
         let mut available = Vec::new();
-        
+
         for backend in &BACKENDS[0..] {
             if backend.is_available() {
                 // Test create a small tensor to verify the backend works
@@ -383,7 +381,7 @@ impl Tensor {
                 }
             }
         }
-        
+
         available
     }
 }
@@ -839,7 +837,7 @@ impl TensorOps for Tensor {
 
         let self_dims = self.shape.dims();
         let other_dims = other.shape.dims();
-        
+
         // Validate dimensions: (M, K) × (K, N) → (M, N)
         if self_dims[1] != other_dims[0] {
             return Err(TensorError::ShapeMismatch {
@@ -875,7 +873,7 @@ impl TensorOps for Tensor {
 
         let self_dims = self.shape.dims();
         let other_dims = other.shape.dims();
-        
+
         // Validate dimensions: (B, M, K) × (B, K, N) → (B, M, N)
         if self_dims[0] != other_dims[0] {
             return Err(TensorError::ShapeMismatch {
@@ -883,7 +881,7 @@ impl TensorOps for Tensor {
                 got: vec![other_dims[0]],
             });
         }
-        
+
         if self_dims[2] != other_dims[1] {
             return Err(TensorError::ShapeMismatch {
                 expected: vec![self_dims[2]],
@@ -1078,7 +1076,7 @@ impl fmt::Display for Tensor {
                 if i > 0 {
                     write!(f, ", ")?;
                 }
-                write!(f, "{:.4}", val)?;
+                write!(f, "{val:.4}")?;
             }
             write!(f, "]")?;
         } else if shape.len() == 2 {
@@ -1093,19 +1091,19 @@ impl fmt::Display for Tensor {
                         write!(f, ", ")?;
                     }
                     let idx = row * shape[1] + col;
-                    write!(f, "{:.4}", data[idx])?;
+                    write!(f, "{val:.4}", val = data[idx])?;
                 }
                 write!(f, "]")?;
             }
             write!(f, "]")?;
         } else {
-            write!(f, "shape={:?}, data=[", shape)?;
+            write!(f, "shape={shape:?}, data=[")?;
             let max_display = 8.min(data.len());
             for (i, &val) in data.iter().take(max_display).enumerate() {
                 if i > 0 {
                     write!(f, ", ")?;
                 }
-                write!(f, "{:.4}", val)?;
+                write!(f, "{val:.4}")?;
             }
             if data.len() > max_display {
                 write!(f, ", ...")?;

@@ -72,8 +72,7 @@ impl Shape {
                     total = new_total;
                 } else {
                     return Err(crate::error::TensorError::InvalidShape(format!(
-                        "Shape {:?} would overflow (too many elements)",
-                        dims
+                        "Shape {dims:?} would overflow (too many elements)"
                     )));
                 }
             }

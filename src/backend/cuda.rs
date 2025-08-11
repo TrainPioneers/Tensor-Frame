@@ -64,8 +64,17 @@ impl CudaBackend {
             (
                 "math",
                 include_str!("../kernels/math.cu"),
-                vec!["exp_kernel", "log_kernel", "sqrt_kernel", "pow_kernel", 
-                     "sin_kernel", "cos_kernel", "relu_kernel", "sigmoid_kernel", "tanh_kernel"],
+                vec![
+                    "exp_kernel",
+                    "log_kernel",
+                    "sqrt_kernel",
+                    "pow_kernel",
+                    "sin_kernel",
+                    "cos_kernel",
+                    "relu_kernel",
+                    "sigmoid_kernel",
+                    "tanh_kernel",
+                ],
             ),
         ];
 
@@ -150,9 +159,14 @@ impl CudaBackend {
         match storage {
             Storage::Cuda(cuda_storage) => {
                 let stream = self.context.default_stream();
-                let mut result_buf = stream.alloc_zeros::<f32>(cuda_storage.buffer.len()).map_err(|e| {
-                    TensorError::BackendError(format!("Failed to allocate CUDA result buffer: {}", e))
-                })?;
+                let mut result_buf = stream
+                    .alloc_zeros::<f32>(cuda_storage.buffer.len())
+                    .map_err(|e| {
+                        TensorError::BackendError(format!(
+                            "Failed to allocate CUDA result buffer: {}",
+                            e
+                        ))
+                    })?;
 
                 let kernel = self.kernels.get(kernel_name).ok_or_else(|| {
                     TensorError::BackendError(format!("{} not found", kernel_name))
@@ -168,7 +182,10 @@ impl CudaBackend {
                 builder.arg(&size_arg);
 
                 unsafe { builder.launch(cfg) }.map_err(|e| {
-                    TensorError::BackendError(format!("Failed to launch {} kernel: {}", kernel_name, e))
+                    TensorError::BackendError(format!(
+                        "Failed to launch {} kernel: {}",
+                        kernel_name, e
+                    ))
                 })?;
 
                 Ok(Storage::Cuda(CudaStorage {
@@ -672,7 +689,13 @@ impl Backend for CudaBackend {
         ))
     }
 
-    fn matmul(&self, lhs: &Storage, rhs: &Storage, lhs_shape: &Shape, rhs_shape: &Shape) -> Result<Storage> {
+    fn matmul(
+        &self,
+        lhs: &Storage,
+        rhs: &Storage,
+        lhs_shape: &Shape,
+        rhs_shape: &Shape,
+    ) -> Result<Storage> {
         #[cfg(feature = "cuda")]
         {
             let lhs_dims = lhs_shape.dims();
@@ -708,7 +731,10 @@ impl Backend for CudaBackend {
                 (Storage::Cuda(a), Storage::Cuda(b)) => {
                     let stream = self.context.default_stream();
                     let mut result_buf = stream.alloc_zeros::<f32>(m * n).map_err(|e| {
-                        TensorError::BackendError(format!("Failed to allocate CUDA result buffer: {}", e))
+                        TensorError::BackendError(format!(
+                            "Failed to allocate CUDA result buffer: {}",
+                            e
+                        ))
                     })?;
 
                     // Use tiled kernel for better performance
@@ -745,7 +771,9 @@ impl Backend for CudaBackend {
                         buffer: std::sync::Arc::new(result_buf),
                     }))
                 }
-                _ => Err(TensorError::BackendError("Invalid storage types for CUDA matmul".to_string())),
+                _ => Err(TensorError::BackendError(
+                    "Invalid storage types for CUDA matmul".to_string(),
+                )),
             }
         }
         #[cfg(not(feature = "cuda"))]
@@ -754,7 +782,13 @@ impl Backend for CudaBackend {
         ))
     }
 
-    fn bmm(&self, lhs: &Storage, rhs: &Storage, lhs_shape: &Shape, rhs_shape: &Shape) -> Result<Storage> {
+    fn bmm(
+        &self,
+        lhs: &Storage,
+        rhs: &Storage,
+        lhs_shape: &Shape,
+        rhs_shape: &Shape,
+    ) -> Result<Storage> {
         #[cfg(feature = "cuda")]
         {
             let lhs_dims = lhs_shape.dims();
@@ -797,7 +831,10 @@ impl Backend for CudaBackend {
                 (Storage::Cuda(a), Storage::Cuda(b)) => {
                     let stream = self.context.default_stream();
                     let mut result_buf = stream.alloc_zeros::<f32>(b1 * m * n).map_err(|e| {
-                        TensorError::BackendError(format!("Failed to allocate CUDA result buffer: {}", e))
+                        TensorError::BackendError(format!(
+                            "Failed to allocate CUDA result buffer: {}",
+                            e
+                        ))
                     })?;
 
                     let kernel = self.kernels.get("bmm_kernel").ok_or_else(|| {
@@ -836,7 +873,9 @@ impl Backend for CudaBackend {
                         buffer: std::sync::Arc::new(result_buf),
                     }))
                 }
-                _ => Err(TensorError::BackendError("Invalid storage types for CUDA bmm".to_string())),
+                _ => Err(TensorError::BackendError(
+                    "Invalid storage types for CUDA bmm".to_string(),
+                )),
             }
         }
         #[cfg(not(feature = "cuda"))]
@@ -884,9 +923,14 @@ impl Backend for CudaBackend {
             match storage {
                 Storage::Cuda(cuda_storage) => {
                     let stream = self.context.default_stream();
-                    let mut result_buf = stream.alloc_zeros::<f32>(cuda_storage.buffer.len()).map_err(|e| {
-                        TensorError::BackendError(format!("Failed to allocate CUDA result buffer: {}", e))
-                    })?;
+                    let mut result_buf = stream
+                        .alloc_zeros::<f32>(cuda_storage.buffer.len())
+                        .map_err(|e| {
+                            TensorError::BackendError(format!(
+                                "Failed to allocate CUDA result buffer: {}",
+                                e
+                            ))
+                        })?;
 
                     let kernel = self.kernels.get("pow_kernel").ok_or_else(|| {
                         TensorError::BackendError("pow_kernel not found".to_string())
