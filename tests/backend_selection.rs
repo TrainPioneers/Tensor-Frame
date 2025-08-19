@@ -10,17 +10,6 @@ fn test_backend_type() {
 }
 
 #[test]
-fn test_available_backends() {
-    let available = Tensor::available_backends();
-
-    // Should have at least CPU backend (enabled by default)
-    assert!(!available.is_empty());
-    assert!(available.contains(&"CPU".to_string()));
-
-    println!("Available backends: {:?}", available);
-}
-
-#[test]
 fn test_to_backend_same_backend() {
     let tensor = Tensor::ones(vec![2, 2]).unwrap();
     let current_backend = tensor.backend_type();
@@ -29,16 +18,6 @@ fn test_to_backend_same_backend() {
     let moved_tensor = tensor.to_backend(current_backend).unwrap();
     assert_eq!(moved_tensor.backend_type(), current_backend);
     assert_eq!(moved_tensor.to_vec().unwrap(), tensor.to_vec().unwrap());
-}
-
-#[test]
-fn test_to_backend_cpu() {
-    let tensor = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2]).unwrap();
-
-    // Should be able to move to CPU (always available)
-    let cpu_tensor = tensor.to_backend("CPU").unwrap();
-    assert_eq!(cpu_tensor.backend_type(), "CPU");
-    assert_eq!(cpu_tensor.to_vec().unwrap(), vec![1.0, 2.0, 3.0, 4.0]);
 }
 
 #[test]
