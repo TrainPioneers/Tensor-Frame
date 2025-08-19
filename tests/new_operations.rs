@@ -55,8 +55,10 @@ mod tests {
     #[test]
     fn test_bmm_basic() {
         // Create 2 batches of 2x2 matrices
-        let a = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0], vec![2, 2, 2]).unwrap();
-        let b = Tensor::from_vec(vec![1.0, 0.0, 0.0, 1.0, 2.0, 0.0, 0.0, 2.0], vec![2, 2, 2]).unwrap();
+        let a =
+            Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0], vec![2, 2, 2]).unwrap();
+        let b =
+            Tensor::from_vec(vec![1.0, 0.0, 0.0, 1.0, 2.0, 0.0, 0.0, 2.0], vec![2, 2, 2]).unwrap();
 
         let result = a.bmm(&b).unwrap();
         assert_eq!(result.shape().dims(), &[2, 2, 2]);
