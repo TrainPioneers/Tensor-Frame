@@ -1,0 +1,399 @@
+<!DOCTYPE HTML>
+<html lang="en" class="navy sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Backends - Tensor Frame Documentation</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="A high-performance, PyTorch-like tensor library for Rust with multiple computational backends">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "navy";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('navy')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Tensor Frame Documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/TrainPioneers/Tensor-Frame" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="backends-overview"><a class="header" href="#backends-overview">Backends Overview</a></h1>
+<p>Tensor Frame's backend system provides a pluggable architecture for running tensor operations on different computational devices. This allows the same high-level tensor API to transparently utilize CPU cores, integrated GPUs, discrete GPUs, and specialized accelerators.</p>
+<h2 id="available-backends"><a class="header" href="#available-backends">Available Backends</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Backend</th><th>Feature Flag</th><th>Availability</th><th>Best Use Cases</th></tr></thead><tbody>
+<tr><td><strong>CPU</strong></td><td><code>cpu</code> (default)</td><td>Always</td><td>Small tensors, development, fallback</td></tr>
+<tr><td><strong>WGPU</strong></td><td><code>wgpu</code></td><td>Cross-platform GPU</td><td>Large tensors, cross-platform deployment</td></tr>
+<tr><td><strong>CUDA</strong></td><td><code>cuda</code></td><td>NVIDIA GPUs</td><td>High-performance production workloads</td></tr>
+</tbody></table>
+</div>
+<h2 id="backend-selection-strategy"><a class="header" href="#backend-selection-strategy">Backend Selection Strategy</a></h2>
+<h3 id="automatic-selection-recommended"><a class="header" href="#automatic-selection-recommended">Automatic Selection (Recommended)</a></h3>
+<p>By default, Tensor Frame automatically selects the best available backend using this priority order:</p>
+<ol>
+<li><strong>CUDA</strong> - Highest performance on NVIDIA hardware</li>
+<li><strong>WGPU</strong> - Cross-platform GPU acceleration</li>
+<li><strong>CPU</strong> - Universal fallback</li>
+</ol>
+<pre><code class="language-rust">use tensor_frame::Tensor;
+
+// Automatically uses best available backend
+let tensor = Tensor::zeros(vec![1000, 1000])?;
+println!("Using backend: {:?}", tensor.backend_type());</code></pre>
+<h3 id="manual-backend-control"><a class="header" href="#manual-backend-control">Manual Backend Control</a></h3>
+<p>For specific requirements, you can control backend selection:</p>
+<pre><code class="language-rust">use tensor_frame::backend::{set_backend_priority, BackendType};
+
+// Force CPU-only execution
+let backend = set_backend_priority(vec![BackendType::Cpu]);
+
+// Prefer WGPU over CUDA
+let backend = set_backend_priority(vec![
+    BackendType::Wgpu,
+    BackendType::Cuda,
+    BackendType::Cpu
+]);</code></pre>
+<h3 id="per-tensor-backend-conversion"><a class="header" href="#per-tensor-backend-conversion">Per-Tensor Backend Conversion</a></h3>
+<p>Convert individual tensors between backends:</p>
+<pre><code class="language-rust">let cpu_tensor = Tensor::ones(vec![100, 100])?;
+
+// Move to GPU
+let gpu_tensor = cpu_tensor.to_backend(BackendType::Wgpu)?;
+
+// Move back to CPU  
+let back_to_cpu = gpu_tensor.to_backend(BackendType::Cpu)?;</code></pre>
+<h2 id="performance-characteristics"><a class="header" href="#performance-characteristics">Performance Characteristics</a></h2>
+<h3 id="cpu-backend"><a class="header" href="#cpu-backend">CPU Backend</a></h3>
+<ul>
+<li><strong>Latency</strong>: Lowest for small operations (&lt; 1ms)</li>
+<li><strong>Throughput</strong>: Limited by CPU cores and memory bandwidth</li>
+<li><strong>Memory</strong>: System RAM (typically abundant)</li>
+<li><strong>Parallelism</strong>: Thread-level via Rayon</li>
+<li><strong>Overhead</strong>: Minimal function call overhead</li>
+</ul>
+<h3 id="wgpu-backend"><a class="header" href="#wgpu-backend">WGPU Backend</a></h3>
+<ul>
+<li><strong>Latency</strong>: Higher initialization cost (~1-10ms)</li>
+<li><strong>Throughput</strong>: High for large, parallel operations</li>
+<li><strong>Memory</strong>: GPU memory (limited but fast)</li>
+<li><strong>Parallelism</strong>: Massive thread-level via compute shaders</li>
+<li><strong>Overhead</strong>: GPU command submission and synchronization</li>
+</ul>
+<h3 id="cuda-backend"><a class="header" href="#cuda-backend">CUDA Backend</a></h3>
+<ul>
+<li><strong>Latency</strong>: Moderate initialization cost (~0.1-1ms)</li>
+<li><strong>Throughput</strong>: Highest for supported operations</li>
+<li><strong>Memory</strong>: GPU memory with CUDA optimizations</li>
+<li><strong>Parallelism</strong>: Optimal GPU utilization via cuBLAS/cuDNN</li>
+<li><strong>Overhead</strong>: Minimal with mature driver stack</li>
+</ul>
+<h2 id="when-to-use-each-backend"><a class="header" href="#when-to-use-each-backend">When to Use Each Backend</a></h2>
+<h3 id="cpu-backend-1"><a class="header" href="#cpu-backend-1">CPU Backend</a></h3>
+<pre><code class="language-rust">// Good for:
+let small_tensor = Tensor::ones(vec![10, 10])?;        // Small tensors
+let dev_tensor = Tensor::zeros(vec![100])?;            // Development/testing
+let scalar_ops = tensor.sum(None)?;                    // Scalar results
+
+// Avoid for:
+// - Large matrix multiplications (&gt; 1000x1000)
+// - Batch operations on many tensors
+// - Compute-intensive element-wise operations</code></pre>
+<h3 id="wgpu-backend-1"><a class="header" href="#wgpu-backend-1">WGPU Backend</a></h3>
+<pre><code class="language-rust">// Good for:
+let large_tensor = Tensor::zeros(vec![2048, 2048])?;   // Large tensors
+let batch_ops = tensors.iter().map(|t| t * 2.0);      // Batch operations
+let element_wise = (a * b) + c;                       // Complex element-wise
+
+// Consider for:
+// - Cross-platform deployment
+// - When CUDA is not available
+// - Mixed CPU/GPU workloads</code></pre>
+<h3 id="cuda-backend-1"><a class="header" href="#cuda-backend-1">CUDA Backend</a></h3>
+<pre><code class="language-rust">// Excellent for:
+let huge_tensor = Tensor::zeros(vec![4096, 4096])?;    // Very large tensors
+let matrix_mul = a.matmul(&amp;b)?;                        // Matrix operations
+let ml_workload = model.forward(input)?;               // ML training/inference
+
+// Best when:
+// - NVIDIA GPU available
+// - Performance is critical
+// - Using alongside other CUDA libraries</code></pre>
+<h2 id="cross-backend-operations"><a class="header" href="#cross-backend-operations">Cross-Backend Operations</a></h2>
+<p>Operations between tensors on different backends automatically handle conversion:</p>
+<pre><code class="language-rust">let cpu_a = Tensor::ones(vec![1000])?;
+let gpu_b = Tensor::zeros(vec![1000])?.to_backend(BackendType::Wgpu)?;
+
+// Automatically converts to common backend
+let result = cpu_a + gpu_b;  // Runs on CPU backend</code></pre>
+<p><strong>Conversion Rules</strong>:</p>
+<ol>
+<li>If backends match, operation runs on that backend</li>
+<li>If backends differ, converts to the "lower priority" backend</li>
+<li>Priority order: CPU &gt; WGPU &gt; CUDA (CPU is most compatible)</li>
+</ol>
+<h2 id="memory-management"><a class="header" href="#memory-management">Memory Management</a></h2>
+<h3 id="reference-counting"><a class="header" href="#reference-counting">Reference Counting</a></h3>
+<p>All backends use reference counting for efficient memory management:</p>
+<pre><code class="language-rust">let tensor1 = Tensor::ones(vec![1000, 1000])?;
+let tensor2 = tensor1.clone();  // O(1) - just increments reference count
+
+// Memory freed automatically when last reference dropped</code></pre>
+<h3 id="cross-backend-memory"><a class="header" href="#cross-backend-memory">Cross-Backend Memory</a></h3>
+<p>Converting between backends allocates new memory:</p>
+<pre><code class="language-rust">let cpu_tensor = Tensor::ones(vec![1000])?;         // 4KB CPU memory
+let gpu_tensor = cpu_tensor.to_backend(BackendType::Wgpu)?;  // +4KB GPU memory
+
+// Both tensors exist independently until dropped</code></pre>
+<h3 id="memory-usage-guidelines"><a class="header" href="#memory-usage-guidelines">Memory Usage Guidelines</a></h3>
+<ul>
+<li><strong>Development</strong>: Use CPU backend to avoid GPU memory pressure</li>
+<li><strong>Production</strong>: Convert to GPU early, minimize cross-backend copies</li>
+<li><strong>Mixed workloads</strong>: Keep frequently-accessed tensors on CPU</li>
+<li><strong>Large datasets</strong>: Stream data through GPU backends</li>
+</ul>
+<h2 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h2>
+<p>Backend operations can fail for various reasons:</p>
+<pre><code class="language-rust">match Tensor::zeros(vec![100000, 100000]) {
+    Ok(tensor) =&gt; println!("Created tensor on {:?}", tensor.backend_type()),
+    Err(TensorError::BackendError(msg)) =&gt; {
+        eprintln!("Backend error: {}", msg);
+        // Fallback to smaller size or different backend
+    }
+    Err(e) =&gt; eprintln!("Other error: {}", e),
+}</code></pre>
+<p><strong>Common Error Scenarios</strong>:</p>
+<ul>
+<li><strong>GPU Out of Memory</strong>: Try smaller tensors or CPU backend</li>
+<li><strong>Backend Unavailable</strong>: Fallback to CPU backend</li>
+<li><strong>Feature Not Implemented</strong>: Some operations only available on certain backends</li>
+<li><strong>Cross-Backend Type Mismatch</strong>: Ensure compatible data types</li>
+</ul>
+<h2 id="backend-implementation-status"><a class="header" href="#backend-implementation-status">Backend Implementation Status</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Operation</th><th>CPU</th><th>WGPU</th><th>CUDA</th></tr></thead><tbody>
+<tr><td>Basic arithmetic (+, -, *, /)</td><td>✅</td><td>✅</td><td>✅</td></tr>
+<tr><td>Reductions (sum, mean)</td><td>✅</td><td>❌</td><td>✅</td></tr>
+<tr><td>Reshape, transpose</td><td>✅</td><td>✅</td><td>✅</td></tr>
+<tr><td>Broadcasting</td><td>✅</td><td>✅</td><td>✅</td></tr>
+</tbody></table>
+</div>
+<p>✅ = Fully implemented<br />
+❌ = Not yet implemented<br />
+⚠️ = Partially implemented</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../api/operations.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../backends/cpu.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../api/operations.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../backends/cpu.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="../ace.js"></script>
+        <script src="../mode-rust.js"></script>
+        <script src="../editor.js"></script>
+        <script src="../theme-dawn.js"></script>
+        <script src="../theme-tomorrow_night.js"></script>
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

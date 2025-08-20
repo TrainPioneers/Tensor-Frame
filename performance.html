@@ -1,0 +1,641 @@
+<!DOCTYPE HTML>
+<html lang="en" class="navy sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Performance - Tensor Frame Documentation</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="A high-performance, PyTorch-like tensor library for Rust with multiple computational backends">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "navy";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('navy')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Tensor Frame Documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/TrainPioneers/Tensor-Frame" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="performance-guide"><a class="header" href="#performance-guide">Performance Guide</a></h1>
+<p>This guide provides detailed information on optimizing Tensor Frame performance across different backends and use cases.</p>
+<h2 id="performance-overview"><a class="header" href="#performance-overview">Performance Overview</a></h2>
+<p>Tensor Frame's performance characteristics vary significantly based on:</p>
+<ul>
+<li><strong>Tensor size</strong>: Small vs large tensors have different optimal backends</li>
+<li><strong>Operation type</strong>: Element-wise vs reductions vs matrix operations</li>
+<li><strong>Backend selection</strong>: CPU vs WGPU vs CUDA performance profiles</li>
+<li><strong>Memory patterns</strong>: Data locality and transfer overhead</li>
+</ul>
+<h2 id="backend-performance-characteristics"><a class="header" href="#backend-performance-characteristics">Backend Performance Characteristics</a></h2>
+<h3 id="cpu-backend"><a class="header" href="#cpu-backend">CPU Backend</a></h3>
+<ul>
+<li><strong>Best for</strong>: Small tensors (&lt; 10K elements), development, guaranteed availability</li>
+<li><strong>Strengths</strong>: Low latency, no setup overhead, excellent debugging</li>
+<li><strong>Limitations</strong>: Limited parallelism, memory bandwidth bound for large operations</li>
+</ul>
+<pre><code class="language-rust">use tensor_frame::Tensor;
+// CPU optimal: Small tensors and scalar operations
+let small = Tensor::ones(vec![100, 100])?;
+let result = small.sum(None)?;  // ~0.1ms on modern CPU</code></pre>
+<h3 id="wgpu-backend"><a class="header" href="#wgpu-backend">WGPU Backend</a></h3>
+<ul>
+<li><strong>Best for</strong>: Large element-wise operations (&gt; 100K elements), cross-platform deployment</li>
+<li><strong>Strengths</strong>: Massive parallelism, good memory bandwidth, portable</li>
+<li><strong>Limitations</strong>: GPU setup overhead (~1-10ms), limited operation support</li>
+</ul>
+<pre><code class="language-rust">use tensor_frame::Tensor;
+// WGPU optimal: Large parallel operations
+let large = Tensor::ones(vec![2048, 2048])?
+    .to_backend(BackendType::Wgpu)?;
+let result = (large_a * large_b) + large_c;  // ~2ms on modern GPU</code></pre>
+<h3 id="cuda-backend"><a class="header" href="#cuda-backend">CUDA Backend</a></h3>
+<ul>
+<li><strong>Best for</strong>: Very large operations (&gt; 1M elements), production workloads</li>
+<li><strong>Strengths</strong>: Peak performance, mature optimizations, cuBLAS integration</li>
+<li><strong>Limitations</strong>: NVIDIA-only, CUDA toolkit requirement</li>
+</ul>
+<pre><code class="language-rust">use tensor_frame::Tensor;
+// CUDA optimal: Matrix operations and very large tensors
+let matrices = Tensor::ones(vec![4096, 4096])?
+    .to_backend(BackendType::Cuda)?;
+let result = matrix_a.matmul(&amp;matrix_b)?;  // ~15ms with cuBLAS</code></pre>
+<h2 id="operation-specific-performance"><a class="header" href="#operation-specific-performance">Operation-Specific Performance</a></h2>
+<h3 id="element-wise-operations"><a class="header" href="#element-wise-operations">Element-wise Operations</a></h3>
+<p><strong>Performance Scaling</strong>:</p>
+<ul>
+<li>CPU: O(n) with thread-level parallelism (8-32 threads)</li>
+<li>WGPU: O(n) with massive parallelism (1000+ threads)</li>
+<li>CUDA: O(n) with optimal parallelism (10000+ threads)</li>
+</ul>
+<pre><code class="language-rust">use std::time::Instant;
+
+fn benchmark_element_wise() -&gt; Result&lt;()&gt; {
+    let sizes = vec![1000, 5000, 10000, 50000];
+    
+    for size in sizes {
+        let a = Tensor::ones(vec![size, size])?;
+        let b = Tensor::ones(vec![size, size])?;
+        
+        // CPU timing
+        let start = Instant::now();
+        let cpu_result = &amp;a + &amp;b;
+        let cpu_time = start.elapsed();
+        
+        // GPU timing (if available)
+        #[cfg(feature = "wgpu")]
+        {
+            let gpu_a = a.to_backend(BackendType::Wgpu)?;
+            let gpu_b = b.to_backend(BackendType::Wgpu)?;
+            
+            let start = Instant::now();
+            let gpu_result = &amp;gpu_a + &amp;gpu_b;
+            let _sync = gpu_result.to_vec()?;
+            let gpu_time = start.elapsed();
+            
+            let speedup = cpu_time.as_nanos() as f64 / gpu_time.as_nanos() as f64;
+            println!("Size {}x{}: CPU {:?}, GPU {:?}, Speedup: {:.1}x", 
+                    size, size, cpu_time, gpu_time, speedup);
+        }
+    }
+    
+    Ok(())
+}</code></pre>
+<h3 id="reduction-operations"><a class="header" href="#reduction-operations">Reduction Operations</a></h3>
+<p><strong>Performance Notes</strong>:</p>
+<ul>
+<li>CPU: Rayon parallel reduction, cache-efficient</li>
+<li>GPU: Requires multiple kernel launches for large reductions</li>
+<li>Memory-bound for large tensors</li>
+</ul>
+<pre><code class="language-rust">fn reduction_performance() -&gt; Result&lt;()&gt; {
+    let tensor = Tensor::ones(vec![10000, 10000])?;  // 100M elements
+    
+    // Sum reduction timing
+    let start = Instant::now();
+    let sum = tensor.sum(None)?;
+    let cpu_time = start.elapsed();
+    
+    println!("CPU sum reduction (100M elements): {:?}", cpu_time);
+    println!("Result: {}", sum.to_vec()?[0]);
+    
+    Ok(())
+}</code></pre>
+<h2 id="memory-performance"><a class="header" href="#memory-performance">Memory Performance</a></h2>
+<h3 id="memory-transfer-costs"><a class="header" href="#memory-transfer-costs">Memory Transfer Costs</a></h3>
+<p>GPU operations include memory transfer overhead:</p>
+<pre><code class="language-rust">fn memory_transfer_analysis() -&gt; Result&lt;()&gt; {
+    let sizes = vec![1000, 5000, 10000];
+    
+    for size in sizes {
+        let tensor = Tensor::ones(vec![size, size])?;
+        let elements = tensor.numel();
+        let bytes = elements * 4;  // f32 = 4 bytes
+        
+        #[cfg(feature = "wgpu")]
+        {
+            // Time conversion to GPU
+            let start = Instant::now();
+            let gpu_tensor = tensor.to_backend(BackendType::Wgpu)?;
+            let upload_time = start.elapsed();
+            
+            // Time conversion back to CPU
+            let start = Instant::now();
+            let _data = gpu_tensor.to_vec()?;
+            let download_time = start.elapsed();
+            
+            let upload_bw = bytes as f64 / upload_time.as_secs_f64() / 1e9;  // GB/s
+            let download_bw = bytes as f64 / download_time.as_secs_f64() / 1e9;  // GB/s
+            
+            println!("Size {}x{} ({} MB):", size, size, bytes / 1024 / 1024);
+            println!("  Upload: {:?} ({:.1} GB/s)", upload_time, upload_bw);
+            println!("  Download: {:?} ({:.1} GB/s)", download_time, download_bw);
+        }
+    }
+    
+    Ok(())
+}</code></pre>
+<h3 id="memory-layout-optimization"><a class="header" href="#memory-layout-optimization">Memory Layout Optimization</a></h3>
+<pre><code class="language-rust">// Efficient: Contiguous memory access
+let matrix = Tensor::from_vec(data, vec![rows, cols])?;
+let transposed = matrix.transpose()?;  // May require memory copy
+
+// Efficient: Operations that preserve layout
+let result = (&amp;matrix_a + &amp;matrix_b) * 2.0;  // All operations maintain layout
+
+// Less efficient: Operations that break layout
+let reshaped = matrix.reshape(vec![cols, rows])?;  // May require copy</code></pre>
+<h2 id="optimization-strategies"><a class="header" href="#optimization-strategies">Optimization Strategies</a></h2>
+<h3 id="1-backend-selection-strategy"><a class="header" href="#1-backend-selection-strategy">1. Backend Selection Strategy</a></h3>
+<pre><code class="language-rust">fn optimal_backend_for_workload(tensor_size: usize, operation: &amp;str) -&gt; BackendType {
+    match (tensor_size, operation) {
+        // Small tensors: CPU always optimal
+        (0..=10_000, _) =&gt; BackendType::Cpu,
+        
+        // Large reductions: Prefer CUDA
+        (_, "reduction") if tensor_size &gt; 1_000_000 =&gt; {
+            #[cfg(feature = "cuda")]
+            { BackendType::Cuda }
+            #[cfg(not(feature = "cuda"))]
+            { BackendType::Cpu }
+        }
+        
+        // Large element-wise: GPU beneficial
+        (10_001..=1_000_000, "elementwise") =&gt; {
+            #[cfg(feature = "wgpu")]
+            { BackendType::Wgpu }
+            #[cfg(not(feature = "wgpu"))]
+            { BackendType::Cpu }
+        }
+        
+        // Very large: Prefer CUDA &gt; WGPU &gt; CPU
+        (1_000_001.., _) =&gt; {
+            #[cfg(feature = "cuda")]
+            { BackendType::Cuda }
+            #[cfg(all(feature = "wgpu", not(feature = "cuda")))]
+            { BackendType::Wgpu }
+            #[cfg(all(not(feature = "wgpu"), not(feature = "cuda")))]
+            { BackendType::Cpu }
+        }
+        
+        // Default: CPU
+        _ =&gt; BackendType::Cpu,
+    }
+}</code></pre>
+<h3 id="2-operation-fusion"><a class="header" href="#2-operation-fusion">2. Operation Fusion</a></h3>
+<pre><code class="language-rust">// Efficient: Fused operations
+let result = ((a * b) + c) / d;  // Single expression, potential fusion
+
+// Less efficient: Separate operations  
+let temp1 = a * b;
+let temp2 = temp1 + c;
+let result = temp2 / d;  // Multiple temporary allocations</code></pre>
+<h3 id="3-batch-processing"><a class="header" href="#3-batch-processing">3. Batch Processing</a></h3>
+<pre><code class="language-rust">fn efficient_batch_processing(batches: Vec&lt;Tensor&gt;) -&gt; Result&lt;Vec&lt;Tensor&gt;&gt; {
+    // Convert all to same backend once
+    let backend = BackendType::Wgpu;
+    let gpu_batches: Result&lt;Vec&lt;_&gt;&gt; = batches
+        .into_iter()
+        .map(|t| t.to_backend(backend))
+        .collect();
+    
+    // Process on GPU
+    gpu_batches?
+        .into_iter()
+        .map(|batch| {
+            // Heavy computation on GPU
+            (batch * 2.0) + 1.0
+        })
+        .collect()
+}</code></pre>
+<h3 id="4-memory-pool-usage"><a class="header" href="#4-memory-pool-usage">4. Memory Pool Usage</a></h3>
+<pre><code class="language-rust">// Efficient: Reuse similar-sized tensors
+struct TensorPool {
+    cached_tensors: HashMap&lt;Vec&lt;usize&gt;, Vec&lt;Tensor&gt;&gt;,
+}
+
+impl TensorPool {
+    fn get_or_create(&amp;mut self, shape: Vec&lt;usize&gt;) -&gt; Result&lt;Tensor&gt; {
+        if let Some(cached) = self.cached_tensors.get_mut(&amp;shape) {
+            if let Some(tensor) = cached.pop() {
+                return Ok(tensor);
+            }
+        }
+        
+        // Create new tensor if no cached version
+        Tensor::zeros(shape)
+    }
+    
+    fn return_tensor(&amp;mut self, tensor: Tensor) {
+        let shape = tensor.shape().dims().to_vec();
+        self.cached_tensors
+            .entry(shape)
+            .or_insert_with(Vec::new)
+            .push(tensor);
+    }
+}</code></pre>
+<h2 id="profiling-and-debugging"><a class="header" href="#profiling-and-debugging">Profiling and Debugging</a></h2>
+<h3 id="cpu-profiling"><a class="header" href="#cpu-profiling">CPU Profiling</a></h3>
+<pre><code class="language-rust">// Use built-in timing
+use std::time::Instant;
+
+let start = Instant::now();
+let result = expensive_operation()?;
+println!("Operation took: {:?}", start.elapsed());
+
+// Use external profilers
+// cargo install flamegraph
+// cargo flamegraph --bin your_app</code></pre>
+<h3 id="gpu-profiling"><a class="header" href="#gpu-profiling">GPU Profiling</a></h3>
+<p><strong>NVIDIA Tools</strong> (for CUDA backend):</p>
+<pre><code class="language-bash"># Nsight Systems for timeline analysis
+nsys profile --stats=true ./your_app
+
+# Nsight Compute for kernel analysis  
+ncu --metrics sm__throughput.avg.pct_of_peak_sustained_elapsed ./your_app
+</code></pre>
+<p><strong>Platform Tools</strong> (for WGPU backend):</p>
+<ul>
+<li><strong>Windows</strong>: PIX for Windows, RenderDoc</li>
+<li><strong>macOS</strong>: Xcode Instruments (GPU Timeline)</li>
+<li><strong>Linux</strong>: RenderDoc, Vulkan Tools</li>
+</ul>
+<h3 id="memory-profiling"><a class="header" href="#memory-profiling">Memory Profiling</a></h3>
+<pre><code class="language-rust">fn memory_usage_analysis() -&gt; Result&lt;()&gt; {
+    use std::alloc::{GlobalAlloc, Layout, System};
+    
+    // Monitor system memory usage
+    #[cfg(target_os = "linux")]
+    {
+        use std::fs;
+        let status = fs::read_to_string("/proc/self/status")?;
+        for line in status.lines() {
+            if line.starts_with("VmRSS:") {
+                println!("Memory usage: {}", line);
+            }
+        }
+    }
+    
+    // GPU memory monitoring (platform-specific)
+    #[cfg(feature = "cuda")]
+    {
+        // CUDA memory info
+        let (free, total) = cuda::memory_info()?;
+        println!("GPU memory: {} MB free of {} MB total", 
+                free / 1024 / 1024, total / 1024 / 1024);
+    }
+    
+    Ok(())
+}</code></pre>
+<h2 id="performance-benchmarking"><a class="header" href="#performance-benchmarking">Performance Benchmarking</a></h2>
+<h3 id="comprehensive-benchmark-suite"><a class="header" href="#comprehensive-benchmark-suite">Comprehensive Benchmark Suite</a></h3>
+<pre><code class="language-rust">use criterion::{criterion_group, criterion_main, Criterion};
+
+fn bench_tensor_operations(c: &amp;mut Criterion) {
+    let sizes = vec![100, 500, 1000, 2000];
+    
+    for size in sizes {
+        let a = Tensor::ones(vec![size, size]).unwrap();
+        let b = Tensor::ones(vec![size, size]).unwrap();
+        
+        // CPU benchmark
+        c.bench_function(&amp;format!("cpu_add_{}x{}", size, size), |bench| {
+            bench.iter(|| {
+                let _result = &amp;a + &amp;b;
+            });
+        });
+        
+        // GPU benchmark (if available)
+        #[cfg(feature = "wgpu")]
+        {
+            let gpu_a = a.to_backend(BackendType::Wgpu).unwrap();
+            let gpu_b = b.to_backend(BackendType::Wgpu).unwrap();
+            
+            c.bench_function(&amp;format!("gpu_add_{}x{}", size, size), |bench| {
+                bench.iter(|| {
+                    let result = &amp;gpu_a + &amp;gpu_b;
+                    let _sync = result.to_vec().unwrap();  // Force sync
+                });
+            });
+        }
+    }
+}
+
+criterion_group!(benches, bench_tensor_operations);
+criterion_main!(benches);</code></pre>
+<h2 id="performance-troubleshooting"><a class="header" href="#performance-troubleshooting">Performance Troubleshooting</a></h2>
+<h3 id="common-performance-issues"><a class="header" href="#common-performance-issues">Common Performance Issues</a></h3>
+<ol>
+<li><strong>Small Tensors on GPU</strong></li>
+</ol>
+<pre><code class="language-rust">// Problem: GPU overhead for small operations
+let small = Tensor::ones(vec![10, 10])?;
+let slow = small.to_backend(BackendType::Wgpu)?;  // Overhead &gt; computation
+
+// Solution: Use CPU for small tensors
+let fast = small;  // Stay on CPU</code></pre>
+<ol start="2">
+<li><strong>Frequent Backend Conversions</strong></li>
+</ol>
+<pre><code class="language-rust">// Problem: Repeated conversions
+for i in 0..1000 {
+    let gpu_tensor = cpu_tensor.to_backend(BackendType::Wgpu)?;
+    let result = gpu_tensor + 1.0;
+    let back_to_cpu = result.to_backend(BackendType::Cpu)?;
+}
+
+// Solution: Convert once
+let gpu_tensor = cpu_tensor.to_backend(BackendType::Wgpu)?;
+for i in 0..1000 {
+    gpu_tensor = gpu_tensor + 1.0;  // Stay on GPU
+}
+let final_result = gpu_tensor.to_backend(BackendType::Cpu)?;</code></pre>
+<ol start="3">
+<li><strong>Memory Fragmentation</strong></li>
+</ol>
+<pre><code class="language-rust">// Problem: Large temporary allocations
+let huge_temp = (huge_a * huge_b) + huge_c;  // 3 large tensors in memory
+
+// Solution: In-place operations (when available)
+let result = huge_a.mul_add(&amp;huge_b, &amp;huge_c)?;  // Hypothetical in-place op</code></pre>
+<h3 id="performance-debugging-checklist"><a class="header" href="#performance-debugging-checklist">Performance Debugging Checklist</a></h3>
+<ol>
+<li><strong>Profile first</strong>: Measure before optimizing</li>
+<li><strong>Check backend selection</strong>: Ensure optimal backend for workload</li>
+<li><strong>Monitor memory transfers</strong>: GPU transfer costs often dominate</li>
+<li><strong>Verify operation fusion</strong>: Combine operations when possible</li>
+<li><strong>Consider batch size</strong>: Larger batches amortize overhead</li>
+<li><strong>Test different tensor sizes</strong>: Performance characteristics vary by size</li>
+<li><strong>Use appropriate data types</strong>: f32 vs f64 performance difference</li>
+<li><strong>Monitor memory usage</strong>: Avoid memory pressure and swapping</li>
+</ol>
+<h2 id="hardware-specific-optimization"><a class="header" href="#hardware-specific-optimization">Hardware-Specific Optimization</a></h2>
+<h3 id="cpu-optimization"><a class="header" href="#cpu-optimization">CPU Optimization</a></h3>
+<ul>
+<li>Use all available cores (Rayon handles this automatically)</li>
+<li>Ensure sufficient memory bandwidth</li>
+<li>Consider NUMA topology for large systems</li>
+<li>Link with optimized BLAS (OpenBLAS, Intel MKL)</li>
+</ul>
+<h3 id="gpu-optimization"><a class="header" href="#gpu-optimization">GPU Optimization</a></h3>
+<ul>
+<li>Ensure sufficient GPU memory</li>
+<li>Consider tensor sizes that align with GPU architecture</li>
+<li>Use appropriate batch sizes for GPU utilization</li>
+<li>Monitor thermal throttling on mobile/laptop GPUs</li>
+</ul>
+<h3 id="memory-hierarchy"><a class="header" href="#memory-hierarchy">Memory Hierarchy</a></h3>
+<ul>
+<li>L1/L2 cache: Small frequently-accessed tensors</li>
+<li>System RAM: Medium tensors and CPU operations</li>
+<li>GPU VRAM: Large tensors for GPU operations</li>
+<li>Storage: Streaming large datasets</li>
+</ul>
+<h2 id="conclusion"><a class="header" href="#conclusion">Conclusion</a></h2>
+<p>Tensor Frame performance optimization requires understanding:</p>
+<ol>
+<li><strong>Workload characteristics</strong>: Size, operations, access patterns</li>
+<li><strong>Backend strengths</strong>: CPU for small/mixed, GPU for large parallel</li>
+<li><strong>Memory costs</strong>: Transfer overhead, allocation patterns</li>
+<li><strong>Platform specifics</strong>: Hardware capabilities and limitations</li>
+</ol>
+<p>Use profiling tools to guide optimization decisions and always measure performance improvements to ensure they provide real benefits for your specific use case.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="examples/custom-backends.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="contributing.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="examples/custom-backends.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="contributing.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,555 @@
+<!DOCTYPE HTML>
+<html lang="en" class="navy sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Basic Operations - Tensor Frame Documentation</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="A high-performance, PyTorch-like tensor library for Rust with multiple computational backends">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "navy";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('navy')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Tensor Frame Documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/TrainPioneers/Tensor-Frame" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="basic-operations"><a class="header" href="#basic-operations">Basic Operations</a></h1>
+<p>This example demonstrates the fundamental tensor operations in Tensor Frame. It covers tensor creation, basic arithmetic, shape manipulation, and data access patterns.</p>
+<h2 id="complete-example"><a class="header" href="#complete-example">Complete Example</a></h2>
+<pre><code class="language-rust">use tensor_frame::{Tensor, Result, TensorOps};
+use std::time::Instant;
+
+fn main() -&gt; Result&lt;()&gt; {
+    println!("=== Tensor Frame Basic Operations ===\n");
+
+    // 1. Tensor Creation
+    tensor_creation_examples()?;
+    
+    // 2. Basic Arithmetic
+    arithmetic_examples()?;
+    
+    // 3. Shape Manipulation  
+    shape_manipulation_examples()?;
+    
+    // 4. Data Access
+    data_access_examples()?;
+    
+    // 5. Performance Comparison
+    performance_comparison()?;
+
+    Ok(())
+}
+
+/// Demonstrates various ways to create tensors
+fn tensor_creation_examples() -&gt; Result&lt;()&gt; {
+    println!("=== Tensor Creation ===");
+    
+    // Create tensor filled with zeros
+    let zeros = Tensor::zeros(vec![2, 3])?;
+    println!("Zeros tensor (2x3):\n{}\n", zeros);
+    
+    // Create tensor filled with ones
+    let ones = Tensor::ones(vec![3, 2])?;
+    println!("Ones tensor (3x2):\n{}\n", ones);
+    
+    // Create tensor from existing data
+    let data = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
+    let from_data = Tensor::from_vec(data, vec![2, 3])?;
+    println!("From data (2x3):\n{}\n", from_data);
+    
+    // Check tensor properties
+    println!("Tensor properties:");
+    println!("  Shape: {:?}", from_data.shape().dims());
+    println!("  Number of elements: {}", from_data.numel());
+    println!("  Data type: {:?}", from_data.dtype());
+    println!("  Backend: {:?}\n", from_data.backend_type());
+    
+    Ok(())
+}
+
+/// Demonstrates basic arithmetic operations
+fn arithmetic_examples() -&gt; Result&lt;()&gt; {
+    println!("=== Arithmetic Operations ===");
+    
+    // Create test tensors
+    let a = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2])?;
+    let b = Tensor::from_vec(vec![5.0, 6.0, 7.0, 8.0], vec![2, 2])?;
+    
+    println!("Tensor A:\n{}\n", a);
+    println!("Tensor B:\n{}\n", b);
+    
+    // Element-wise addition
+    let sum = &amp;a + &amp;b;  // Use references to avoid moving tensors
+    println!("A + B:\n{}\n", sum);
+    
+    // Element-wise subtraction
+    let diff = &amp;a - &amp;b;
+    println!("A - B:\n{}\n", diff);
+    
+    // Element-wise multiplication
+    let product = &amp;a * &amp;b;
+    println!("A * B (element-wise):\n{}\n", product);
+    
+    // Element-wise division
+    let quotient = &amp;a / &amp;b;
+    println!("A / B:\n{}\n", quotient);
+    
+    // Chained operations
+    let complex = ((&amp;a * 2.0) + &amp;b) / 3.0;
+    println!("(A * 2 + B) / 3:\n{}\n", complex);
+    
+    Ok(())
+}
+
+/// Demonstrates shape manipulation operations
+fn shape_manipulation_examples() -&gt; Result&lt;()&gt; {
+    println!("=== Shape Manipulation ===");
+    
+    // Create a tensor to manipulate
+    let tensor = Tensor::from_vec(
+        vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0], 
+        vec![2, 4]
+    )?;
+    println!("Original tensor (2x4):\n{}\n", tensor);
+    
+    // Reshape to different dimensions
+    let reshaped = tensor.reshape(vec![4, 2])?;
+    println!("Reshaped to (4x2):\n{}\n", reshaped);
+    
+    // Reshape to 1D
+    let flattened = tensor.reshape(vec![8])?;
+    println!("Flattened to (8,):\n{}\n", flattened);
+    
+    // Transpose (2D only)
+    let matrix = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2])?;
+    let transposed = matrix.transpose()?;
+    println!("Original matrix:\n{}\n", matrix);
+    println!("Transposed matrix:\n{}\n", transposed);
+    
+    // Squeeze and unsqueeze
+    let with_ones = Tensor::ones(vec![1, 3, 1])?;
+    println!("Tensor with size-1 dimensions (1x3x1):\n{}\n", with_ones);
+    
+    let squeezed = with_ones.squeeze(None)?;
+    println!("Squeezed (removes all size-1 dims):\n{}\n", squeezed);
+    
+    let unsqueezed = squeezed.unsqueeze(0)?;
+    println!("Unsqueezed at dimension 0:\n{}\n", unsqueezed);
+    
+    Ok(())
+}
+
+/// Demonstrates data access patterns
+fn data_access_examples() -&gt; Result&lt;()&gt; {
+    println!("=== Data Access ===");
+    
+    let tensor = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2])?;
+    println!("Tensor:\n{}\n", tensor);
+    
+    // Convert to Vec for external use
+    let data = tensor.to_vec()?;
+    println!("As Vec&lt;f32&gt;: {:?}\n", data);
+    
+    // Reduction operations
+    let sum_all = tensor.sum(None)?;
+    println!("Sum of all elements: {}\n", sum_all);
+    
+    let mean_all = tensor.mean(None)?;
+    println!("Mean of all elements: {}\n", mean_all);
+    
+    // Axis-specific reductions
+    let row_sums = tensor.sum(Some(1))?;  // Sum along columns (axis 1)
+    println!("Row sums (sum along axis 1): {}\n", row_sums);
+    
+    let col_sums = tensor.sum(Some(0))?;  // Sum along rows (axis 0)
+    println!("Column sums (sum along axis 0): {}\n", col_sums);
+    
+    Ok(())
+}
+
+/// Demonstrates performance characteristics
+fn performance_comparison() -&gt; Result&lt;()&gt; {
+    println!("=== Performance Comparison ===");
+    
+    // Small tensor operations (CPU should be faster)
+    let small_a = Tensor::ones(vec![100, 100])?;
+    let small_b = Tensor::ones(vec![100, 100])?;
+    
+    let start = Instant::now();
+    let result = &amp;small_a + &amp;small_b;
+    let small_time = start.elapsed();
+    println!("Small tensor (100x100) addition: {:?}", small_time);
+    
+    // Large tensor operations (GPU might be faster if available)
+    let large_a = Tensor::ones(vec![1000, 1000])?;
+    let large_b = Tensor::ones(vec![1000, 1000])?;
+    
+    let start = Instant::now();
+    let result = &amp;large_a + &amp;large_b;
+    let large_time = start.elapsed();
+    println!("Large tensor (1000x1000) addition: {:?}", large_time);
+    
+    // Show current backend
+    println!("Current backend: {:?}", result.backend_type());
+    
+    // Demonstrate backend conversion (if other backends available)
+    #[cfg(feature = "wgpu")]
+    {
+        println!("\n--- WGPU Backend Comparison ---");
+        let start = Instant::now();
+        let wgpu_a = large_a.to_backend(tensor_frame::BackendType::Wgpu)?;
+        let wgpu_b = large_b.to_backend(tensor_frame::BackendType::Wgpu)?;
+        let conversion_time = start.elapsed();
+        
+        let start = Instant::now();
+        let wgpu_result = &amp;wgpu_a + &amp;wgpu_b;
+        let _sync = wgpu_result.to_vec()?;  // Force synchronization
+        let wgpu_time = start.elapsed();
+        
+        println!("WGPU conversion time: {:?}", conversion_time);
+        println!("WGPU computation time: {:?}", wgpu_time);
+        println!("Total WGPU time: {:?}", conversion_time + wgpu_time);
+    }
+    
+    Ok(())
+}
+
+/// Advanced patterns demonstration
+fn advanced_patterns() -&gt; Result&lt;()&gt; {
+    println!("=== Advanced Patterns ===");
+    
+    // Broadcasting example
+    let matrix = Tensor::ones(vec![3, 4])?;     // Shape: [3, 4]
+    let vector = Tensor::ones(vec![4])?;        // Shape: [4]
+    let broadcasted = &amp;matrix + &amp;vector;        // Result: [3, 4]
+    
+    println!("Matrix (3x4):\n{}\n", matrix);
+    println!("Vector (4,):\n{}\n", vector);
+    println!("Matrix + Vector (broadcasted):\n{}\n", broadcasted);
+    
+    // Complex broadcasting
+    let a = Tensor::ones(vec![2, 1, 3])?;       // Shape: [2, 1, 3]
+    let b = Tensor::ones(vec![1, 4, 1])?;       // Shape: [1, 4, 1]
+    let complex_broadcast = &amp;a + &amp;b;            // Result: [2, 4, 3]
+    
+    println!("Complex broadcasting:");
+    println!("A shape: {:?}", a.shape().dims());
+    println!("B shape: {:?}", b.shape().dims());
+    println!("Result shape: {:?}", complex_broadcast.shape().dims());
+    
+    // Method chaining
+    let result = Tensor::ones(vec![2, 3])?
+        .reshape(vec![3, 2])?
+        .transpose()?;
+    
+    println!("Method chaining result:\n{}\n", result);
+    
+    Ok(())
+}
+
+/// Error handling examples
+fn error_handling_examples() -&gt; Result&lt;()&gt; {
+    println!("=== Error Handling ===");
+    
+    // Shape mismatch error
+    let a = Tensor::ones(vec![2, 3])?;
+    let b = Tensor::ones(vec![3, 2])?;
+    
+    match &amp;a + &amp;b {
+        Ok(result) =&gt; println!("Addition succeeded: {}", result),
+        Err(e) =&gt; println!("Expected error - shape mismatch: {}", e),
+    }
+    
+    // Invalid reshape error
+    let tensor = Tensor::ones(vec![2, 3])?;  // 6 elements
+    match tensor.reshape(vec![2, 2]) {       // 4 elements - invalid!
+        Ok(result) =&gt; println!("Reshape succeeded: {}", result),
+        Err(e) =&gt; println!("Expected error - invalid reshape: {}", e),
+    }
+    
+    // Out of bounds dimension error
+    match tensor.squeeze(Some(5)) {  // Dimension 5 doesn't exist
+        Ok(result) =&gt; println!("Squeeze succeeded: {}", result),
+        Err(e) =&gt; println!("Expected error - invalid dimension: {}", e),
+    }
+    
+    Ok(())
+}</code></pre>
+<h2 id="key-concepts-demonstrated"><a class="header" href="#key-concepts-demonstrated">Key Concepts Demonstrated</a></h2>
+<h3 id="1-tensor-creation"><a class="header" href="#1-tensor-creation">1. Tensor Creation</a></h3>
+<p>Three primary ways to create tensors:</p>
+<ul>
+<li><code>Tensor::zeros(shape)</code> - Creates tensor filled with zeros</li>
+<li><code>Tensor::ones(shape)</code> - Creates tensor filled with ones</li>
+<li><code>Tensor::from_vec(data, shape)</code> - Creates tensor from existing data</li>
+</ul>
+<h3 id="2-reference-vs-owned-operations"><a class="header" href="#2-reference-vs-owned-operations">2. Reference vs. Owned Operations</a></h3>
+<pre><code class="language-rust">// Moves tensors (can only use once)
+let result = a + b;
+
+// Uses references (can reuse tensors)
+let result = &amp;a + &amp;b;</code></pre>
+<h3 id="3-shape-broadcasting"><a class="header" href="#3-shape-broadcasting">3. Shape Broadcasting</a></h3>
+<p>Tensor Frame automatically broadcasts compatible shapes:</p>
+<pre><code class="language-rust">let matrix = Tensor::ones(vec![3, 4])?;  // [3, 4]
+let vector = Tensor::ones(vec![4])?;     // [4] broadcasts to [1, 4]
+let result = matrix + vector;            // Result: [3, 4]</code></pre>
+<h3 id="4-method-chaining"><a class="header" href="#4-method-chaining">4. Method Chaining</a></h3>
+<p>Operations can be chained for concise code:</p>
+<pre><code class="language-rust">let result = tensor
+    .reshape(vec![4, 2])?
+    .transpose()?
+    .squeeze(None)?;</code></pre>
+<h3 id="5-error-handling"><a class="header" href="#5-error-handling">5. Error Handling</a></h3>
+<p>All operations return <code>Result&lt;T&gt;</code> for proper error handling:</p>
+<pre><code class="language-rust">match risky_operation() {
+    Ok(tensor) =&gt; process_tensor(tensor),
+    Err(TensorError::ShapeMismatch { expected, got }) =&gt; {
+        eprintln!("Shape error: expected {:?}, got {:?}", expected, got);
+    }
+    Err(e) =&gt; eprintln!("Other error: {}", e),
+}</code></pre>
+<h2 id="performance-tips"><a class="header" href="#performance-tips">Performance Tips</a></h2>
+<ol>
+<li><strong>Use References</strong>: Use <code>&amp;a + &amp;b</code> instead of <code>a + b</code> to avoid unnecessary clones</li>
+<li><strong>Batch Operations</strong>: Combine operations when possible: <code>(a * 2.0) + b</code> vs separate operations</li>
+<li><strong>Choose Right Backend</strong>: CPU for small tensors, GPU for large operations</li>
+<li><strong>Avoid Frequent Conversions</strong>: Stay on one backend when possible</li>
+</ol>
+<h2 id="common-pitfalls"><a class="header" href="#common-pitfalls">Common Pitfalls</a></h2>
+<ol>
+<li><strong>Shape Mismatches</strong>: Ensure compatible shapes for operations</li>
+<li><strong>Invalid Reshapes</strong>: New shape must have same total elements</li>
+<li><strong>Backend Overhead</strong>: GPU operations have overhead for small tensors</li>
+<li><strong>Memory Usage</strong>: Large tensors consume significant memory</li>
+</ol>
+<h2 id="next-steps"><a class="header" href="#next-steps">Next Steps</a></h2>
+<p>After mastering basic operations, explore:</p>
+<ul>
+<li><a href="./broadcasting.html">Broadcasting Examples</a> - Advanced broadcasting patterns</li>
+<li><a href="./custom-backends.html">Backend Selection</a> - Optimizing backend usage</li>
+<li><a href="../performance.html">Performance Guide</a> - Advanced performance optimization</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../examples/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../examples/broadcasting.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../examples/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../examples/broadcasting.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="../ace.js"></script>
+        <script src="../mode-rust.js"></script>
+        <script src="../editor.js"></script>
+        <script src="../theme-dawn.js"></script>
+        <script src="../theme-tomorrow_night.js"></script>
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

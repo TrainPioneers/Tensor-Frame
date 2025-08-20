@@ -1,0 +1,676 @@
+<!DOCTYPE HTML>
+<html lang="en" class="navy sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Contributing - Tensor Frame Documentation</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="A high-performance, PyTorch-like tensor library for Rust with multiple computational backends">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "navy";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('navy')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Tensor Frame Documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/TrainPioneers/Tensor-Frame" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="contributing-to-tensor-frame"><a class="header" href="#contributing-to-tensor-frame">Contributing to Tensor Frame</a></h1>
+<p>We welcome contributions to Tensor Frame! This guide will help you get started with contributing to the project.</p>
+<h2 id="getting-started"><a class="header" href="#getting-started">Getting Started</a></h2>
+<h3 id="development-setup"><a class="header" href="#development-setup">Development Setup</a></h3>
+<ol>
+<li><strong>Clone the repository</strong>:</li>
+</ol>
+<pre><code class="language-bash">git clone https://github.com/TrainPioneers/Tensor-Frame.git
+cd Tensor-Frame
+</code></pre>
+<ol start="2">
+<li><strong>Install Rust</strong> (if not already installed):</li>
+</ol>
+<pre><code class="language-bash">curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source ~/.cargo/env
+</code></pre>
+<ol start="3">
+<li><strong>Install development dependencies</strong>:</li>
+</ol>
+<pre><code class="language-bash"># For documentation building
+cargo install mdbook
+
+# For benchmarking
+cargo install criterion
+
+# For code formatting
+rustup component add rustfmt
+
+# For linting
+rustup component add clippy
+</code></pre>
+<ol start="4">
+<li><strong>Build and test</strong>:</li>
+</ol>
+<pre><code class="language-bash"># Build with all features
+cargo build --all-features
+
+# Run tests
+cargo test
+
+# Run with specific backend
+cargo test --features wgpu
+cargo test --features cuda
+</code></pre>
+<h2 id="development-workflow"><a class="header" href="#development-workflow">Development Workflow</a></h2>
+<h3 id="building-the-project"><a class="header" href="#building-the-project">Building the Project</a></h3>
+<pre><code class="language-bash"># Quick compilation check
+cargo check
+
+# Build with specific backends
+cargo build --features wgpu
+cargo build --features cuda
+cargo build --all-features
+
+# Release build
+cargo build --release --all-features
+</code></pre>
+<h3 id="running-tests"><a class="header" href="#running-tests">Running Tests</a></h3>
+<pre><code class="language-bash"># Run all tests
+cargo test
+
+# Test specific backend
+make test-wgpu
+make test-cuda
+
+# Test with verbose output
+cargo test -- --nocapture
+
+# Run specific test
+cargo test test_tensor_creation
+</code></pre>
+<h3 id="code-formatting-and-linting"><a class="header" href="#code-formatting-and-linting">Code Formatting and Linting</a></h3>
+<pre><code class="language-bash"># Format code
+cargo fmt
+
+# Check formatting
+cargo fmt --check
+
+# Run clippy lints
+cargo clippy
+
+# Run clippy with all features
+cargo clippy --all-features
+
+# Fix clippy warnings
+cargo clippy --fix
+</code></pre>
+<h3 id="documentation"><a class="header" href="#documentation">Documentation</a></h3>
+<pre><code class="language-bash"># Generate API documentation
+cargo doc --open
+
+# Build the book
+cd docs
+mdbook build
+
+# Serve book locally
+mdbook serve
+</code></pre>
+<h2 id="contribution-guidelines"><a class="header" href="#contribution-guidelines">Contribution Guidelines</a></h2>
+<h3 id="code-style"><a class="header" href="#code-style">Code Style</a></h3>
+<ul>
+<li><strong>Formatting</strong>: Use <code>cargo fmt</code> for consistent formatting</li>
+<li><strong>Linting</strong>: Address all <code>cargo clippy</code> warnings</li>
+<li><strong>Naming</strong>: Use descriptive names following Rust conventions</li>
+<li><strong>Comments</strong>: Document public APIs and complex algorithms</li>
+<li><strong>Error Handling</strong>: Use proper <code>Result</code> types and meaningful error messages</li>
+</ul>
+<h3 id="testing"><a class="header" href="#testing">Testing</a></h3>
+<p>All contributions must include appropriate tests:</p>
+<pre><code class="language-rust">#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_new_feature() {
+        let tensor = Tensor::zeros(vec![2, 3]).unwrap();
+        let result = tensor.new_operation().unwrap();
+        assert_eq!(result.shape().dims(), &amp;[2, 3]);
+    }
+
+    #[test]
+    fn test_error_handling() {
+        let tensor = Tensor::zeros(vec![2, 3]).unwrap();
+        let result = tensor.invalid_operation();
+        assert!(result.is_err());
+    }
+}</code></pre>
+<h3 id="documentation-requirements"><a class="header" href="#documentation-requirements">Documentation Requirements</a></h3>
+<ul>
+<li><strong>Public APIs</strong>: All public functions, structs, and traits must have documentation</li>
+<li><strong>Examples</strong>: Include usage examples in documentation</li>
+<li><strong>Error Cases</strong>: Document when functions return errors</li>
+<li><strong>Safety</strong>: Document any unsafe code usage</li>
+</ul>
+<pre><code class="language-rust">/// Creates a new tensor filled with zeros.
+///
+/// # Arguments
+/// * `shape` - The dimensions of the tensor
+///
+/// # Returns
+/// A new tensor filled with zeros, or an error if the shape is invalid.
+///
+/// # Examples
+/// ```
+/// use tensor_frame::Tensor;
+/// 
+/// let tensor = Tensor::zeros(vec![2, 3])?;
+/// assert_eq!(tensor.numel(), 6);
+/// # Ok::&lt;(), tensor_frame::TensorError&gt;(())
+/// ```
+///
+/// # Errors
+/// Returns `TensorError::InvalidShape` if any dimension is zero.
+pub fn zeros(shape: Vec&lt;usize&gt;) -&gt; Result&lt;Self&gt; {
+    // Implementation
+}</code></pre>
+<h2 id="types-of-contributions"><a class="header" href="#types-of-contributions">Types of Contributions</a></h2>
+<h3 id="bug-fixes"><a class="header" href="#bug-fixes">Bug Fixes</a></h3>
+<ol>
+<li>
+<p><strong>Report the issue</strong>: Create a GitHub issue with:</p>
+<ul>
+<li>Clear reproduction steps</li>
+<li>Expected vs actual behavior</li>
+<li>Environment details (OS, Rust version, GPU info)</li>
+<li>Minimal code example</li>
+</ul>
+</li>
+<li>
+<p><strong>Fix the bug</strong>:</p>
+<ul>
+<li>Create a focused fix addressing the specific issue</li>
+<li>Add regression tests to prevent recurrence</li>
+<li>Update documentation if the bug was in documented behavior</li>
+</ul>
+</li>
+</ol>
+<h3 id="new-features"><a class="header" href="#new-features">New Features</a></h3>
+<p>Before implementing new features:</p>
+<ol>
+<li>
+<p><strong>Discuss the feature</strong>: Open a GitHub issue to discuss:</p>
+<ul>
+<li>Use case and motivation</li>
+<li>Proposed API design</li>
+<li>Implementation approach</li>
+<li>Performance implications</li>
+</ul>
+</li>
+<li>
+<p><strong>Implementation guidelines</strong>:</p>
+<ul>
+<li>Follow existing patterns and conventions</li>
+<li>Implement for all relevant backends</li>
+<li>Add comprehensive tests</li>
+<li>Update documentation and examples</li>
+</ul>
+</li>
+</ol>
+<h4 id="backend-implementation"><a class="header" href="#backend-implementation">Backend Implementation</a></h4>
+<p>New operations should be implemented across all backends:</p>
+<pre><code class="language-rust">// src/backend/mod.rs
+pub trait Backend {
+    // Add new operation to trait
+    fn new_operation(&amp;self, input: &amp;Storage) -&gt; Result&lt;Storage&gt;;
+}
+
+// src/backend/cpu.rs
+impl Backend for CpuBackend {
+    fn new_operation(&amp;self, input: &amp;Storage) -&gt; Result&lt;Storage&gt; {
+        match input {
+            Storage::Cpu(data) =&gt; {
+                // CPU implementation using Rayon
+                let result: Vec&lt;f32&gt; = data
+                    .par_iter()
+                    .map(|&amp;x| compute_new_operation(x))
+                    .collect();
+                Ok(Storage::Cpu(result))
+            }
+            _ =&gt; Err(TensorError::BackendError("Invalid storage type".to_string())),
+        }
+    }
+}
+
+// src/backend/wgpu.rs
+impl Backend for WgpuBackend {
+    fn new_operation(&amp;self, input: &amp;Storage) -&gt; Result&lt;Storage&gt; {
+        match input {
+            Storage::Wgpu(wgpu_storage) =&gt; {
+                // WGPU implementation using compute shaders
+                self.execute_compute_shader(
+                    &amp;wgpu_storage.buffer,
+                    include_str!("../shaders/new_operation.wgsl")
+                )
+            }
+            _ =&gt; Err(TensorError::BackendError("Invalid storage type".to_string())),
+        }
+    }
+}</code></pre>
+<h3 id="performance-improvements"><a class="header" href="#performance-improvements">Performance Improvements</a></h3>
+<ol>
+<li><strong>Benchmark first</strong>: Establish baseline performance</li>
+<li><strong>Profile the bottleneck</strong>: Use profiling tools to identify issues</li>
+<li><strong>Implement optimization</strong>: Make targeted improvements</li>
+<li><strong>Measure improvement</strong>: Verify performance gains</li>
+<li><strong>Add performance tests</strong>: Prevent performance regressions</li>
+</ol>
+<pre><code class="language-rust">// Add benchmark for new optimization
+use criterion::{criterion_group, criterion_main, Criterion};
+
+fn bench_optimized_operation(c: &amp;mut Criterion) {
+    let tensor = Tensor::ones(vec![1000, 1000]).unwrap();
+    
+    c.bench_function("optimized_operation", |b| {
+        b.iter(|| {
+            tensor.optimized_operation().unwrap()
+        });
+    });
+}
+
+criterion_group!(benches, bench_optimized_operation);
+criterion_main!(benches);</code></pre>
+<h3 id="documentation-improvements"><a class="header" href="#documentation-improvements">Documentation Improvements</a></h3>
+<ul>
+<li><strong>API documentation</strong>: Improve function/struct documentation</li>
+<li><strong>Examples</strong>: Add or improve usage examples</li>
+<li><strong>Guides</strong>: Write tutorials for specific use cases</li>
+<li><strong>Book</strong>: Contribute to the mdbook documentation</li>
+</ul>
+<h2 id="backend-specific-contributions"><a class="header" href="#backend-specific-contributions">Backend-Specific Contributions</a></h2>
+<h3 id="cpu-backend"><a class="header" href="#cpu-backend">CPU Backend</a></h3>
+<ul>
+<li><strong>Optimization</strong>: Improve Rayon parallelization</li>
+<li><strong>BLAS integration</strong>: Better integration with optimized BLAS libraries</li>
+<li><strong>Memory layout</strong>: Optimize for cache efficiency</li>
+</ul>
+<h3 id="wgpu-backend"><a class="header" href="#wgpu-backend">WGPU Backend</a></h3>
+<ul>
+<li><strong>Shader optimization</strong>: Improve WGSL compute shaders</li>
+<li><strong>New operations</strong>: Implement missing operations (matmul, reductions)</li>
+<li><strong>Platform support</strong>: Improve compatibility across graphics APIs</li>
+</ul>
+<h3 id="cuda-backend"><a class="header" href="#cuda-backend">CUDA Backend</a></h3>
+<ul>
+<li><strong>Kernel optimization</strong>: Improve CUDA kernel performance</li>
+<li><strong>cuBLAS integration</strong>: Better integration with cuBLAS/cuDNN</li>
+<li><strong>Memory management</strong>: Optimize GPU memory usage</li>
+</ul>
+<h2 id="pull-request-process"><a class="header" href="#pull-request-process">Pull Request Process</a></h2>
+<h3 id="before-submitting"><a class="header" href="#before-submitting">Before Submitting</a></h3>
+<ol>
+<li><strong>Ensure tests pass</strong>:</li>
+</ol>
+<pre><code class="language-bash">cargo test --all-features
+</code></pre>
+<ol start="2">
+<li><strong>Check formatting and lints</strong>:</li>
+</ol>
+<pre><code class="language-bash">cargo fmt --check
+cargo clippy --all-features
+</code></pre>
+<ol start="3">
+<li><strong>Update documentation</strong>:</li>
+</ol>
+<pre><code class="language-bash">cargo doc --all-features
+cd docs &amp;&amp; mdbook build
+</code></pre>
+<ol start="4">
+<li><strong>Add changelog entry</strong> (if applicable):</li>
+</ol>
+<pre><code class="language-markdown">## [Unreleased]
+### Added
+- New tensor operation `my_operation` (#123)
+### Fixed  
+- Fixed broadcasting bug in GPU backend (#124)
+</code></pre>
+<h3 id="pull-request-template"><a class="header" href="#pull-request-template">Pull Request Template</a></h3>
+<pre><code class="language-markdown">## Description
+Brief description of the changes and motivation.
+
+## Type of Change
+- [ ] Bug fix (non-breaking change which fixes an issue)
+- [ ] New feature (non-breaking change which adds functionality)
+- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
+- [ ] Documentation update
+
+## Testing
+- [ ] I have added tests that prove my fix is effective or that my feature works
+- [ ] New and existing unit tests pass locally with my changes
+- [ ] I have tested with different backends (CPU/WGPU/CUDA)
+
+## Checklist
+- [ ] My code follows the code style of this project
+- [ ] I have performed a self-review of my own code
+- [ ] I have commented my code, particularly in hard-to-understand areas
+- [ ] I have made corresponding changes to the documentation
+- [ ] My changes generate no new warnings
+- [ ] Any dependent changes have been merged and published
+</code></pre>
+<h3 id="review-process"><a class="header" href="#review-process">Review Process</a></h3>
+<ol>
+<li><strong>Automated checks</strong>: CI will run tests, linting, and formatting checks</li>
+<li><strong>Code review</strong>: Maintainers will review for:
+<ul>
+<li>Code quality and style</li>
+<li>Test coverage</li>
+<li>Documentation completeness</li>
+<li>Performance implications</li>
+<li>API design consistency</li>
+</ul>
+</li>
+<li><strong>Feedback</strong>: Address review feedback and update the PR</li>
+<li><strong>Approval</strong>: Once approved, maintainers will merge the PR</li>
+</ol>
+<h2 id="issue-reporting"><a class="header" href="#issue-reporting">Issue Reporting</a></h2>
+<h3 id="bug-reports"><a class="header" href="#bug-reports">Bug Reports</a></h3>
+<p>Use the bug report template:</p>
+<pre><code class="language-markdown">**Describe the bug**
+A clear and concise description of what the bug is.
+
+**To Reproduce**
+Steps to reproduce the behavior:
+1. Create tensor with '...'
+2. Call operation '....'
+3. See error
+
+**Expected behavior**
+A clear and concise description of what you expected to happen.
+
+**Code Example**
+```rust
+use tensor_frame::Tensor;
+
+let tensor = Tensor::zeros(vec![2, 3])?;
+let result = tensor.problematic_operation()?; // This fails
+</code></pre>
+<p><strong>Environment:</strong></p>
+<ul>
+<li>OS: [e.g. Ubuntu 20.04]</li>
+<li>Rust version: [e.g. 1.75.0]</li>
+<li>Tensor Frame version: [e.g. 0.1.0]</li>
+<li>GPU info: [if applicable]</li>
+<li>Backend: [CPU/WGPU/CUDA]</li>
+</ul>
+<p><strong>Additional context</strong>
+Add any other context about the problem here.</p>
+<pre><code>
+### Feature Requests
+
+Use the feature request template:
+
+```markdown
+**Is your feature request related to a problem?**
+A clear and concise description of what the problem is.
+
+**Describe the solution you'd like**
+A clear and concise description of what you want to happen.
+
+**Describe alternatives you've considered**
+A clear and concise description of any alternative solutions or features you've considered.
+
+**Use case**
+Describe how this feature would be used in practice.
+
+**API Design** (if applicable)
+```rust
+// Proposed API
+let result = tensor.new_operation(parameters)?;
+</code></pre>
+<p><strong>Additional context</strong>
+Add any other context about the feature request here.</p>
+<pre><code>
+## Community Guidelines
+
+### Code of Conduct
+
+- Be respectful and inclusive
+- Focus on constructive feedback
+- Help newcomers learn and contribute
+- Celebrate diverse perspectives and backgrounds
+
+### Communication
+
+- **GitHub Issues**: Bug reports, feature requests, design discussions
+- **GitHub Discussions**: General questions, show and tell, ideas
+- **Pull Requests**: Code contributions and reviews
+
+### Recognition
+
+Contributors are recognized in:
+- `CONTRIBUTORS.md` file
+- Release notes for significant contributions
+- GitHub contributor statistics
+
+## Getting Help
+
+If you need help contributing:
+
+1. **Read existing code**: Look at similar implementations for patterns
+2. **Check documentation**: API docs and this book contain guidance
+3. **Ask questions**: Open a GitHub issue or discussion
+4. **Start small**: Begin with bug fixes or documentation improvements
+
+Thank you for contributing to Tensor Frame!</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="performance.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="performance.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

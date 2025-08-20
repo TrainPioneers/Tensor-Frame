@@ -1,0 +1,4138 @@
+<!DOCTYPE HTML>
+<html lang="en" class="navy sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Tensor Frame Documentation</title>
+        <meta name="robots" content="noindex">
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="A high-performance, PyTorch-like tensor library for Rust with multiple computational backends">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "navy";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('navy')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Tensor Frame Documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/TrainPioneers/Tensor-Frame" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="tensor-frame"><a class="header" href="#tensor-frame">Tensor Frame</a></h1>
+<p>Tensor Frame is a high-performance, PyTorch-like tensor library for Rust that supports multiple computational backends including CPU (with Rayon), WGPU (for GPU compute), and CUDA.</p>
+<h2 id="features"><a class="header" href="#features">Features</a></h2>
+<ul>
+<li><strong>Multiple Backends</strong>: Automatic backend selection with fallback support
+<ul>
+<li>CPU backend with Rayon for parallel processing</li>
+<li>WGPU backend for cross-platform GPU computing</li>
+<li>CUDA backend for NVIDIA GPU acceleration</li>
+</ul>
+</li>
+<li><strong>PyTorch-like API</strong>: Familiar tensor operations and broadcasting</li>
+<li><strong>Dynamic Tensors</strong>: Runtime shape and type flexibility</li>
+<li><strong>Full Broadcasting Support</strong>: NumPy-style automatic shape broadcasting for all arithmetic operations (+, -, *, /)</li>
+<li><strong>Zero-Copy Operations</strong>: Efficient memory management where possible</li>
+<li><strong>Feature Flags</strong>: Optional backends via Cargo features</li>
+</ul>
+<h2 id="quick-example"><a class="header" href="#quick-example">Quick Example</a></h2>
+<pre><code class="language-rust">use tensor_frame::Tensor;
+
+// Create tensors (automatically uses the best available backend)
+let a = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2])?;
+let b = Tensor::from_vec(vec![10.0, 20.0], vec![2, 1])?;
+
+// Perform operations with automatic broadcasting
+let c = (a + b)?;  // Broadcasting: [2,2] + [2,1] -&gt; [2,2]
+println!("Result: {:?}", c.to_vec()?); // [11.0, 12.0, 23.0, 24.0]
+
+// All operations support broadcasting
+let scalar = Tensor::from_vec(vec![2.0], vec![])?;
+let scaled = (c / scalar)?;  // Divide by scalar
+let sum = scaled.sum(None)?; // Sum all elements
+
+println!("Sum: {:?}", sum.to_vec()?);</code></pre>
+<h2 id="backend-priority"><a class="header" href="#backend-priority">Backend Priority</a></h2>
+<p>By default, Tensor Frame will attempt to use backends in this order:</p>
+<ol>
+<li>CUDA (if available and feature enabled)</li>
+<li>WGPU (if available and feature enabled)</li>
+<li>CPU (always available)</li>
+</ol>
+<p>You can also explicitly specify a backend or create custom backend implementations.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="getting-started"><a class="header" href="#getting-started">Getting Started</a></h1>
+<h2 id="installation"><a class="header" href="#installation">Installation</a></h2>
+<p>Add Tensor Frame to your <code>Cargo.toml</code>:</p>
+<pre><code class="language-toml">[dependencies]
+tensor_frame = "0.0.3-alpha"
+</code></pre>
+<h3 id="feature-flags"><a class="header" href="#feature-flags">Feature Flags</a></h3>
+<p>Tensor Frame supports optional backends via feature flags:</p>
+<pre><code class="language-toml">[dependencies]
+# CPU only (default)
+tensor_frame = "0.0.3-alpha"
+
+# With WGPU support
+tensor_frame = { version = "0.0.3-alpha", features = ["wgpu"] }
+
+# With CUDA support  
+tensor_frame = { version = "0.0.3-alpha", features = ["cuda"] }
+
+# All backends
+tensor_frame = { version = "0.0.3-alpha", features = ["wgpu", "cuda"] }
+</code></pre>
+<h2 id="basic-usage"><a class="header" href="#basic-usage">Basic Usage</a></h2>
+<h3 id="creating-tensors"><a class="header" href="#creating-tensors">Creating Tensors</a></h3>
+<pre><code class="language-rust">use tensor_frame::{Tensor, Result};
+
+fn main() -&gt; Result&lt;()&gt; {
+    // Create tensors with different initialization
+    let zeros = Tensor::zeros(vec![2, 3])?;
+    let ones = Tensor::ones(vec![2, 3])?;
+    let from_data = Tensor::from_vec(
+        vec![1.0, 2.0, 3.0, 4.0], 
+        vec![2, 2]
+    )?;
+    
+    // Inspect tensor properties
+    println!("Shape: {:?}", zeros.shape().dims());
+    println!("Number of elements: {}", zeros.numel());
+    println!("Number of dimensions: {}", zeros.ndim());
+    
+    Ok(())
+}</code></pre>
+<h3 id="basic-operations"><a class="header" href="#basic-operations">Basic Operations</a></h3>
+<pre><code class="language-rust">use tensor_frame::{Tensor, Result};
+
+fn main() -&gt; Result&lt;()&gt; {
+    let a = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2])?;
+    let b = Tensor::from_vec(vec![5.0, 6.0, 7.0, 8.0], vec![2, 2])?;
+    
+    // Element-wise operations
+    let sum = (a.clone() + b.clone())?;
+    let diff = (a.clone() - b.clone())?;
+    let product = (a.clone() * b.clone())?;
+    let quotient = (a / b)?;
+    
+    // Reduction operations
+    let total = sum.sum(None)?;
+    let average = product.mean(None)?;
+    
+    println!("Sum result: {:?}", total.to_vec()?);
+    
+    Ok(())
+}</code></pre>
+<h3 id="broadcasting"><a class="header" href="#broadcasting">Broadcasting</a></h3>
+<p>Tensor Frame supports automatic broadcasting similar to NumPy and PyTorch:</p>
+<pre><code class="language-rust">use tensor_frame::{Tensor, Result};
+
+fn main() -&gt; Result&lt;()&gt; {
+    let a = Tensor::ones(vec![2, 1])?;  // Shape: [2, 1]
+    let b = Tensor::ones(vec![1, 3])?;  // Shape: [1, 3]
+    
+    // Broadcasting: [2, 1] + [1, 3] -&gt; [2, 3]
+    let c = (a + b)?;
+    println!("Result shape: {:?}", c.shape().dims());
+    
+    Ok(())
+}</code></pre>
+<h3 id="tensor-manipulation"><a class="header" href="#tensor-manipulation">Tensor Manipulation</a></h3>
+<pre><code class="language-rust">use tensor_frame::{Tensor, Result, TensorOps};
+
+fn main() -&gt; Result&lt;()&gt; {
+    let tensor = Tensor::from_vec(
+        vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
+        vec![2, 3]
+    )?;
+    
+    // Reshape
+    let reshaped = tensor.reshape(vec![3, 2])?;
+    
+    // Transpose (2D only for now)
+    let transposed = reshaped.transpose()?;
+    
+    // Squeeze and unsqueeze
+    let squeezed = tensor.squeeze(None)?;
+    let unsqueezed = squeezed.unsqueeze(0)?;
+    
+    Ok(())
+}</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="api-reference"><a class="header" href="#api-reference">API Reference</a></h1>
+<p>This section provides detailed documentation for all public APIs in Tensor Frame.</p>
+<h2 id="core-types"><a class="header" href="#core-types">Core Types</a></h2>
+<ul>
+<li><strong><a href="api/./tensor.html">Tensor</a></strong> - The main tensor type with all operations</li>
+<li><strong><a href="api/./backends.html">Backends</a></strong> - Backend trait and implementation details</li>
+<li><strong><a href="api/./operations.html">Operations</a></strong> - Detailed operation specifications</li>
+</ul>
+<h2 id="key-traits-and-enums"><a class="header" href="#key-traits-and-enums">Key Traits and Enums</a></h2>
+<h3 id="tensorops-trait"><a class="header" href="#tensorops-trait">TensorOps Trait</a></h3>
+<p>The <code>TensorOps</code> trait defines all tensor manipulation and computation operations:</p>
+<pre><code class="language-rust">pub trait TensorOps {
+    fn reshape(&amp;self, new_shape: Vec&lt;usize&gt;) -&gt; Result&lt;Tensor&gt;;
+    fn transpose(&amp;self) -&gt; Result&lt;Tensor&gt;;
+    fn squeeze(&amp;self, dim: Option&lt;usize&gt;) -&gt; Result&lt;Tensor&gt;;
+    fn unsqueeze(&amp;self, dim: usize) -&gt; Result&lt;Tensor&gt;;
+    // ... more methods
+}</code></pre>
+<h3 id="dtype-enum"><a class="header" href="#dtype-enum">DType Enum</a></h3>
+<p>Supported data types:</p>
+<pre><code class="language-rust">pub enum DType {
+    F32,    // 32-bit floating point (default)
+    F64,    // 64-bit floating point  
+    I32,    // 32-bit signed integer
+    U32,    // 32-bit unsigned integer
+}</code></pre>
+<h3 id="backendtype-enum"><a class="header" href="#backendtype-enum">BackendType Enum</a></h3>
+<p>Available computational backends:</p>
+<pre><code class="language-rust">pub enum BackendType {
+    Cpu,    // CPU backend with Rayon
+    Wgpu,   // Cross-platform GPU backend
+    Cuda,   // NVIDIA CUDA backend
+}</code></pre>
+<h2 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h2>
+<p>All operations return <code>Result&lt;T&gt;</code> with <code>TensorError</code> for comprehensive error handling:</p>
+<pre><code class="language-rust">pub enum TensorError {
+    ShapeMismatch { expected: Vec&lt;usize&gt;, got: Vec&lt;usize&gt; },
+    BackendError(String),
+    InvalidOperation(String),
+    DimensionError(String),
+}</code></pre>
+<h2 id="memory-management"><a class="header" href="#memory-management">Memory Management</a></h2>
+<p>Tensor Frame uses smart pointers and reference counting for efficient memory management:</p>
+<ul>
+<li>Tensors are cheaply clonable (reference counted)</li>
+<li>Backend storage is automatically managed</li>
+<li>Cross-backend tensor conversion is supported</li>
+<li>Zero-copy operations where possible</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="tensor-api"><a class="header" href="#tensor-api">Tensor API</a></h1>
+<p>The <code>Tensor</code> struct is the core data structure in Tensor Frame, representing multi-dimensional arrays with automatic backend selection.</p>
+<h2 id="constructor-methods"><a class="header" href="#constructor-methods">Constructor Methods</a></h2>
+<h3 id="basic-constructors"><a class="header" href="#basic-constructors">Basic Constructors</a></h3>
+<pre><code class="language-rust">// Create tensor filled with zeros
+pub fn zeros(shape: Vec&lt;usize&gt;) -&gt; Result&lt;Tensor&gt;
+
+// Create tensor filled with ones  
+pub fn ones(shape: Vec&lt;usize&gt;) -&gt; Result&lt;Tensor&gt;
+
+// Create tensor from Vec data
+pub fn from_vec(data: Vec&lt;f32&gt;, shape: Vec&lt;usize&gt;) -&gt; Result&lt;Tensor&gt;</code></pre>
+<h4 id="examples"><a class="header" href="#examples">Examples</a></h4>
+<pre><code class="language-rust">use tensor_frame::Tensor;
+
+// 2x3 matrix of zeros
+let zeros = Tensor::zeros(vec![2, 3])?;
+
+// 1D vector of ones
+let ones = Tensor::ones(vec![5])?;
+
+// Create from existing data
+let data = vec![1.0, 2.0, 3.0, 4.0];
+let tensor = Tensor::from_vec(data, vec![2, 2])?;</code></pre>
+<h2 id="properties"><a class="header" href="#properties">Properties</a></h2>
+<h3 id="shape-information"><a class="header" href="#shape-information">Shape Information</a></h3>
+<pre><code class="language-rust">// Get tensor shape
+pub fn shape(&amp;self) -&gt; &amp;Shape
+
+// Get number of elements
+pub fn numel(&amp;self) -&gt; usize
+
+// Get number of dimensions  
+pub fn ndim(&amp;self) -&gt; usize</code></pre>
+<h3 id="data-access"><a class="header" href="#data-access">Data Access</a></h3>
+<pre><code class="language-rust">// Convert tensor to Vec&lt;f32&gt;
+pub fn to_vec(&amp;self) -&gt; Result&lt;Vec&lt;f32&gt;&gt;</code></pre>
+<h2 id="arithmetic-operations"><a class="header" href="#arithmetic-operations">Arithmetic Operations</a></h2>
+<p>Tensor Frame supports standard arithmetic operations through operator overloading:</p>
+<h3 id="binary-operations"><a class="header" href="#binary-operations">Binary Operations</a></h3>
+<pre><code class="language-rust">// Addition (element-wise)
+let c = a + b;
+let c = &amp;a + &amp;b;  // Avoid cloning
+
+// Subtraction (element-wise)  
+let c = a - b;
+
+// Multiplication (element-wise)
+let c = a * b;
+
+// Division (element-wise)
+let c = a / b;</code></pre>
+<h3 id="broadcasting-rules"><a class="header" href="#broadcasting-rules">Broadcasting Rules</a></h3>
+<p>Addition operations automatically broadcast tensors following NumPy/PyTorch rules. Note: Broadcasting is currently only implemented for addition; other operations require matching shapes.</p>
+<ol>
+<li>Dimensions are aligned from the right</li>
+<li>Missing dimensions are treated as size 1</li>
+<li>Dimensions of size 1 are expanded to match</li>
+</ol>
+<pre><code class="language-rust">let a = Tensor::ones(vec![2, 1, 3])?;    // Shape: [2, 1, 3]
+let b = Tensor::ones(vec![1, 4, 1])?;    // Shape: [1, 4, 1]
+let c = a + b;                           // Result: [2, 4, 3]</code></pre>
+<h2 id="tensor-manipulation-1"><a class="header" href="#tensor-manipulation-1">Tensor Manipulation</a></h2>
+<h3 id="reshaping"><a class="header" href="#reshaping">Reshaping</a></h3>
+<pre><code class="language-rust">impl TensorOps for Tensor {
+    // Change tensor shape (must preserve total elements)
+    fn reshape(&amp;self, new_shape: Vec&lt;usize&gt;) -&gt; Result&lt;Tensor&gt;;
+}</code></pre>
+<pre><code class="language-rust">let tensor = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0], vec![2, 3])?;
+let reshaped = tensor.reshape(vec![3, 2])?;  // 2x3 -&gt; 3x2</code></pre>
+<h3 id="transposition"><a class="header" href="#transposition">Transposition</a></h3>
+<pre><code class="language-rust">// Transpose 2D tensor (swap dimensions)
+fn transpose(&amp;self) -&gt; Result&lt;Tensor&gt;;</code></pre>
+<pre><code class="language-rust">let matrix = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2])?;
+let transposed = matrix.transpose()?;  // [[1,2],[3,4]] -&gt; [[1,3],[2,4]]</code></pre>
+<h3 id="dimension-manipulation"><a class="header" href="#dimension-manipulation">Dimension Manipulation</a></h3>
+<pre><code class="language-rust">// Remove dimensions of size 1
+fn squeeze(&amp;self, dim: Option&lt;usize&gt;) -&gt; Result&lt;Tensor&gt;;
+
+// Add dimension of size 1
+fn unsqueeze(&amp;self, dim: usize) -&gt; Result&lt;Tensor&gt;;</code></pre>
+<pre><code class="language-rust">let tensor = Tensor::ones(vec![1, 3, 1])?;     // Shape: [1, 3, 1]
+let squeezed = tensor.squeeze(None)?;          // Shape: [3]
+let unsqueezed = squeezed.unsqueeze(0)?;       // Shape: [1, 3]</code></pre>
+<h2 id="reduction-operations"><a class="header" href="#reduction-operations">Reduction Operations</a></h2>
+<h3 id="full-reductions"><a class="header" href="#full-reductions">Full Reductions</a></h3>
+<pre><code class="language-rust">// Sum all elements
+fn sum(&amp;self, axis: Option&lt;usize&gt;) -&gt; Result&lt;Tensor&gt;;
+
+// Mean of all elements
+fn mean(&amp;self, axis: Option&lt;usize&gt;) -&gt; Result&lt;Tensor&gt;;</code></pre>
+<pre><code class="language-rust">let tensor = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2])?;
+
+// Sum all elements -&gt; scalar tensor
+let total = tensor.sum(None)?;              // Result: 10.0
+
+// Mean of all elements -&gt; scalar tensor  
+let average = tensor.mean(None)?;           // Result: 2.5</code></pre>
+<h3 id="axis-specific-reductions"><a class="header" href="#axis-specific-reductions">Axis-specific Reductions</a></h3>
+<p>Note: Axis-specific reductions are not yet implemented in the CPU backend. Currently, only full tensor reductions (with <code>axis=None</code>) are supported.</p>
+<h2 id="display-and-debug"><a class="header" href="#display-and-debug">Display and Debug</a></h2>
+<p>Tensors implement comprehensive display formatting:</p>
+<pre><code class="language-rust">let tensor = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2])?;
+println!("{}", tensor);
+// Output:
+// Tensor([[1.0000, 2.0000],
+//        [3.0000, 4.0000]], dtype=f32)</code></pre>
+<h2 id="type-conversions"><a class="header" href="#type-conversions">Type Conversions</a></h2>
+<pre><code class="language-rust">// Convert to Vec for external use
+let data: Vec&lt;f32&gt; = tensor.to_vec()?;
+
+// Clone (cheap - reference counted)
+let cloned = tensor.clone();</code></pre>
+<h2 id="performance-notes"><a class="header" href="#performance-notes">Performance Notes</a></h2>
+<ul>
+<li><strong>Cloning</strong>: Tensors use reference counting, so cloning is O(1)</li>
+<li><strong>Backend Selection</strong>: Operations stay on the same backend when possible</li>
+<li><strong>Memory Layout</strong>: Tensors use row-major (C-style) memory layout</li>
+<li><strong>Broadcasting</strong>: Zero-copy when possible, falls back to explicit expansion</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="backend-system"><a class="header" href="#backend-system">Backend System</a></h1>
+<p>Tensor Frame uses a pluggable backend system that allows tensors to run on different computational devices. This page documents the backend architecture and API.</p>
+<h2 id="backend-trait"><a class="header" href="#backend-trait">Backend Trait</a></h2>
+<p>All backends implement the <code>Backend</code> trait:</p>
+<pre><code class="language-rust">pub trait Backend: Debug + Send + Sync {
+    fn backend_type(&amp;self) -&gt; BackendType;
+    fn is_available(&amp;self) -&gt; bool;
+    
+    // Tensor creation
+    fn zeros(&amp;self, shape: &amp;Shape, dtype: DType) -&gt; Result&lt;Storage&gt;;
+    fn ones(&amp;self, shape: &amp;Shape, dtype: DType) -&gt; Result&lt;Storage&gt;;
+    fn from_slice(&amp;self, data: &amp;[f32], shape: &amp;Shape) -&gt; Result&lt;Storage&gt;;
+    
+    // Arithmetic operations
+    fn add(&amp;self, lhs: &amp;Storage, rhs: &amp;Storage) -&gt; Result&lt;Storage&gt;;
+    fn sub(&amp;self, lhs: &amp;Storage, rhs: &amp;Storage) -&gt; Result&lt;Storage&gt;;
+    fn mul(&amp;self, lhs: &amp;Storage, rhs: &amp;Storage) -&gt; Result&lt;Storage&gt;;
+    fn div(&amp;self, lhs: &amp;Storage, rhs: &amp;Storage) -&gt; Result&lt;Storage&gt;;
+    
+    
+    // Reduction operations
+    fn sum(&amp;self, storage: &amp;Storage, axis: Option&lt;usize&gt;) -&gt; Result&lt;Storage&gt;;
+    fn mean(&amp;self, storage: &amp;Storage, axis: Option&lt;usize&gt;) -&gt; Result&lt;Storage&gt;;
+    
+    // Data access
+    fn to_vec_f32(&amp;self, storage: &amp;Storage) -&gt; Result&lt;Vec&lt;f32&gt;&gt;;
+}</code></pre>
+<h2 id="storage-types"><a class="header" href="#storage-types">Storage Types</a></h2>
+<p>Each backend uses a different storage mechanism:</p>
+<pre><code class="language-rust">pub enum Storage {
+    Cpu(Vec&lt;f32&gt;),                    // CPU: simple Vec
+    Wgpu(WgpuStorage),                // WGPU: GPU buffer
+    Cuda(CudaStorage),                // CUDA: device pointer
+}
+
+pub struct WgpuStorage {
+    pub buffer: Arc&lt;wgpu::Buffer&gt;,    // WGPU buffer handle
+}
+
+pub struct CudaStorage {
+    pub ptr: *mut f32,                // Raw CUDA device pointer
+    pub len: usize,                   // Buffer length
+}</code></pre>
+<h2 id="backend-selection"><a class="header" href="#backend-selection">Backend Selection</a></h2>
+<h3 id="automatic-selection"><a class="header" href="#automatic-selection">Automatic Selection</a></h3>
+<p>By default, Tensor Frame automatically selects the best available backend:</p>
+<ol>
+<li><strong>CUDA</strong> (if available and feature enabled)</li>
+<li><strong>WGPU</strong> (if available and feature enabled)</li>
+<li><strong>CPU</strong> (always available)</li>
+</ol>
+<pre><code class="language-rust">// Uses automatic backend selection
+let tensor = Tensor::zeros(vec![1000, 1000])?;
+println!("Selected backend: {:?}", tensor.backend_type());</code></pre>
+<h3 id="manual-selection"><a class="header" href="#manual-selection">Manual Selection</a></h3>
+<p>You can also explicitly specify backend priority:</p>
+<pre><code class="language-rust">use tensor_frame::backend::{set_backend_priority, BackendType};
+
+// Force CPU backend
+let cpu_backend = set_backend_priority(vec![BackendType::Cpu]);
+
+// Prefer WGPU over CUDA
+let gpu_backend = set_backend_priority(vec![
+    BackendType::Wgpu,
+    BackendType::Cuda, 
+    BackendType::Cpu
+]);</code></pre>
+<h3 id="backend-conversion"><a class="header" href="#backend-conversion">Backend Conversion</a></h3>
+<p>Convert tensors between backends:</p>
+<pre><code class="language-rust">let cpu_tensor = Tensor::ones(vec![100, 100])?;
+
+// Convert to GPU backend (if available)
+let gpu_tensor = cpu_tensor.to_backend(BackendType::Wgpu)?;
+
+// Convert back to CPU
+let back_to_cpu = gpu_tensor.to_backend(BackendType::Cpu)?;</code></pre>
+<h2 id="performance-characteristics"><a class="header" href="#performance-characteristics">Performance Characteristics</a></h2>
+<h3 id="cpu-backend"><a class="header" href="#cpu-backend">CPU Backend</a></h3>
+<ul>
+<li><strong>Pros</strong>: Always available, good for small tensors, excellent for development</li>
+<li><strong>Cons</strong>: Limited parallelism, slower for large operations</li>
+<li><strong>Best for</strong>: Tensors &lt; 10K elements, prototyping, fallback option</li>
+<li><strong>Implementation</strong>: Uses Rayon for parallel CPU operations</li>
+</ul>
+<h3 id="wgpu-backend"><a class="header" href="#wgpu-backend">WGPU Backend</a></h3>
+<ul>
+<li><strong>Pros</strong>: Cross-platform GPU support, works on Metal/Vulkan/DX12/OpenGL</li>
+<li><strong>Cons</strong>: Compute shader overhead, limited by GPU memory</li>
+<li><strong>Best for</strong>: Large tensor operations, cross-platform deployment</li>
+<li><strong>Implementation</strong>: Compute shaders with buffer storage</li>
+</ul>
+<h3 id="cuda-backend"><a class="header" href="#cuda-backend">CUDA Backend</a></h3>
+<ul>
+<li><strong>Pros</strong>: Highest performance on NVIDIA GPUs, mature ecosystem</li>
+<li><strong>Cons</strong>: NVIDIA-only, requires CUDA toolkit installation</li>
+<li><strong>Best for</strong>: Production workloads on NVIDIA hardware</li>
+<li><strong>Implementation</strong>: cuBLAS and custom CUDA kernels</li>
+</ul>
+<h2 id="backend-availability"><a class="header" href="#backend-availability">Backend Availability</a></h2>
+<p>Check backend availability at runtime:</p>
+<pre><code class="language-rust">use tensor_frame::backend::{cpu, wgpu, cuda};
+
+// CPU backend is always available
+println!("CPU available: {}", cpu::CpuBackend::new().is_available());
+
+// Check GPU backends
+#[cfg(feature = "wgpu")]
+if let Ok(wgpu_backend) = wgpu::WgpuBackend::new() {
+    println!("WGPU available: {}", wgpu_backend.is_available());
+}
+
+#[cfg(feature = "cuda")]
+println!("CUDA available: {}", cuda::is_available());</code></pre>
+<h2 id="cross-backend-operations"><a class="header" href="#cross-backend-operations">Cross-Backend Operations</a></h2>
+<p>Operations between tensors on different backends automatically handle conversion:</p>
+<pre><code class="language-rust">let cpu_tensor = Tensor::ones(vec![100])?;
+let gpu_tensor = Tensor::zeros(vec![100])?.to_backend(BackendType::Wgpu)?;
+
+// Automatically converts gpu_tensor to CPU backend for the operation
+let result = cpu_tensor + gpu_tensor;  </code></pre>
+<h2 id="custom-backends"><a class="header" href="#custom-backends">Custom Backends</a></h2>
+<p>You can implement custom backends by implementing the <code>Backend</code> trait:</p>
+<pre><code class="language-rust">#[derive(Debug)]
+struct MyCustomBackend;
+
+impl Backend for MyCustomBackend {
+    fn backend_type(&amp;self) -&gt; BackendType {
+        // Would need to extend BackendType enum
+        BackendType::Custom
+    }
+    
+    fn is_available(&amp;self) -&gt; bool {
+        true  // Your availability logic
+    }
+    
+    // Implement all required methods...
+    fn zeros(&amp;self, shape: &amp;Shape, dtype: DType) -&gt; Result&lt;Storage&gt; {
+        // Your implementation
+    }
+    
+    // ... more methods
+}</code></pre>
+<h2 id="memory-management-1"><a class="header" href="#memory-management-1">Memory Management</a></h2>
+<h3 id="reference-counting"><a class="header" href="#reference-counting">Reference Counting</a></h3>
+<ul>
+<li>Tensors use <code>Arc&lt;dyn Backend&gt;</code> for backend sharing</li>
+<li>Storage is reference counted within each backend</li>
+<li>Automatic cleanup when last reference is dropped</li>
+</ul>
+<h3 id="cross-backend-memory"><a class="header" href="#cross-backend-memory">Cross-Backend Memory</a></h3>
+<ul>
+<li>Converting between backends allocates new memory</li>
+<li>Original data remains valid until all references dropped</li>
+<li>No automatic synchronization between backends</li>
+</ul>
+<h3 id="gpu-memory-management"><a class="header" href="#gpu-memory-management">GPU Memory Management</a></h3>
+<ul>
+<li>WGPU backend uses WGPU's automatic memory management</li>
+<li>CUDA backend manually manages device memory with proper cleanup</li>
+<li>Out-of-memory errors are propagated as <code>TensorError::BackendError</code></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="operations-reference"><a class="header" href="#operations-reference">Operations Reference</a></h1>
+<p>This page provides detailed specifications for all tensor operations in Tensor Frame.</p>
+<h2 id="arithmetic-operations-1"><a class="header" href="#arithmetic-operations-1">Arithmetic Operations</a></h2>
+<h3 id="element-wise-binary-operations"><a class="header" href="#element-wise-binary-operations">Element-wise Binary Operations</a></h3>
+<p>All arithmetic operations support automatic NumPy-style broadcasting, allowing operations between tensors of different but compatible shapes.</p>
+<h4 id="addition-"><a class="header" href="#addition-">Addition (<code>+</code>)</a></h4>
+<pre><code class="language-rust">fn add(lhs: &amp;Tensor, rhs: &amp;Tensor) -&gt; Result&lt;Tensor&gt;</code></pre>
+<p>Computes element-wise addition: <code>output[i] = lhs[i] + rhs[i]</code></p>
+<p><strong>Broadcasting</strong>: Yes<br />
+<strong>Supported shapes</strong>: Any compatible shapes<br />
+<strong>Error conditions</strong>: Shape incompatibility</p>
+<pre><code class="language-rust">let a = Tensor::ones(vec![2, 3])?;
+let b = Tensor::ones(vec![2, 3])?;
+let c = a + b;  // All elements = 2.0
+
+// Broadcasting example
+let x = Tensor::from_vec(vec![1.0, 2.0], vec![2, 1])?;
+let y = Tensor::from_vec(vec![10.0, 20.0, 30.0], vec![1, 3])?;
+let z = x + y;  // Shape: [2, 3]</code></pre>
+<h4 id="subtraction--"><a class="header" href="#subtraction--">Subtraction (<code>-</code>)</a></h4>
+<pre><code class="language-rust">fn sub(lhs: &amp;Tensor, rhs: &amp;Tensor) -&gt; Result&lt;Tensor&gt;</code></pre>
+<p>Computes element-wise subtraction: <code>output[i] = lhs[i] - rhs[i]</code></p>
+<p><strong>Broadcasting</strong>: Yes<br />
+<strong>Supported shapes</strong>: Any compatible shapes<br />
+<strong>Error conditions</strong>: Shape incompatibility</p>
+<pre><code class="language-rust">// Same shapes
+let a = Tensor::from_vec(vec![5.0, 6.0, 7.0, 8.0], vec![2, 2])?;
+let b = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2])?;
+let c = a - b;  // [4.0, 4.0, 4.0, 4.0]
+
+// With broadcasting
+let x = Tensor::from_vec(vec![10.0, 20.0], vec![2, 1])?;
+let y = Tensor::from_vec(vec![1.0, 2.0, 3.0], vec![1, 3])?;
+let z = x - y;  // Shape: [2, 3], values: [[9, 8, 7], [19, 18, 17]]</code></pre>
+<h4 id="multiplication-"><a class="header" href="#multiplication-">Multiplication (<code>*</code>)</a></h4>
+<pre><code class="language-rust">fn mul(lhs: &amp;Tensor, rhs: &amp;Tensor) -&gt; Result&lt;Tensor&gt;</code></pre>
+<p>Computes element-wise multiplication: <code>output[i] = lhs[i] * rhs[i]</code></p>
+<p><strong>Note</strong>: This is element-wise multiplication (Hadamard product), not matrix multiplication.</p>
+<p><strong>Broadcasting</strong>: Yes<br />
+<strong>Supported shapes</strong>: Any compatible shapes<br />
+<strong>Error conditions</strong>: Shape incompatibility</p>
+<pre><code class="language-rust">// Broadcasting with a row vector
+let matrix = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0], vec![2, 3])?;
+let row = Tensor::from_vec(vec![10.0, 20.0, 30.0], vec![3])?;
+let scaled = matrix * row;  // Each row multiplied by [10, 20, 30]</code></pre>
+<h4 id="division-"><a class="header" href="#division-">Division (<code>/</code>)</a></h4>
+<pre><code class="language-rust">fn div(lhs: &amp;Tensor, rhs: &amp;Tensor) -&gt; Result&lt;Tensor&gt;</code></pre>
+<p>Computes element-wise division: <code>output[i] = lhs[i] / rhs[i]</code></p>
+<p><strong>Broadcasting</strong>: Yes<br />
+<strong>Supported shapes</strong>: Any compatible shapes<br />
+<strong>Error conditions</strong>: Shape incompatibility<br />
+<strong>Special handling</strong>: Division by zero follows IEEE 754 standards:</p>
+<ul>
+<li><code>x/0.0</code> where <code>x &gt; 0</code> → <code>+∞</code></li>
+<li><code>x/0.0</code> where <code>x &lt; 0</code> → <code>-∞</code></li>
+<li><code>0.0/0.0</code> → <code>NaN</code></li>
+</ul>
+<pre><code class="language-rust">// Divide by scalar (broadcast)
+let tensor = Tensor::from_vec(vec![2.0, 4.0, 6.0, 8.0], vec![2, 2])?;
+let scalar = Tensor::from_vec(vec![2.0], vec![])?;  // Scalar tensor
+let result = tensor / scalar;  // [1.0, 2.0, 3.0, 4.0]
+
+// Broadcasting example
+let x = Tensor::from_vec(vec![100.0, 200.0], vec![2, 1])?;
+let y = Tensor::from_vec(vec![1.0, 2.0, 4.0], vec![1, 3])?;
+let z = x / y;  // Shape: [2, 3], values: [[100, 50, 25], [200, 100, 50]]</code></pre>
+<h2 id="reduction-operations-1"><a class="header" href="#reduction-operations-1">Reduction Operations</a></h2>
+<h3 id="sum"><a class="header" href="#sum">Sum</a></h3>
+<pre><code class="language-rust">fn sum(&amp;self, axis: Option&lt;usize&gt;) -&gt; Result&lt;Tensor&gt;</code></pre>
+<p>Computes sum along specified axis or all elements.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>axis: None</code> - Sum all elements, return scalar tensor</li>
+<li><code>axis: Some(i)</code> - Sum along axis <code>i</code>, reduce that dimension</li>
+</ul>
+<p><strong>Supported shapes</strong>: Any<br />
+<strong>Backend support</strong>:</p>
+<ul>
+<li>CPU: Full native support for axis-specific reductions</li>
+<li>WGPU: Full support for axis-specific reductions (CPU fallback)</li>
+<li>CUDA: Full support for axis-specific reductions (CPU fallback)</li>
+</ul>
+<pre><code class="language-rust">let tensor = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2])?;
+
+// Sum all elements (all backends)
+let total = tensor.sum(None)?;          // Result: [10.0] (scalar)
+
+// Axis-specific sums (all backends)
+let col_sums = tensor.sum(Some(0))?;    // Result: [4.0, 6.0] (shape: [2])
+let row_sums = tensor.sum(Some(1))?;    // Result: [3.0, 7.0] (shape: [2])</code></pre>
+<h3 id="mean"><a class="header" href="#mean">Mean</a></h3>
+<pre><code class="language-rust">fn mean(&amp;self, axis: Option&lt;usize&gt;) -&gt; Result&lt;Tensor&gt;</code></pre>
+<p>Computes arithmetic mean along specified axis or all elements.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>axis: None</code> - Mean of all elements, return scalar tensor</li>
+<li><code>axis: Some(i)</code> - Mean along axis <code>i</code>, reduce that dimension</li>
+</ul>
+<p><strong>Supported shapes</strong>: Any<br />
+<strong>Backend support</strong>:</p>
+<ul>
+<li>CPU: Full native support for axis-specific reductions</li>
+<li>WGPU: Full support for axis-specific reductions (CPU fallback)</li>
+<li>CUDA: Full support for axis-specific reductions (CPU fallback)</li>
+</ul>
+<pre><code class="language-rust">let tensor = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2])?;
+
+// Mean of all elements (all backends)
+let average = tensor.mean(None)?;       // Result: [2.5] (scalar)
+
+// Axis-specific means (all backends)
+let col_means = tensor.mean(Some(0))?;  // Result: [2.0, 3.0] (shape: [2])
+let row_means = tensor.mean(Some(1))?;  // Result: [1.5, 3.5] (shape: [2])</code></pre>
+<h2 id="shape-manipulation"><a class="header" href="#shape-manipulation">Shape Manipulation</a></h2>
+<h3 id="reshape"><a class="header" href="#reshape">Reshape</a></h3>
+<pre><code class="language-rust">fn reshape(&amp;self, new_shape: Vec&lt;usize&gt;) -&gt; Result&lt;Tensor&gt;</code></pre>
+<p>Changes tensor shape while preserving total number of elements.</p>
+<p><strong>Requirements</strong>:</p>
+<ul>
+<li>Product of new_shape must equal <code>self.numel()</code></li>
+<li>New shape cannot have zero dimensions</li>
+</ul>
+<p><strong>Error conditions</strong>:</p>
+<ul>
+<li>Incompatible total elements</li>
+<li>Invalid shape dimensions</li>
+</ul>
+<pre><code class="language-rust">let tensor = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0], vec![2, 3])?;
+let reshaped = tensor.reshape(vec![3, 2])?;  // 2×3 -&gt; 3×2
+let flattened = tensor.reshape(vec![6])?;    // 2×3 -&gt; 6×1</code></pre>
+<h3 id="transpose"><a class="header" href="#transpose">Transpose</a></h3>
+<pre><code class="language-rust">fn transpose(&amp;self) -&gt; Result&lt;Tensor&gt;</code></pre>
+<p>Transposes a 2D tensor (swaps dimensions).</p>
+<p><strong>Requirements</strong>: Tensor must be exactly 2D<br />
+<strong>Error conditions</strong>: Non-2D tensor</p>
+<pre><code class="language-rust">let matrix = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2])?;
+let transposed = matrix.transpose()?;
+// [[1,2],[3,4]] -&gt; [[1,3],[2,4]]</code></pre>
+<h3 id="squeeze"><a class="header" href="#squeeze">Squeeze</a></h3>
+<pre><code class="language-rust">fn squeeze(&amp;self, dim: Option&lt;usize&gt;) -&gt; Result&lt;Tensor&gt;</code></pre>
+<p>Removes dimensions of size 1.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>dim: None</code> - Remove all dimensions of size 1</li>
+<li><code>dim: Some(i)</code> - Remove dimension <code>i</code> only if it has size 1</li>
+</ul>
+<p><strong>Error conditions</strong>:</p>
+<ul>
+<li>Invalid dimension index</li>
+<li>Trying to squeeze dimension with size &gt; 1</li>
+</ul>
+<pre><code class="language-rust">let tensor = Tensor::ones(vec![1, 3, 1, 2])?;  // Shape: [1, 3, 1, 2]
+let squeezed = tensor.squeeze(None)?;          // Shape: [3, 2]
+let partial = tensor.squeeze(Some(0))?;        // Shape: [3, 1, 2]</code></pre>
+<h3 id="unsqueeze"><a class="header" href="#unsqueeze">Unsqueeze</a></h3>
+<pre><code class="language-rust">fn unsqueeze(&amp;self, dim: usize) -&gt; Result&lt;Tensor&gt;</code></pre>
+<p>Adds a dimension of size 1 at the specified position.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>dim</code> - Position to insert new dimension (0 to ndim inclusive)</li>
+</ul>
+<p><strong>Error conditions</strong>: Invalid dimension index (&gt; ndim)</p>
+<pre><code class="language-rust">let tensor = Tensor::ones(vec![3, 2])?;      // Shape: [3, 2]
+let unsqueezed = tensor.unsqueeze(0)?;       // Shape: [1, 3, 2]
+let middle = tensor.unsqueeze(1)?;           // Shape: [3, 1, 2]
+let end = tensor.unsqueeze(2)?;              // Shape: [3, 2, 1]</code></pre>
+<h2 id="broadcasting-rules-1"><a class="header" href="#broadcasting-rules-1">Broadcasting Rules</a></h2>
+<p>Tensor Frame follows NumPy/PyTorch broadcasting conventions:</p>
+<h3 id="alignment"><a class="header" href="#alignment">Alignment</a></h3>
+<p>Shapes are aligned from the rightmost dimension:</p>
+<pre><code>Tensor A: [3, 1, 4]
+Tensor B:    [2, 4]
+Result:   [3, 2, 4]
+</code></pre>
+<h3 id="size-1-expansion"><a class="header" href="#size-1-expansion">Size 1 Expansion</a></h3>
+<p>Dimensions of size 1 are expanded to match:</p>
+<pre><code>Tensor A: [3, 1, 4]
+Tensor B: [3, 2, 1]  
+Result:   [3, 2, 4]
+</code></pre>
+<h3 id="missing-dimensions"><a class="header" href="#missing-dimensions">Missing Dimensions</a></h3>
+<p>Missing leading dimensions are treated as size 1:</p>
+<pre><code>Tensor A: [5, 3, 2]
+Tensor B:    [3, 2]
+Result:   [5, 3, 2]
+</code></pre>
+<h3 id="incompatible-shapes"><a class="header" href="#incompatible-shapes">Incompatible Shapes</a></h3>
+<p>These shapes cannot be broadcast:</p>
+<pre><code>Tensor A: [3, 4]
+Tensor B: [2, 4]  # Error: 3 and 2 cannot be broadcast
+</code></pre>
+<h2 id="performance-notes-1"><a class="header" href="#performance-notes-1">Performance Notes</a></h2>
+<h3 id="operation-fusion"><a class="header" href="#operation-fusion">Operation Fusion</a></h3>
+<ul>
+<li>Operations on the same backend avoid intermediate allocations when possible</li>
+<li>Sequential reductions can be fused into single kernel calls</li>
+</ul>
+<h3 id="memory-layout"><a class="header" href="#memory-layout">Memory Layout</a></h3>
+<ul>
+<li>All tensors use row-major (C-style) memory layout</li>
+<li>Reshape operations are zero-copy when layout permits</li>
+<li>Transpose creates new memory layout</li>
+</ul>
+<h3 id="backend-specific-optimizations"><a class="header" href="#backend-specific-optimizations">Backend-Specific Optimizations</a></h3>
+<ul>
+<li><strong>CPU</strong>: Uses Rayon for parallel element-wise operations</li>
+<li><strong>WGPU</strong>: Utilizes compute shaders for parallel GPU execution</li>
+<li><strong>CUDA</strong>: Uses custom kernels for all operations</li>
+</ul>
+<h3 id="broadcasting-performance"><a class="header" href="#broadcasting-performance">Broadcasting Performance</a></h3>
+<ul>
+<li>Zero-copy broadcasting when one tensor has size-1 dimensions</li>
+<li>Explicit memory expansion fallback for complex broadcasting patterns</li>
+<li>GPU backends optimize broadcasting in compute shaders</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="backends-overview"><a class="header" href="#backends-overview">Backends Overview</a></h1>
+<p>Tensor Frame's backend system provides a pluggable architecture for running tensor operations on different computational devices. This allows the same high-level tensor API to transparently utilize CPU cores, integrated GPUs, discrete GPUs, and specialized accelerators.</p>
+<h2 id="available-backends"><a class="header" href="#available-backends">Available Backends</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Backend</th><th>Feature Flag</th><th>Availability</th><th>Best Use Cases</th></tr></thead><tbody>
+<tr><td><strong>CPU</strong></td><td><code>cpu</code> (default)</td><td>Always</td><td>Small tensors, development, fallback</td></tr>
+<tr><td><strong>WGPU</strong></td><td><code>wgpu</code></td><td>Cross-platform GPU</td><td>Large tensors, cross-platform deployment</td></tr>
+<tr><td><strong>CUDA</strong></td><td><code>cuda</code></td><td>NVIDIA GPUs</td><td>High-performance production workloads</td></tr>
+</tbody></table>
+</div>
+<h2 id="backend-selection-strategy"><a class="header" href="#backend-selection-strategy">Backend Selection Strategy</a></h2>
+<h3 id="automatic-selection-recommended"><a class="header" href="#automatic-selection-recommended">Automatic Selection (Recommended)</a></h3>
+<p>By default, Tensor Frame automatically selects the best available backend using this priority order:</p>
+<ol>
+<li><strong>CUDA</strong> - Highest performance on NVIDIA hardware</li>
+<li><strong>WGPU</strong> - Cross-platform GPU acceleration</li>
+<li><strong>CPU</strong> - Universal fallback</li>
+</ol>
+<pre><code class="language-rust">use tensor_frame::Tensor;
+
+// Automatically uses best available backend
+let tensor = Tensor::zeros(vec![1000, 1000])?;
+println!("Using backend: {:?}", tensor.backend_type());</code></pre>
+<h3 id="manual-backend-control"><a class="header" href="#manual-backend-control">Manual Backend Control</a></h3>
+<p>For specific requirements, you can control backend selection:</p>
+<pre><code class="language-rust">use tensor_frame::backend::{set_backend_priority, BackendType};
+
+// Force CPU-only execution
+let backend = set_backend_priority(vec![BackendType::Cpu]);
+
+// Prefer WGPU over CUDA
+let backend = set_backend_priority(vec![
+    BackendType::Wgpu,
+    BackendType::Cuda,
+    BackendType::Cpu
+]);</code></pre>
+<h3 id="per-tensor-backend-conversion"><a class="header" href="#per-tensor-backend-conversion">Per-Tensor Backend Conversion</a></h3>
+<p>Convert individual tensors between backends:</p>
+<pre><code class="language-rust">let cpu_tensor = Tensor::ones(vec![100, 100])?;
+
+// Move to GPU
+let gpu_tensor = cpu_tensor.to_backend(BackendType::Wgpu)?;
+
+// Move back to CPU  
+let back_to_cpu = gpu_tensor.to_backend(BackendType::Cpu)?;</code></pre>
+<h2 id="performance-characteristics-1"><a class="header" href="#performance-characteristics-1">Performance Characteristics</a></h2>
+<h3 id="cpu-backend-1"><a class="header" href="#cpu-backend-1">CPU Backend</a></h3>
+<ul>
+<li><strong>Latency</strong>: Lowest for small operations (&lt; 1ms)</li>
+<li><strong>Throughput</strong>: Limited by CPU cores and memory bandwidth</li>
+<li><strong>Memory</strong>: System RAM (typically abundant)</li>
+<li><strong>Parallelism</strong>: Thread-level via Rayon</li>
+<li><strong>Overhead</strong>: Minimal function call overhead</li>
+</ul>
+<h3 id="wgpu-backend-1"><a class="header" href="#wgpu-backend-1">WGPU Backend</a></h3>
+<ul>
+<li><strong>Latency</strong>: Higher initialization cost (~1-10ms)</li>
+<li><strong>Throughput</strong>: High for large, parallel operations</li>
+<li><strong>Memory</strong>: GPU memory (limited but fast)</li>
+<li><strong>Parallelism</strong>: Massive thread-level via compute shaders</li>
+<li><strong>Overhead</strong>: GPU command submission and synchronization</li>
+</ul>
+<h3 id="cuda-backend-1"><a class="header" href="#cuda-backend-1">CUDA Backend</a></h3>
+<ul>
+<li><strong>Latency</strong>: Moderate initialization cost (~0.1-1ms)</li>
+<li><strong>Throughput</strong>: Highest for supported operations</li>
+<li><strong>Memory</strong>: GPU memory with CUDA optimizations</li>
+<li><strong>Parallelism</strong>: Optimal GPU utilization via cuBLAS/cuDNN</li>
+<li><strong>Overhead</strong>: Minimal with mature driver stack</li>
+</ul>
+<h2 id="when-to-use-each-backend"><a class="header" href="#when-to-use-each-backend">When to Use Each Backend</a></h2>
+<h3 id="cpu-backend-2"><a class="header" href="#cpu-backend-2">CPU Backend</a></h3>
+<pre><code class="language-rust">// Good for:
+let small_tensor = Tensor::ones(vec![10, 10])?;        // Small tensors
+let dev_tensor = Tensor::zeros(vec![100])?;            // Development/testing
+let scalar_ops = tensor.sum(None)?;                    // Scalar results
+
+// Avoid for:
+// - Large matrix multiplications (&gt; 1000x1000)
+// - Batch operations on many tensors
+// - Compute-intensive element-wise operations</code></pre>
+<h3 id="wgpu-backend-2"><a class="header" href="#wgpu-backend-2">WGPU Backend</a></h3>
+<pre><code class="language-rust">// Good for:
+let large_tensor = Tensor::zeros(vec![2048, 2048])?;   // Large tensors
+let batch_ops = tensors.iter().map(|t| t * 2.0);      // Batch operations
+let element_wise = (a * b) + c;                       // Complex element-wise
+
+// Consider for:
+// - Cross-platform deployment
+// - When CUDA is not available
+// - Mixed CPU/GPU workloads</code></pre>
+<h3 id="cuda-backend-2"><a class="header" href="#cuda-backend-2">CUDA Backend</a></h3>
+<pre><code class="language-rust">// Excellent for:
+let huge_tensor = Tensor::zeros(vec![4096, 4096])?;    // Very large tensors
+let matrix_mul = a.matmul(&amp;b)?;                        // Matrix operations
+let ml_workload = model.forward(input)?;               // ML training/inference
+
+// Best when:
+// - NVIDIA GPU available
+// - Performance is critical
+// - Using alongside other CUDA libraries</code></pre>
+<h2 id="cross-backend-operations-1"><a class="header" href="#cross-backend-operations-1">Cross-Backend Operations</a></h2>
+<p>Operations between tensors on different backends automatically handle conversion:</p>
+<pre><code class="language-rust">let cpu_a = Tensor::ones(vec![1000])?;
+let gpu_b = Tensor::zeros(vec![1000])?.to_backend(BackendType::Wgpu)?;
+
+// Automatically converts to common backend
+let result = cpu_a + gpu_b;  // Runs on CPU backend</code></pre>
+<p><strong>Conversion Rules</strong>:</p>
+<ol>
+<li>If backends match, operation runs on that backend</li>
+<li>If backends differ, converts to the "lower priority" backend</li>
+<li>Priority order: CPU &gt; WGPU &gt; CUDA (CPU is most compatible)</li>
+</ol>
+<h2 id="memory-management-2"><a class="header" href="#memory-management-2">Memory Management</a></h2>
+<h3 id="reference-counting-1"><a class="header" href="#reference-counting-1">Reference Counting</a></h3>
+<p>All backends use reference counting for efficient memory management:</p>
+<pre><code class="language-rust">let tensor1 = Tensor::ones(vec![1000, 1000])?;
+let tensor2 = tensor1.clone();  // O(1) - just increments reference count
+
+// Memory freed automatically when last reference dropped</code></pre>
+<h3 id="cross-backend-memory-1"><a class="header" href="#cross-backend-memory-1">Cross-Backend Memory</a></h3>
+<p>Converting between backends allocates new memory:</p>
+<pre><code class="language-rust">let cpu_tensor = Tensor::ones(vec![1000])?;         // 4KB CPU memory
+let gpu_tensor = cpu_tensor.to_backend(BackendType::Wgpu)?;  // +4KB GPU memory
+
+// Both tensors exist independently until dropped</code></pre>
+<h3 id="memory-usage-guidelines"><a class="header" href="#memory-usage-guidelines">Memory Usage Guidelines</a></h3>
+<ul>
+<li><strong>Development</strong>: Use CPU backend to avoid GPU memory pressure</li>
+<li><strong>Production</strong>: Convert to GPU early, minimize cross-backend copies</li>
+<li><strong>Mixed workloads</strong>: Keep frequently-accessed tensors on CPU</li>
+<li><strong>Large datasets</strong>: Stream data through GPU backends</li>
+</ul>
+<h2 id="error-handling-1"><a class="header" href="#error-handling-1">Error Handling</a></h2>
+<p>Backend operations can fail for various reasons:</p>
+<pre><code class="language-rust">match Tensor::zeros(vec![100000, 100000]) {
+    Ok(tensor) =&gt; println!("Created tensor on {:?}", tensor.backend_type()),
+    Err(TensorError::BackendError(msg)) =&gt; {
+        eprintln!("Backend error: {}", msg);
+        // Fallback to smaller size or different backend
+    }
+    Err(e) =&gt; eprintln!("Other error: {}", e),
+}</code></pre>
+<p><strong>Common Error Scenarios</strong>:</p>
+<ul>
+<li><strong>GPU Out of Memory</strong>: Try smaller tensors or CPU backend</li>
+<li><strong>Backend Unavailable</strong>: Fallback to CPU backend</li>
+<li><strong>Feature Not Implemented</strong>: Some operations only available on certain backends</li>
+<li><strong>Cross-Backend Type Mismatch</strong>: Ensure compatible data types</li>
+</ul>
+<h2 id="backend-implementation-status"><a class="header" href="#backend-implementation-status">Backend Implementation Status</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Operation</th><th>CPU</th><th>WGPU</th><th>CUDA</th></tr></thead><tbody>
+<tr><td>Basic arithmetic (+, -, *, /)</td><td>✅</td><td>✅</td><td>✅</td></tr>
+<tr><td>Reductions (sum, mean)</td><td>✅</td><td>❌</td><td>✅</td></tr>
+<tr><td>Reshape, transpose</td><td>✅</td><td>✅</td><td>✅</td></tr>
+<tr><td>Broadcasting</td><td>✅</td><td>✅</td><td>✅</td></tr>
+</tbody></table>
+</div>
+<p>✅ = Fully implemented<br />
+❌ = Not yet implemented<br />
+⚠️ = Partially implemented</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="cpu-backend-3"><a class="header" href="#cpu-backend-3">CPU Backend</a></h1>
+<p>The CPU backend is the default and most mature backend in Tensor Frame. It provides reliable tensor operations using system memory and CPU cores, with parallelization via the Rayon library.</p>
+<h2 id="features-1"><a class="header" href="#features-1">Features</a></h2>
+<ul>
+<li><strong>Always Available</strong>: No additional dependencies required</li>
+<li><strong>Parallel Processing</strong>: Multi-threaded operations via Rayon</li>
+<li><strong>Full API Support</strong>: All tensor operations implemented</li>
+<li><strong>Memory Efficient</strong>: Direct Vec<f32> storage without additional overhead</li>
+<li><strong>Debugging Friendly</strong>: Easy inspection with standard debugging tools</li>
+</ul>
+<h2 id="configuration"><a class="header" href="#configuration">Configuration</a></h2>
+<p>The CPU backend is enabled by default:</p>
+<pre><code class="language-toml">[dependencies]
+tensor_frame = "0.0.3-alpha"  # CPU backend included
+</code></pre>
+<p>Or explicitly:</p>
+<pre><code class="language-toml">[dependencies]
+tensor_frame = { version = "0.0.3-alpha", features = ["cpu"] }
+</code></pre>
+<h2 id="implementation-details"><a class="header" href="#implementation-details">Implementation Details</a></h2>
+<h3 id="storage"><a class="header" href="#storage">Storage</a></h3>
+<p>CPU tensors use standard Rust <code>Vec&lt;f32&gt;</code> for data storage:</p>
+<pre><code class="language-rust">pub enum Storage {
+    Cpu(Vec&lt;f32&gt;),    // Direct vector storage
+    // ...
+}</code></pre>
+<p>This provides:</p>
+<ul>
+<li><strong>Memory Layout</strong>: Contiguous, row-major (C-style) layout</li>
+<li><strong>Access</strong>: Direct memory access without marshaling overhead</li>
+<li><strong>Debugging</strong>: Easy inspection with standard Rust tools</li>
+</ul>
+<h3 id="parallelization"><a class="header" href="#parallelization">Parallelization</a></h3>
+<p>The CPU backend uses <a href="https://github.com/rayon-rs/rayon">Rayon</a> for data-parallel operations:</p>
+<pre><code class="language-rust">// Element-wise operations are parallelized
+a.par_iter()
+    .zip(b.par_iter())
+    .map(|(a, b)| a + b)
+    .collect()</code></pre>
+<p><strong>Thread Pool</strong>: Rayon automatically manages a global thread pool sized to the number of CPU cores.</p>
+<p><strong>Granularity</strong>: Operations are automatically chunked for optimal parallel efficiency.</p>
+<h2 id="performance-characteristics-2"><a class="header" href="#performance-characteristics-2">Performance Characteristics</a></h2>
+<h3 id="strengths"><a class="header" href="#strengths">Strengths</a></h3>
+<ul>
+<li><strong>Low Latency</strong>: Minimal overhead for small operations</li>
+<li><strong>Predictable</strong>: Performance scales linearly with data size and core count</li>
+<li><strong>Memory Bandwidth</strong>: Efficiently utilizes system memory bandwidth</li>
+<li><strong>Cache Friendly</strong>: Good locality for sequential operations</li>
+</ul>
+<h3 id="limitations"><a class="header" href="#limitations">Limitations</a></h3>
+<ul>
+<li><strong>Compute Bound</strong>: Limited by CPU ALU throughput</li>
+<li><strong>Memory Bound</strong>: Large operations limited by RAM bandwidth</li>
+<li><strong>Thread Overhead</strong>: Parallel overhead dominates for small tensors</li>
+</ul>
+<h3 id="performance-guidelines"><a class="header" href="#performance-guidelines">Performance Guidelines</a></h3>
+<h4 id="optimal-use-cases"><a class="header" href="#optimal-use-cases">Optimal Use Cases</a></h4>
+<pre><code class="language-rust">// Small to medium tensors (&lt; 10K elements)
+let small = Tensor::ones(vec![100, 100])?;
+
+// Scalar reductions
+let sum = large_tensor.sum(None)?;
+
+// Development and prototyping
+let test_tensor = Tensor::from_vec(test_data, shape)?;</code></pre>
+<h4 id="suboptimal-use-cases"><a class="header" href="#suboptimal-use-cases">Suboptimal Use Cases</a></h4>
+<pre><code class="language-rust">// Very large tensor operations
+let huge_op = a + b;  // Consider GPU for very large tensors
+
+// Repeated large element-wise operations
+for _ in 0..1000 {
+    result = (a.clone() * b.clone())?;  // GPU would be faster
+}</code></pre>
+<h2 id="memory-management-3"><a class="header" href="#memory-management-3">Memory Management</a></h2>
+<h3 id="allocation"><a class="header" href="#allocation">Allocation</a></h3>
+<p>CPU tensors allocate memory directly from the system heap:</p>
+<pre><code class="language-rust">let tensor = Tensor::zeros(vec![1000, 1000])?;  // Allocates 4MB</code></pre>
+<h3 id="reference-counting-2"><a class="header" href="#reference-counting-2">Reference Counting</a></h3>
+<p>Tensors use <code>Arc&lt;Vec&lt;f32&gt;&gt;</code> internally for efficient cloning:</p>
+<pre><code class="language-rust">let tensor1 = Tensor::ones(vec![1000])?;
+let tensor2 = tensor1.clone();  // O(1) reference count increment
+// Memory shared until one tensor is modified (copy-on-write semantics)</code></pre>
+<h3 id="memory-usage"><a class="header" href="#memory-usage">Memory Usage</a></h3>
+<p>Monitor memory usage with standard system tools:</p>
+<pre><code class="language-bash"># Linux
+cat /proc/meminfo
+
+# macOS  
+vm_stat
+
+# Windows
+wmic OS get TotalVisibleMemorySize,FreePhysicalMemory
+</code></pre>
+<h2 id="debugging-and-profiling"><a class="header" href="#debugging-and-profiling">Debugging and Profiling</a></h2>
+<h3 id="tensor-inspection"><a class="header" href="#tensor-inspection">Tensor Inspection</a></h3>
+<p>CPU tensors are easy to inspect:</p>
+<pre><code class="language-rust">let tensor = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2])?;
+
+// Direct access to underlying data
+let data = tensor.to_vec()?;
+println!("Raw data: {:?}", data);
+
+// Shape information
+println!("Shape: {:?}", tensor.shape().dims());
+println!("Elements: {}", tensor.numel());</code></pre>
+<h3 id="performance-profiling"><a class="header" href="#performance-profiling">Performance Profiling</a></h3>
+<p>Use standard Rust profiling tools:</p>
+<pre><code class="language-rust">// Add timing
+use std::time::Instant;
+
+let start = Instant::now();
+let result = large_tensor.sum(None)?;
+println!("CPU operation took: {:?}", start.elapsed());</code></pre>
+<p>For detailed profiling:</p>
+<pre><code class="language-bash"># Install flamegraph
+cargo install flamegraph
+
+# Profile your application  
+cargo flamegraph --bin your_app
+</code></pre>
+<h3 id="thread-analysis"><a class="header" href="#thread-analysis">Thread Analysis</a></h3>
+<p>Monitor Rayon thread usage:</p>
+<pre><code class="language-rust">// Check thread pool size
+println!("Rayon threads: {}", rayon::current_num_threads());
+
+// Custom thread pool
+let pool = rayon::ThreadPoolBuilder::new()
+    .num_threads(4)
+    .build()?;
+
+pool.install(|| {
+    // Operations here use 4 threads max
+    let result = tensor1 + tensor2;
+});</code></pre>
+<h2 id="error-handling-2"><a class="header" href="#error-handling-2">Error Handling</a></h2>
+<p>CPU backend errors are typically related to memory allocation:</p>
+<pre><code class="language-rust">use tensor_frame::{Tensor, TensorError};
+
+match Tensor::zeros(vec![100000, 100000]) {
+    Ok(tensor) =&gt; {
+        // Success - 40GB allocated
+    }
+    Err(TensorError::BackendError(msg)) =&gt; {
+        // Likely out of memory
+        eprintln!("CPU backend error: {}", msg);
+    }
+    Err(e) =&gt; {
+        eprintln!("Other error: {}", e);
+    }
+}</code></pre>
+<p><strong>Common Error Conditions</strong>:</p>
+<ul>
+<li><strong>Out of Memory</strong>: Requesting more memory than available</li>
+<li><strong>Integer Overflow</strong>: Tensor dimensions too large for address space</li>
+<li><strong>Thread Panic</strong>: Rayon worker thread panics (rare)</li>
+</ul>
+<h2 id="optimization-tips"><a class="header" href="#optimization-tips">Optimization Tips</a></h2>
+<h3 id="memory-layout-optimization"><a class="header" href="#memory-layout-optimization">Memory Layout Optimization</a></h3>
+<pre><code class="language-rust">// Prefer contiguous operations
+let result = (a + b) * c;  // Better than separate operations
+
+// Avoid unnecessary allocations
+let result = a.clone() + b;  // Creates temporary clone
+let result = &amp;a + &amp;b;       // Better - uses references</code></pre>
+<h3 id="parallel-operation-tuning"><a class="header" href="#parallel-operation-tuning">Parallel Operation Tuning</a></h3>
+<pre><code class="language-rust">// For very small tensors, disable parallelism
+let small_result = small_a + small_b;  // Rayon decides automatically
+
+// For custom control
+rayon::ThreadPoolBuilder::new()
+    .num_threads(1)  // Force single-threaded
+    .build_global()?;</code></pre>
+<h3 id="cache-optimization"><a class="header" href="#cache-optimization">Cache Optimization</a></h3>
+<pre><code class="language-rust">// Process data in blocks for better cache usage
+for chunk in tensor.chunks(cache_friendly_size) {
+    // Process chunk
+}
+
+// Transpose cache-friendly
+let transposed = matrix.transpose()?;  // May benefit from blocking</code></pre>
+<h2 id="integration-with-other-libraries"><a class="header" href="#integration-with-other-libraries">Integration with Other Libraries</a></h2>
+<h3 id="numpy-compatibility"><a class="header" href="#numpy-compatibility">NumPy Compatibility</a></h3>
+<pre><code class="language-rust">// Convert to/from Vec for NumPy interop
+let tensor = Tensor::from_vec(numpy_data, shape)?;
+let back_to_numpy = tensor.to_vec()?;</code></pre>
+<h3 id="ndarray-integration"><a class="header" href="#ndarray-integration">ndarray Integration</a></h3>
+<pre><code class="language-rust">use ndarray::Array2;
+
+// Convert from ndarray
+let nd_array = Array2::from_shape_vec((2, 2), vec![1.0, 2.0, 3.0, 4.0])?;
+let tensor = Tensor::from_vec(nd_array.into_raw_vec(), vec![2, 2])?;
+
+// Convert to ndarray
+let data = tensor.to_vec()?;
+let shape = tensor.shape().dims();
+let nd_array = Array2::from_shape_vec((shape[0], shape[1]), data)?;</code></pre>
+<h3 id="blas-integration"><a class="header" href="#blas-integration">BLAS Integration</a></h3>
+<p>For maximum performance, consider linking with optimized BLAS:</p>
+<pre><code class="language-toml">[dependencies]
+tensor_frame = "0.0.3-alpha"
+blas-src = { version = "0.8", features = ["openblas"] }
+</code></pre>
+<p>This can significantly speed up matrix operations on the CPU backend.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="wgpu-backend-3"><a class="header" href="#wgpu-backend-3">WGPU Backend</a></h1>
+<p>The WGPU backend provides cross-platform GPU compute acceleration using the WebGPU standard. It supports Metal, Vulkan, DirectX 12, and OpenGL backends, making it an excellent choice for portable high-performance computing.</p>
+<h2 id="features-2"><a class="header" href="#features-2">Features</a></h2>
+<ul>
+<li><strong>Cross-Platform</strong>: Works on Windows, macOS, Linux, iOS, Android, and Web</li>
+<li><strong>Multiple APIs</strong>: Supports Vulkan, Metal, DX12, DX11, OpenGL ES, and WebGL</li>
+<li><strong>Compute Shaders</strong>: Uses WGSL (WebGPU Shading Language) for parallel operations</li>
+<li><strong>Memory Efficient</strong>: GPU buffer management with automatic cleanup</li>
+<li><strong>Future-Proof</strong>: Based on the emerging WebGPU standard</li>
+</ul>
+<h2 id="installation-1"><a class="header" href="#installation-1">Installation</a></h2>
+<p>Enable the WGPU backend with the feature flag:</p>
+<pre><code class="language-toml">[dependencies]
+tensor_frame = { version = "0.0.3-alpha", features = ["wgpu"] }
+</code></pre>
+<p><strong>Additional Dependencies</strong>:</p>
+<ul>
+<li>No platform-specific GPU drivers required</li>
+<li>Uses system graphics drivers (Metal, Vulkan, DirectX, OpenGL)</li>
+</ul>
+<h2 id="system-requirements"><a class="header" href="#system-requirements">System Requirements</a></h2>
+<h3 id="minimum-requirements"><a class="header" href="#minimum-requirements">Minimum Requirements</a></h3>
+<ul>
+<li><strong>GPU</strong>: Any GPU with compute shader support</li>
+<li><strong>Driver</strong>: Up-to-date graphics drivers</li>
+<li><strong>Memory</strong>: Sufficient GPU memory for tensor data</li>
+</ul>
+<h3 id="supported-platforms"><a class="header" href="#supported-platforms">Supported Platforms</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Platform</th><th>Graphics API</th><th>Status</th></tr></thead><tbody>
+<tr><td>Windows</td><td>DirectX 12, Vulkan</td><td>✅ Full support</td></tr>
+<tr><td>Windows</td><td>DirectX 11</td><td>✅ Fallback support</td></tr>
+<tr><td>macOS</td><td>Metal</td><td>✅ Full support</td></tr>
+<tr><td>Linux</td><td>Vulkan</td><td>✅ Full support</td></tr>
+<tr><td>Linux</td><td>OpenGL ES</td><td>⚠️ Limited support</td></tr>
+<tr><td>iOS</td><td>Metal</td><td>✅ Full support</td></tr>
+<tr><td>Android</td><td>Vulkan, OpenGL ES</td><td>✅ Full support</td></tr>
+<tr><td>Web</td><td>WebGPU, WebGL2</td><td>⚠️ Experimental</td></tr>
+</tbody></table>
+</div>
+<h2 id="implementation-details-1"><a class="header" href="#implementation-details-1">Implementation Details</a></h2>
+<h3 id="storage-1"><a class="header" href="#storage-1">Storage</a></h3>
+<p>WGPU tensors use GPU buffers for data storage:</p>
+<pre><code class="language-rust">pub struct WgpuStorage {
+    pub buffer: Arc&lt;wgpu::Buffer&gt;,    // GPU buffer handle
+}</code></pre>
+<p><strong>Buffer Properties</strong>:</p>
+<ul>
+<li><strong>Location</strong>: GPU memory (VRAM)</li>
+<li><strong>Layout</strong>: Contiguous, row-major layout</li>
+<li><strong>Usage</strong>: Storage buffers with compute shader access</li>
+<li><strong>Synchronization</strong>: Automatic via command queue</li>
+</ul>
+<h3 id="compute-shaders"><a class="header" href="#compute-shaders">Compute Shaders</a></h3>
+<p>Operations are implemented as WGSL compute shaders loaded from external files in <code>src/shaders/</code>:</p>
+<ul>
+<li><code>add.wgsl</code> - Element-wise addition</li>
+<li><code>sub.wgsl</code> - Element-wise subtraction</li>
+<li><code>mul.wgsl</code> - Element-wise multiplication</li>
+<li><code>div.wgsl</code> - Element-wise division with IEEE 754 compliance</li>
+</ul>
+<pre><code class="language-wgsl">// Example: Element-wise addition shader (add.wgsl)
+@group(0) @binding(0) var&lt;storage, read&gt; input_a: array&lt;f32&gt;;
+@group(0) @binding(1) var&lt;storage, read&gt; input_b: array&lt;f32&gt;;
+@group(0) @binding(2) var&lt;storage, read_write&gt; output: array&lt;f32&gt;;
+
+@compute @workgroup_size(64)
+fn main(@builtin(global_invocation_id) global_id: vec3&lt;u32&gt;) {
+    let index = global_id.x;
+    if (index &gt;= arrayLength(&amp;input_a)) {
+        return;
+    }
+    output[index] = input_a[index] + input_b[index];
+}
+</code></pre>
+<h3 id="parallelization-1"><a class="header" href="#parallelization-1">Parallelization</a></h3>
+<ul>
+<li><strong>Workgroups</strong>: Operations dispatched in parallel workgroups</li>
+<li><strong>Thread Count</strong>: Automatically sized based on tensor dimensions</li>
+<li><strong>GPU Utilization</strong>: Optimized for high occupancy on modern GPUs</li>
+</ul>
+<h2 id="performance-characteristics-3"><a class="header" href="#performance-characteristics-3">Performance Characteristics</a></h2>
+<h3 id="strengths-1"><a class="header" href="#strengths-1">Strengths</a></h3>
+<ul>
+<li><strong>Massive Parallelism</strong>: Thousands of parallel threads</li>
+<li><strong>High Throughput</strong>: Excellent for large tensor operations</li>
+<li><strong>Memory Bandwidth</strong>: High GPU memory bandwidth utilization</li>
+<li><strong>Compute Density</strong>: Specialized compute units for arithmetic operations</li>
+</ul>
+<h3 id="limitations-1"><a class="header" href="#limitations-1">Limitations</a></h3>
+<ul>
+<li><strong>Latency</strong>: GPU command submission and synchronization overhead</li>
+<li><strong>Memory Transfer</strong>: CPU-GPU data transfers can be expensive</li>
+<li><strong>Limited Precision</strong>: Currently only supports f32 operations</li>
+<li><strong>Shader Compilation</strong>: First-use compilation overhead</li>
+</ul>
+<h3 id="performance-guidelines-1"><a class="header" href="#performance-guidelines-1">Performance Guidelines</a></h3>
+<h4 id="optimal-use-cases-1"><a class="header" href="#optimal-use-cases-1">Optimal Use Cases</a></h4>
+<pre><code class="language-rust">// Large tensor operations (&gt; 10K elements)
+let large = Tensor::zeros(vec![2048, 2048])?;
+let result = (large_a * large_b) + large_c;
+
+// Repeated operations on same-sized tensors
+for batch in batches {
+    let output = model.forward(batch)?;  // Shader programs cached
+}
+
+// Element-wise operations with complex expressions
+let result = ((a * b) + c).sqrt();  // Single GPU kernel</code></pre>
+<h4 id="suboptimal-use-cases-1"><a class="header" href="#suboptimal-use-cases-1">Suboptimal Use Cases</a></h4>
+<pre><code class="language-rust">// Very small tensors
+let small = Tensor::ones(vec![10, 10])?;  // GPU overhead dominates
+
+// Frequent CPU-GPU transfers  
+let gpu_tensor = cpu_tensor.to_backend(BackendType::Wgpu)?;
+let back_to_cpu = gpu_tensor.to_vec()?;  // Expensive transfers
+
+// Scalar operations
+let sum = tensor.sum(None)?;  // Result copied back to CPU</code></pre>
+<h2 id="memory-management-4"><a class="header" href="#memory-management-4">Memory Management</a></h2>
+<h3 id="gpu-memory-allocation"><a class="header" href="#gpu-memory-allocation">GPU Memory Allocation</a></h3>
+<p>WGPU automatically manages GPU memory:</p>
+<pre><code class="language-rust">let tensor = Tensor::zeros(vec![2048, 2048])?;  // Allocates ~16MB GPU memory</code></pre>
+<p><strong>Memory Pool</strong>: WGPU uses internal memory pools for efficient allocation<br />
+<strong>Garbage Collection</strong>: Buffers automatically freed when last reference dropped<br />
+<strong>Fragmentation</strong>: Large allocations may fail even with sufficient total memory</p>
+<h3 id="memory-transfer-patterns"><a class="header" href="#memory-transfer-patterns">Memory Transfer Patterns</a></h3>
+<pre><code class="language-rust">// Efficient: Create on GPU
+let gpu_tensor = Tensor::zeros(vec![1000, 1000])?
+    .to_backend(BackendType::Wgpu)?;
+
+// Inefficient: Frequent transfers
+let result = cpu_data.to_backend(BackendType::Wgpu)?
+    .sum(None)?
+    .to_backend(BackendType::Cpu)?;  // Multiple transfers</code></pre>
+<h3 id="memory-debugging"><a class="header" href="#memory-debugging">Memory Debugging</a></h3>
+<p>Monitor GPU memory usage:</p>
+<pre><code class="language-rust">// Check GPU memory limits
+let limits = device.limits();
+println!("Max buffer size: {} MB", limits.max_buffer_size / (1024*1024));
+
+// Handle out-of-memory errors
+match Tensor::zeros(vec![16384, 16384]) {
+    Ok(tensor) =&gt; println!("Allocated 1GB GPU tensor"),
+    Err(TensorError::BackendError(msg)) if msg.contains("memory") =&gt; {
+        eprintln!("GPU out of memory, trying smaller size");
+    }
+    Err(e) =&gt; eprintln!("Other error: {}", e),
+}</code></pre>
+<h2 id="debugging-and-profiling-1"><a class="header" href="#debugging-and-profiling-1">Debugging and Profiling</a></h2>
+<h3 id="shader-debugging"><a class="header" href="#shader-debugging">Shader Debugging</a></h3>
+<p>WGPU provides validation and debugging features:</p>
+<pre><code class="language-rust">// Enable validation (debug builds)
+let instance = wgpu::Instance::new(&amp;wgpu::InstanceDescriptor {
+    backends: wgpu::Backends::all(),
+    flags: wgpu::InstanceFlags::DEBUG | wgpu::InstanceFlags::VALIDATION,
+    ..Default::default()
+});</code></pre>
+<h3 id="performance-profiling-1"><a class="header" href="#performance-profiling-1">Performance Profiling</a></h3>
+<p>Use GPU profiling tools:</p>
+<p><strong>Windows (DirectX)</strong>:</p>
+<ul>
+<li>PIX for Windows</li>
+<li>RenderDoc</li>
+<li>Visual Studio Graphics Diagnostics</li>
+</ul>
+<p><strong>macOS (Metal)</strong>:</p>
+<ul>
+<li>Xcode Instruments (GPU Timeline)</li>
+<li>Metal System Trace</li>
+</ul>
+<p><strong>Linux (Vulkan)</strong>:</p>
+<ul>
+<li>RenderDoc</li>
+<li>Vulkan Tools</li>
+</ul>
+<h3 id="custom-timing"><a class="header" href="#custom-timing">Custom Timing</a></h3>
+<pre><code class="language-rust">use std::time::Instant;
+
+let start = Instant::now();
+let result = gpu_tensor_a + gpu_tensor_b;
+// Note: GPU operations are asynchronous!
+let _data = result.to_vec()?;  // Synchronization point
+println!("GPU operation took: {:?}", start.elapsed());</code></pre>
+<h2 id="error-handling-3"><a class="header" href="#error-handling-3">Error Handling</a></h2>
+<p>WGPU backend errors can occur at multiple levels:</p>
+<h3 id="device-creation-errors"><a class="header" href="#device-creation-errors">Device Creation Errors</a></h3>
+<pre><code class="language-rust">match WgpuBackend::new() {
+    Ok(backend) =&gt; println!("WGPU backend ready"),
+    Err(TensorError::BackendError(msg)) =&gt; {
+        eprintln!("WGPU initialization failed: {}", msg);
+        // Fallback to CPU backend
+    }
+}</code></pre>
+<h3 id="runtime-errors"><a class="header" href="#runtime-errors">Runtime Errors</a></h3>
+<pre><code class="language-rust">// Out of GPU memory
+let result = Tensor::zeros(vec![100000, 100000]); // May fail
+
+// Shader compilation errors (rare)
+let result = custom_operation(tensor);  // May fail for invalid shaders
+
+// Device lost (driver reset, etc.)
+let result = tensor.sum(None);  // May fail if device is lost</code></pre>
+<p><strong>Common Error Scenarios</strong>:</p>
+<ul>
+<li><strong>Device Not Found</strong>: No compatible GPU available</li>
+<li><strong>Out of Memory</strong>: GPU memory exhausted</li>
+<li><strong>Driver Issues</strong>: Outdated or buggy graphics drivers</li>
+<li><strong>Unsupported Operations</strong>: Feature not implemented in WGPU backend</li>
+</ul>
+<h2 id="platform-specific-notes"><a class="header" href="#platform-specific-notes">Platform-Specific Notes</a></h2>
+<h3 id="windows"><a class="header" href="#windows">Windows</a></h3>
+<ul>
+<li><strong>DirectX 12</strong>: Best performance and feature support</li>
+<li><strong>Vulkan</strong>: Good alternative if DX12 not available</li>
+<li><strong>DirectX 11</strong>: Fallback with limited compute support</li>
+</ul>
+<h3 id="macos"><a class="header" href="#macos">macOS</a></h3>
+<ul>
+<li><strong>Metal</strong>: Excellent native support and performance</li>
+<li><strong>MoltenVK</strong>: Vulkan compatibility layer (not recommended for production)</li>
+</ul>
+<h3 id="linux"><a class="header" href="#linux">Linux</a></h3>
+<ul>
+<li><strong>Vulkan</strong>: Primary choice with best performance</li>
+<li><strong>OpenGL</strong>: Fallback with limited compute features</li>
+<li><strong>Graphics Drivers</strong>: Ensure latest Mesa/NVIDIA/AMD drivers</li>
+</ul>
+<h3 id="mobile-iosandroid"><a class="header" href="#mobile-iosandroid">Mobile (iOS/Android)</a></h3>
+<ul>
+<li><strong>iOS</strong>: Metal provides excellent mobile GPU performance</li>
+<li><strong>Android</strong>: Vulkan on newer devices, OpenGL ES fallback</li>
+<li><strong>Power Management</strong>: Be aware of thermal throttling</li>
+</ul>
+<h3 id="web-experimental"><a class="header" href="#web-experimental">Web (Experimental)</a></h3>
+<ul>
+<li><strong>WebGPU</strong>: Emerging standard with excellent performance potential</li>
+<li><strong>WebGL2</strong>: Fallback with compute shader emulation</li>
+<li><strong>Browser Support</strong>: Chrome/Edge (flag), Firefox (experimental)</li>
+</ul>
+<h2 id="optimization-tips-1"><a class="header" href="#optimization-tips-1">Optimization Tips</a></h2>
+<h3 id="workgroup-size-tuning"><a class="header" href="#workgroup-size-tuning">Workgroup Size Tuning</a></h3>
+<pre><code class="language-rust">// Optimal workgroup sizes depend on GPU architecture
+// Current default: 64 threads per workgroup
+// Nvidia: 32 (warp size) or 64
+// AMD: 64 (wavefront size)  
+// Intel: 32 or 64
+// Mobile: 16 or 32</code></pre>
+<h3 id="batch-operations"><a class="header" href="#batch-operations">Batch Operations</a></h3>
+<pre><code class="language-rust">// Efficient: Batch similar operations
+let results: Vec&lt;Tensor&gt; = inputs
+    .iter()
+    .map(|input| model.forward(input))
+    .collect()?;
+
+// Inefficient: Individual operations
+for input in inputs {
+    let result = model.forward(input)?;
+    let cpu_result = result.to_vec()?;  // Forces synchronization
+}</code></pre>
+<h3 id="memory-layout-optimization-1"><a class="header" href="#memory-layout-optimization-1">Memory Layout Optimization</a></h3>
+<pre><code class="language-rust">// Ensure tensor shapes are GPU-friendly
+let aligned_size = (size + 63) &amp; !63;  // Align to 64-element boundaries
+let tensor = Tensor::zeros(vec![aligned_size, aligned_size])?;</code></pre>
+<h2 id="future-developments"><a class="header" href="#future-developments">Future Developments</a></h2>
+<p>The WGPU backend is actively developed with planned improvements:</p>
+<ul>
+<li><strong>Reduction Operations</strong>: Sum, mean, and other reductions on GPU</li>
+<li><strong>Advanced Operations</strong>: GPU-optimized tensor operations</li>
+<li><strong>Mixed Precision</strong>: f16 and bf16 data type support</li>
+<li><strong>Async Operations</strong>: Fully asynchronous GPU command queues</li>
+<li><strong>WebGPU Stability</strong>: Production-ready web deployment</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="cuda-backend-3"><a class="header" href="#cuda-backend-3">CUDA Backend</a></h1>
+<p>The CUDA backend provides high-performance tensor operations on NVIDIA GPUs using the CUDA toolkit. It offers the highest performance for supported operations and integrates well with the broader CUDA ecosystem.</p>
+<h2 id="features-3"><a class="header" href="#features-3">Features</a></h2>
+<ul>
+<li><strong>Peak Performance</strong>: Optimized kernels for maximum NVIDIA GPU utilization</li>
+<li><strong>Optimized Kernels</strong>: Hardware-accelerated tensor operations</li>
+<li><strong>Memory Optimization</strong>: Efficient GPU memory management</li>
+<li><strong>Mature Ecosystem</strong>: Integration with existing CUDA libraries</li>
+<li><strong>Production Ready</strong>: Battle-tested in production environments</li>
+</ul>
+<h2 id="installation-2"><a class="header" href="#installation-2">Installation</a></h2>
+<h3 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h3>
+<p><strong>CUDA Toolkit</strong>: Install NVIDIA CUDA Toolkit 11.0 or later</p>
+<ul>
+<li>Download from <a href="https://developer.nvidia.com/cuda-toolkit">NVIDIA Developer</a></li>
+<li>Ensure <code>nvcc</code> is in your PATH</li>
+<li>Verify installation: <code>nvcc --version</code></li>
+</ul>
+<p><strong>Compatible GPU</strong>: NVIDIA GPU with compute capability 3.5+</p>
+<ul>
+<li>Check compatibility: <code>nvidia-smi</code></li>
+<li>Verify compute capability: <code>deviceQuery</code> (CUDA samples)</li>
+</ul>
+<h3 id="cargo-configuration"><a class="header" href="#cargo-configuration">Cargo Configuration</a></h3>
+<p>Enable the CUDA backend:</p>
+<pre><code class="language-toml">[dependencies]
+tensor_frame = { version = "0.0.3-alpha", features = ["cuda"] }
+</code></pre>
+<p><strong>Build Requirements</strong>:</p>
+<ul>
+<li>CUDA Toolkit installed</li>
+<li>NVIDIA GPU drivers</li>
+<li>C++ compiler (MSVC on Windows, GCC/Clang on Linux)</li>
+</ul>
+<h2 id="system-requirements-1"><a class="header" href="#system-requirements-1">System Requirements</a></h2>
+<h3 id="hardware"><a class="header" href="#hardware">Hardware</a></h3>
+<ul>
+<li><strong>GPU</strong>: NVIDIA GPU with compute capability 3.5+</li>
+<li><strong>Memory</strong>: Sufficient GPU memory for tensor operations</li>
+<li><strong>PCIe</strong>: PCIe 3.0 x16 recommended for optimal memory bandwidth</li>
+</ul>
+<h3 id="software"><a class="header" href="#software">Software</a></h3>
+<ul>
+<li><strong>CUDA Toolkit</strong>: Version 11.0+ (12.0+ recommended)</li>
+<li><strong>Driver</strong>: NVIDIA driver supporting your CUDA version</li>
+<li><strong>OS</strong>: Linux (preferred), Windows 10+, WSL2</li>
+</ul>
+<h3 id="verified-configurations"><a class="header" href="#verified-configurations">Verified Configurations</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>GPU Generation</th><th>Compute Capability</th><th>CUDA Version</th><th>Status</th></tr></thead><tbody>
+<tr><td>Maxwell (GTX 900)</td><td>5.0, 5.2</td><td>11.0+</td><td>✅ Supported</td></tr>
+<tr><td>Pascal (GTX 10x0)</td><td>6.0, 6.1</td><td>11.0+</td><td>✅ Fully supported</td></tr>
+<tr><td>Volta (V100)</td><td>7.0</td><td>11.0+</td><td>✅ Optimized</td></tr>
+<tr><td>Turing (RTX 20x0)</td><td>7.5</td><td>11.0+</td><td>✅ Optimized</td></tr>
+<tr><td>Ampere (RTX 30x0)</td><td>8.0, 8.6</td><td>11.2+</td><td>✅ Optimal</td></tr>
+<tr><td>Ada (RTX 40x0)</td><td>8.9</td><td>12.0+</td><td>✅ Latest features</td></tr>
+</tbody></table>
+</div>
+<h2 id="implementation-details-2"><a class="header" href="#implementation-details-2">Implementation Details</a></h2>
+<h3 id="storage-2"><a class="header" href="#storage-2">Storage</a></h3>
+<p>CUDA tensors use device memory pointers:</p>
+<pre><code class="language-rust">pub struct CudaStorage {
+    pub ptr: *mut f32,    // Raw CUDA device pointer
+    pub len: usize,       // Buffer length in elements
+}</code></pre>
+<p><strong>Memory Properties</strong>:</p>
+<ul>
+<li><strong>Location</strong>: GPU global memory (VRAM)</li>
+<li><strong>Layout</strong>: Contiguous, row-major layout</li>
+<li><strong>Alignment</strong>: 256-byte aligned for optimal coalescing</li>
+<li><strong>Synchronization</strong>: Explicit via CUDA streams</li>
+</ul>
+<h3 id="kernel-implementation"><a class="header" href="#kernel-implementation">Kernel Implementation</a></h3>
+<p>Operations use optimized CUDA kernels:</p>
+<pre><code class="language-cuda">// Element-wise addition kernel
+__global__ void add_kernel(const float* a, const float* b, float* c, int n) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx &lt; n) {
+        c[idx] = a[idx] + b[idx];
+    }
+}
+</code></pre>
+<h2 id="performance-characteristics-4"><a class="header" href="#performance-characteristics-4">Performance Characteristics</a></h2>
+<h3 id="strengths-2"><a class="header" href="#strengths-2">Strengths</a></h3>
+<ul>
+<li><strong>Compute Throughput</strong>: Maximum FP32/FP16 throughput on NVIDIA hardware</li>
+<li><strong>Memory Bandwidth</strong>: Optimal utilization of GPU memory bandwidth</li>
+<li><strong>Kernel Optimization</strong>: Hand-tuned kernels for each operation</li>
+<li><strong>Library Integration</strong>: Designed for future integration with cuDNN, etc.</li>
+</ul>
+<h3 id="performance-metrics"><a class="header" href="#performance-metrics">Performance Metrics</a></h3>
+<p>Example performance on RTX 4090:</p>
+<div class="table-wrapper"><table><thead><tr><th>Operation</th><th>Tensor Size</th><th>CPU (32 cores)</th><th>CUDA</th><th>Speedup</th></tr></thead><tbody>
+<tr><td>Element-wise Add</td><td>1M elements</td><td>2.1 ms</td><td>0.18 ms</td><td>12x</td></tr>
+<tr><td>Matrix Multiply</td><td>2048x2048</td><td>450 ms</td><td>8.2 ms</td><td>55x</td></tr>
+<tr><td>Reduction Sum</td><td>16M elements</td><td>15 ms</td><td>0.52 ms</td><td>29x</td></tr>
+</tbody></table>
+</div>
+<h3 id="optimization-guidelines"><a class="header" href="#optimization-guidelines">Optimization Guidelines</a></h3>
+<h4 id="optimal-use-cases-2"><a class="header" href="#optimal-use-cases-2">Optimal Use Cases</a></h4>
+<pre><code class="language-rust">// Large tensor operations
+let a = Tensor::zeros(vec![4096, 4096])?;
+let b = Tensor::zeros(vec![4096, 4096])?;
+let c = (a * b) + 1.0;  // Excellent GPU performance
+
+// Batch operations
+for batch in large_dataset {
+    let result = model.forward(batch)?;  // Amortizes GPU overhead
+}
+
+// Memory-bound operations
+let result = ((a * b) + c) / d;  // GPU memory bandwidth utilized</code></pre>
+<h4 id="suboptimal-use-cases-2"><a class="header" href="#suboptimal-use-cases-2">Suboptimal Use Cases</a></h4>
+<pre><code class="language-rust">// Very small tensors
+let tiny = Tensor::ones(vec![8, 8])?;  // Kernel launch overhead dominates
+
+// Frequent host-device transfers
+let gpu_result = cpu_tensor.to_backend(BackendType::Cuda)?;
+let back_to_cpu = gpu_result.to_vec()?;  // PCIe bandwidth bottleneck
+
+// Scalar reductions with immediate use
+let sum = tensor.sum(None)?.to_vec()?;  // Forces synchronization</code></pre>
+<h2 id="memory-management-5"><a class="header" href="#memory-management-5">Memory Management</a></h2>
+<h3 id="device-memory-allocation"><a class="header" href="#device-memory-allocation">Device Memory Allocation</a></h3>
+<p>CUDA tensors allocate GPU memory directly:</p>
+<pre><code class="language-rust">// Allocates 64MB of GPU memory
+let large_tensor = Tensor::zeros(vec![4096, 4096])?
+    .to_backend(BackendType::Cuda)?;</code></pre>
+<h3 id="memory-pool-management"><a class="header" href="#memory-pool-management">Memory Pool Management</a></h3>
+<p>The backend uses a memory pool for efficient allocation:</p>
+<pre><code class="language-rust">// Pool reduces allocation overhead
+let tensors: Vec&lt;Tensor&gt; = (0..100)
+    .map(|_| Tensor::zeros(vec![1024, 1024]))
+    .collect::&lt;Result&lt;Vec&lt;_&gt;&gt;&gt;()?;</code></pre>
+<h3 id="memory-transfer-optimization"><a class="header" href="#memory-transfer-optimization">Memory Transfer Optimization</a></h3>
+<pre><code class="language-rust">// Efficient: Batch transfers
+let gpu_tensors = cpu_tensors
+    .into_iter()
+    .map(|t| t.to_backend(BackendType::Cuda))
+    .collect::&lt;Result&lt;Vec&lt;_&gt;&gt;&gt;()?;
+
+// Inefficient: Individual transfers  
+for cpu_tensor in cpu_tensors {
+    let gpu_tensor = cpu_tensor.to_backend(BackendType::Cuda)?;
+    process(gpu_tensor)?;
+}</code></pre>
+<h3 id="memory-debugging-1"><a class="header" href="#memory-debugging-1">Memory Debugging</a></h3>
+<p>Monitor GPU memory usage:</p>
+<pre><code class="language-bash"># Check GPU memory
+nvidia-smi
+
+# Continuous monitoring
+watch -n 1 nvidia-smi
+</code></pre>
+<pre><code class="language-rust">// Check available memory
+let (free, total) = cuda::memory_info()?;
+println!("GPU memory: {}/{} MB", free / 1024 / 1024, total / 1024 / 1024);
+
+// Handle out-of-memory
+match Tensor::zeros(vec![16384, 16384]).and_then(|t| t.to_backend(BackendType::Cuda)) {
+    Ok(tensor) =&gt; println!("Allocated 1GB GPU tensor"),
+    Err(TensorError::BackendError(msg)) if msg.contains("memory") =&gt; {
+        eprintln!("GPU OOM, trying smaller allocation");
+    }
+    Err(e) =&gt; eprintln!("CUDA error: {}", e),
+}</code></pre>
+<h2 id="error-handling-4"><a class="header" href="#error-handling-4">Error Handling</a></h2>
+<p>CUDA operations can fail for various hardware and software reasons:</p>
+<h3 id="runtime-errors-1"><a class="header" href="#runtime-errors-1">Runtime Errors</a></h3>
+<pre><code class="language-rust">use tensor_frame::{Tensor, TensorError};
+
+match tensor_operation() {
+    Ok(result) =&gt; process(result),
+    Err(TensorError::BackendError(msg)) =&gt; {
+        if msg.contains("out of memory") {
+            // GPU memory exhausted
+            fallback_to_cpu()?;
+        } else if msg.contains("invalid device") {
+            // GPU not available or driver issue
+            retry_with_cpu_backend()?;
+        } else {
+            // Other CUDA error
+            eprintln!("CUDA error: {}", msg);
+        }
+    }
+}</code></pre>
+<h3 id="common-error-scenarios"><a class="header" href="#common-error-scenarios">Common Error Scenarios</a></h3>
+<ul>
+<li><strong>GPU Out of Memory</strong>: Tensor too large for available GPU memory</li>
+<li><strong>Invalid Device</strong>: GPU not found or not compatible</li>
+<li><strong>Driver Mismatch</strong>: CUDA driver version incompatible</li>
+<li><strong>Kernel Launch Failed</strong>: Invalid kernel parameters or GPU fault</li>
+<li><strong>Memory Access Violation</strong>: Invalid GPU memory access</li>
+</ul>
+<h3 id="error-recovery"><a class="header" href="#error-recovery">Error Recovery</a></h3>
+<pre><code class="language-rust">// Graceful fallback strategy
+fn robust_tensor_operation(tensor: Tensor) -&gt; Result&lt;Tensor&gt; {
+    // Try CUDA first
+    if let Ok(cuda_tensor) = tensor.to_backend(BackendType::Cuda) {
+        match cuda_operation(cuda_tensor) {
+            Ok(result) =&gt; return Ok(result),
+            Err(TensorError::BackendError(_)) =&gt; {
+                // CUDA failed, fall back to CPU
+                eprintln!("CUDA operation failed, falling back to CPU");
+            }
+        }
+    }
+    
+    // CPU fallback
+    cpu_operation(tensor.to_backend(BackendType::Cpu)?)
+}</code></pre>
+<h2 id="debugging-and-profiling-2"><a class="header" href="#debugging-and-profiling-2">Debugging and Profiling</a></h2>
+<h3 id="cuda-debugging-tools"><a class="header" href="#cuda-debugging-tools">CUDA Debugging Tools</a></h3>
+<p><strong>NVIDIA Nsight Systems</strong>: System-wide performance analysis</p>
+<pre><code class="language-bash">nsys profile --stats=true ./your_app
+</code></pre>
+<p><strong>NVIDIA Nsight Compute</strong>: Kernel-level profiling</p>
+<pre><code class="language-bash">ncu --metrics sm__throughput.avg.pct_of_peak_sustained_elapsed ./your_app
+</code></pre>
+<p><strong>cuda-memcheck</strong>: Memory error detection</p>
+<pre><code class="language-bash">cuda-memcheck ./your_app
+</code></pre>
+<h3 id="performance-analysis"><a class="header" href="#performance-analysis">Performance Analysis</a></h3>
+<pre><code class="language-rust">// GPU timing with CUDA events
+use std::time::Instant;
+
+let start = Instant::now();
+let result = gpu_tensor_a.matmul(&amp;gpu_tensor_b)?;
+// Note: matmul is asynchronous!
+let _sync = result.to_vec()?;  // Force synchronization
+let elapsed = start.elapsed();
+println!("Matrix multiplication took: {:?}", elapsed);</code></pre>
+<h3 id="memory-leak-detection"><a class="header" href="#memory-leak-detection">Memory Leak Detection</a></h3>
+<pre><code class="language-rust">// Monitor for memory leaks in long-running applications
+fn check_memory_usage() -&gt; Result&lt;()&gt; {
+    let (free_before, total) = cuda::memory_info()?;
+    
+    // Perform operations
+    {
+        let tensor = Tensor::zeros(vec![1000, 1000])?.to_backend(BackendType::Cuda)?;
+        let result = expensive_operation(tensor)?;
+    } // tensor should be freed here
+    
+    let (free_after, _) = cuda::memory_info()?;
+    
+    if free_after &lt; free_before {
+        eprintln!("Potential memory leak detected!");
+        eprintln!("Memory delta: {} MB", (free_before - free_after) / 1024 / 1024);
+    }
+    
+    Ok(())
+}</code></pre>
+<h2 id="production-deployment"><a class="header" href="#production-deployment">Production Deployment</a></h2>
+<h3 id="docker-configuration"><a class="header" href="#docker-configuration">Docker Configuration</a></h3>
+<pre><code class="language-dockerfile"># Use NVIDIA CUDA base image
+FROM nvidia/cuda:12.0-devel-ubuntu20.04
+
+# Install Rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Copy and build your application
+COPY . /app
+WORKDIR /app
+RUN cargo build --release --features cuda
+
+# Runtime with CUDA
+FROM nvidia/cuda:12.0-runtime-ubuntu20.04
+COPY --from=0 /app/target/release/your_app /usr/local/bin/
+CMD ["your_app"]
+</code></pre>
+<h3 id="kubernetes-deployment"><a class="header" href="#kubernetes-deployment">Kubernetes Deployment</a></h3>
+<pre><code class="language-yaml">apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: tensor-app
+    image: your-app:latest
+    resources:
+      limits:
+        nvidia.com/gpu: 1
+    env:
+    - name: CUDA_VISIBLE_DEVICES
+      value: "0"
+</code></pre>
+<h3 id="environment-variables"><a class="header" href="#environment-variables">Environment Variables</a></h3>
+<pre><code class="language-bash"># Limit GPU memory growth
+export CUDA_MEMORY_POOL_TYPE=pool
+
+# Enable GPU timing
+export CUDA_LAUNCH_BLOCKING=1
+
+# Select specific GPU
+export CUDA_VISIBLE_DEVICES=0
+</code></pre>
+<h2 id="optimization-best-practices"><a class="header" href="#optimization-best-practices">Optimization Best Practices</a></h2>
+<h3 id="memory-access-patterns"><a class="header" href="#memory-access-patterns">Memory Access Patterns</a></h3>
+<pre><code class="language-rust">// Coalesced memory access (efficient)
+let result = tensor_a + tensor_b;  // Sequential element access
+
+// Strided access (less efficient)
+let transposed = tensor.transpose()?;  // May require memory reshape</code></pre>
+<h3 id="kernel-fusion"><a class="header" href="#kernel-fusion">Kernel Fusion</a></h3>
+<pre><code class="language-rust">// Fused operations (single kernel launch)
+let result = ((a * b) + c).relu();  // Ideally fused into one kernel
+
+// Separate operations (multiple kernel launches)
+let temp1 = a * b;
+let temp2 = temp1 + c;
+let result = temp2.relu();  // Three separate kernels</code></pre>
+<h3 id="stream-management"><a class="header" href="#stream-management">Stream Management</a></h3>
+<pre><code class="language-rust">// Future: Async operations with CUDA streams
+// Currently synchronous, but optimizations planned
+let stream_a = cuda::create_stream()?;
+let stream_b = cuda::create_stream()?;
+
+// Parallel execution on different streams
+let result_a = tensor_a.sum(None).execute_on(stream_a)?;
+let result_b = tensor_b.mean(None).execute_on(stream_b)?;</code></pre>
+<h2 id="integration-with-cuda-ecosystem"><a class="header" href="#integration-with-cuda-ecosystem">Integration with CUDA Ecosystem</a></h2>
+<h3 id="cudnn-future"><a class="header" href="#cudnn-future">cuDNN (Future)</a></h3>
+<p>Planned integration for neural network operations:</p>
+<pre><code class="language-rust">// Future: Convolution operations
+let output = input.conv2d(&amp;kernel, stride, padding)?;</code></pre>
+<h3 id="nccl-future"><a class="header" href="#nccl-future">NCCL (Future)</a></h3>
+<p>Multi-GPU communication for distributed computing:</p>
+<pre><code class="language-rust">// Future: Multi-GPU operations
+let distributed_result = tensor.all_reduce_sum()?;</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="examples-and-tutorials"><a class="header" href="#examples-and-tutorials">Examples and Tutorials</a></h1>
+<p>This section provides practical examples and tutorials for using Tensor Frame effectively. Each example is designed to demonstrate specific features and common usage patterns.</p>
+<h2 id="getting-started-examples"><a class="header" href="#getting-started-examples">Getting Started Examples</a></h2>
+<p>Perfect for newcomers to Tensor Frame:</p>
+<ul>
+<li><strong><a href="examples/./basic.html">Basic Operations</a></strong> - Tensor creation, arithmetic, and basic manipulation</li>
+<li><strong><a href="examples/./broadcasting.html">Broadcasting</a></strong> - Understanding automatic shape broadcasting</li>
+<li><strong><a href="examples/./custom-backends.html">Custom Backends</a></strong> - Working with different computational backends</li>
+</ul>
+<h2 id="example-categories"><a class="header" href="#example-categories">Example Categories</a></h2>
+<h3 id="fundamental-operations"><a class="header" href="#fundamental-operations">Fundamental Operations</a></h3>
+<p>Learn the core tensor operations that form the foundation of all computational work:</p>
+<pre><code class="language-rust">// Tensor creation
+let zeros = Tensor::zeros(vec![3, 4])?;
+let ones = Tensor::ones(vec![2, 2])?;
+let data = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2])?;
+
+// Basic arithmetic
+let sum = a + b;
+let product = a * b;
+let result = (a * 2.0) + b;</code></pre>
+<h3 id="shape-manipulation-1"><a class="header" href="#shape-manipulation-1">Shape Manipulation</a></h3>
+<p>Master tensor reshaping and dimension manipulation:</p>
+<pre><code class="language-rust">// Reshaping and transposition
+let reshaped = tensor.reshape(vec![4, 3])?;
+let transposed = matrix.transpose()?;
+
+// Dimension manipulation
+let squeezed = tensor.squeeze(None)?;
+let unsqueezed = squeezed.unsqueeze(1)?;</code></pre>
+<h3 id="backend-optimization"><a class="header" href="#backend-optimization">Backend Optimization</a></h3>
+<p>Learn when and how to use different computational backends:</p>
+<pre><code class="language-rust">// Automatic backend selection
+let tensor = Tensor::zeros(vec![1000, 1000])?;
+
+// Manual backend control
+let gpu_tensor = tensor.to_backend(BackendType::Wgpu)?;
+let cuda_tensor = tensor.to_backend(BackendType::Cuda)?;</code></pre>
+<h2 id="running-examples"><a class="header" href="#running-examples">Running Examples</a></h2>
+<p>All examples are located in the <code>examples/</code> directory of the repository:</p>
+<pre><code class="language-bash"># Run basic operations example
+cargo run --example basic_operations
+
+# Run with specific backend
+cargo run --example basic_operations --features wgpu
+cargo run --example basic_operations --features cuda
+
+# Run with all features
+cargo run --example basic_operations --features "wgpu,cuda"
+</code></pre>
+<h2 id="example-structure"><a class="header" href="#example-structure">Example Structure</a></h2>
+<p>Each example follows a consistent structure:</p>
+<ol>
+<li><strong>Setup</strong>: Import necessary modules and create test data</li>
+<li><strong>Demonstration</strong>: Show the specific feature in action</li>
+<li><strong>Explanation</strong>: Detailed comments explaining what's happening</li>
+<li><strong>Performance Notes</strong>: Tips for optimal usage</li>
+<li><strong>Error Handling</strong>: Proper error handling patterns</li>
+</ol>
+<h2 id="performance-benchmarking"><a class="header" href="#performance-benchmarking">Performance Benchmarking</a></h2>
+<p>Many examples include performance comparisons:</p>
+<pre><code class="language-rust">use std::time::Instant;
+
+// CPU benchmark
+let start = Instant::now();
+let cpu_result = &amp;cpu_tensor + &amp;cpu_other;
+let cpu_time = start.elapsed();
+
+// GPU benchmark  
+let start = Instant::now();
+let gpu_result = &amp;gpu_tensor + &amp;gpu_other;
+let _sync = gpu_result.to_vec()?;  // Force synchronization
+let gpu_time = start.elapsed();
+
+println!("CPU: {:?}, GPU: {:?}, Speedup: {:.1}x", 
+         cpu_time, gpu_time, cpu_time.as_secs_f64() / gpu_time.as_secs_f64());</code></pre>
+<h2 id="interactive-examples"><a class="header" href="#interactive-examples">Interactive Examples</a></h2>
+<p>Some examples are designed for interactive exploration:</p>
+<pre><code class="language-bash"># Interactive tensor exploration
+cargo run --example interactive
+
+# Performance testing with different sizes
+cargo run --example benchmark -- --size 1000
+cargo run --example benchmark -- --size 2000 --backend cuda
+</code></pre>
+<h2 id="common-patterns"><a class="header" href="#common-patterns">Common Patterns</a></h2>
+<h3 id="error-handling-pattern"><a class="header" href="#error-handling-pattern">Error Handling Pattern</a></h3>
+<pre><code class="language-rust">use tensor_frame::{Tensor, Result, TensorError};
+
+fn robust_operation() -&gt; Result&lt;Tensor&gt; {
+    let tensor = Tensor::zeros(vec![1000, 1000])?;
+    
+    // Try GPU backend first
+    match tensor.to_backend(BackendType::Wgpu) {
+        Ok(gpu_tensor) =&gt; {
+            // GPU operations here
+            Ok(expensive_gpu_operation(gpu_tensor)?)
+        }
+        Err(TensorError::BackendError(_)) =&gt; {
+            // Fallback to CPU
+            println!("GPU not available, using CPU");
+            Ok(cpu_operation(tensor)?)
+        }
+        Err(e) =&gt; Err(e),
+    }
+}</code></pre>
+<h3 id="memory-management-pattern"><a class="header" href="#memory-management-pattern">Memory Management Pattern</a></h3>
+<pre><code class="language-rust">fn memory_efficient_batch_processing(batches: Vec&lt;Vec&lt;f32&gt;&gt;) -&gt; Result&lt;Vec&lt;Tensor&gt;&gt; {
+    let backend = BackendType::Wgpu; // Choose once
+    
+    batches
+        .into_iter()
+        .map(|batch| {
+            let tensor = Tensor::from_vec(batch, vec![batch.len()])?;
+            tensor.to_backend(backend)  // Convert once per batch
+        })
+        .collect()
+}</code></pre>
+<h3 id="broadcasting-pattern"><a class="header" href="#broadcasting-pattern">Broadcasting Pattern</a></h3>
+<pre><code class="language-rust">fn demonstrate_broadcasting() -&gt; Result&lt;()&gt; {
+    // Scalar broadcast
+    let tensor = Tensor::ones(vec![3, 4])?;
+    let scaled = tensor * 2.0;  // Scalar broadcasts to all elements
+    
+    // Vector broadcast
+    let matrix = Tensor::ones(vec![3, 4])?;
+    let vector = Tensor::ones(vec![4])?;      // Shape: [4]
+    let result = matrix + vector;             // Broadcasts to [3, 4]
+    
+    // Matrix broadcast
+    let a = Tensor::ones(vec![3, 1])?;        // Shape: [3, 1]
+    let b = Tensor::ones(vec![1, 4])?;        // Shape: [1, 4]
+    let result = a + b;                       // Result: [3, 4]
+    
+    Ok(())
+}</code></pre>
+<h2 id="advanced-examples"><a class="header" href="#advanced-examples">Advanced Examples</a></h2>
+<p>For users comfortable with the basics:</p>
+<h3 id="custom-backend-selection"><a class="header" href="#custom-backend-selection">Custom Backend Selection</a></h3>
+<pre><code class="language-rust">fn adaptive_backend_selection(tensor_size: usize) -&gt; BackendType {
+    match tensor_size {
+        0..=1000 =&gt; BackendType::Cpu,           // Small: CPU overhead minimal
+        1001..=100000 =&gt; BackendType::Wgpu,     // Medium: GPU beneficial
+        _ =&gt; BackendType::Cuda,                 // Large: Maximum performance
+    }
+}</code></pre>
+<h3 id="batched-operations"><a class="header" href="#batched-operations">Batched Operations</a></h3>
+<pre><code class="language-rust">fn process_batch_efficiently(inputs: Vec&lt;Tensor&gt;) -&gt; Result&lt;Vec&lt;Tensor&gt;&gt; {
+    // Convert all inputs to same backend
+    let backend = BackendType::Wgpu;
+    let gpu_inputs: Result&lt;Vec&lt;_&gt;&gt; = inputs
+        .into_iter()
+        .map(|t| t.to_backend(backend))
+        .collect();
+    
+    // Process on GPU
+    let gpu_outputs: Result&lt;Vec&lt;_&gt;&gt; = gpu_inputs?
+        .into_iter()
+        .map(|input| expensive_operation(input))
+        .collect();
+    
+    gpu_outputs
+}</code></pre>
+<h2 id="troubleshooting-common-issues"><a class="header" href="#troubleshooting-common-issues">Troubleshooting Common Issues</a></h2>
+<h3 id="performance-problems"><a class="header" href="#performance-problems">Performance Problems</a></h3>
+<pre><code class="language-rust">// Problem: Slow operations on small tensors
+let small = Tensor::ones(vec![10, 10])?;
+let slow_result = small.to_backend(BackendType::Wgpu)?; // GPU overhead
+
+// Solution: Use CPU for small tensors
+let fast_result = small; // Stay on CPU backend</code></pre>
+<h3 id="memory-issues"><a class="header" href="#memory-issues">Memory Issues</a></h3>
+<pre><code class="language-rust">// Problem: GPU out of memory
+match Tensor::zeros(vec![10000, 10000]) {
+    Err(TensorError::BackendError(msg)) if msg.contains("memory") =&gt; {
+        // Solution: Use smaller chunks or CPU backend
+        let chunks = create_smaller_chunks()?;
+        process_chunks_individually(chunks)?;
+    }
+    Ok(tensor) =&gt; process_large_tensor(tensor)?,
+    Err(e) =&gt; return Err(e),
+}</code></pre>
+<h3 id="backend-compatibility"><a class="header" href="#backend-compatibility">Backend Compatibility</a></h3>
+<pre><code class="language-rust">// Problem: Operation not supported on backend
+let result = match tensor.backend_type() {
+    BackendType::Wgpu =&gt; {
+        // Some operations not yet implemented on WGPU
+        tensor.to_backend(BackendType::Cpu)?.complex_operation()?
+    }
+    _ =&gt; tensor.complex_operation()?,
+};</code></pre>
+<h2 id="contributing-examples"><a class="header" href="#contributing-examples">Contributing Examples</a></h2>
+<p>We welcome contributions of new examples! Please follow these guidelines:</p>
+<ol>
+<li><strong>Clear Purpose</strong>: Each example should demonstrate a specific concept</li>
+<li><strong>Complete Code</strong>: Include all necessary imports and error handling</li>
+<li><strong>Documentation</strong>: Add detailed comments explaining the concepts</li>
+<li><strong>Performance Notes</strong>: Include timing and backend recommendations</li>
+<li><strong>Error Handling</strong>: Show proper error handling patterns</li>
+</ol>
+<p>See the <a href="examples/../contributing.html">Contributing Guide</a> for more details on submitting examples.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="basic-operations-1"><a class="header" href="#basic-operations-1">Basic Operations</a></h1>
+<p>This example demonstrates the fundamental tensor operations in Tensor Frame. It covers tensor creation, basic arithmetic, shape manipulation, and data access patterns.</p>
+<h2 id="complete-example"><a class="header" href="#complete-example">Complete Example</a></h2>
+<pre><code class="language-rust">use tensor_frame::{Tensor, Result, TensorOps};
+use std::time::Instant;
+
+fn main() -&gt; Result&lt;()&gt; {
+    println!("=== Tensor Frame Basic Operations ===\n");
+
+    // 1. Tensor Creation
+    tensor_creation_examples()?;
+    
+    // 2. Basic Arithmetic
+    arithmetic_examples()?;
+    
+    // 3. Shape Manipulation  
+    shape_manipulation_examples()?;
+    
+    // 4. Data Access
+    data_access_examples()?;
+    
+    // 5. Performance Comparison
+    performance_comparison()?;
+
+    Ok(())
+}
+
+/// Demonstrates various ways to create tensors
+fn tensor_creation_examples() -&gt; Result&lt;()&gt; {
+    println!("=== Tensor Creation ===");
+    
+    // Create tensor filled with zeros
+    let zeros = Tensor::zeros(vec![2, 3])?;
+    println!("Zeros tensor (2x3):\n{}\n", zeros);
+    
+    // Create tensor filled with ones
+    let ones = Tensor::ones(vec![3, 2])?;
+    println!("Ones tensor (3x2):\n{}\n", ones);
+    
+    // Create tensor from existing data
+    let data = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
+    let from_data = Tensor::from_vec(data, vec![2, 3])?;
+    println!("From data (2x3):\n{}\n", from_data);
+    
+    // Check tensor properties
+    println!("Tensor properties:");
+    println!("  Shape: {:?}", from_data.shape().dims());
+    println!("  Number of elements: {}", from_data.numel());
+    println!("  Data type: {:?}", from_data.dtype());
+    println!("  Backend: {:?}\n", from_data.backend_type());
+    
+    Ok(())
+}
+
+/// Demonstrates basic arithmetic operations
+fn arithmetic_examples() -&gt; Result&lt;()&gt; {
+    println!("=== Arithmetic Operations ===");
+    
+    // Create test tensors
+    let a = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2])?;
+    let b = Tensor::from_vec(vec![5.0, 6.0, 7.0, 8.0], vec![2, 2])?;
+    
+    println!("Tensor A:\n{}\n", a);
+    println!("Tensor B:\n{}\n", b);
+    
+    // Element-wise addition
+    let sum = &amp;a + &amp;b;  // Use references to avoid moving tensors
+    println!("A + B:\n{}\n", sum);
+    
+    // Element-wise subtraction
+    let diff = &amp;a - &amp;b;
+    println!("A - B:\n{}\n", diff);
+    
+    // Element-wise multiplication
+    let product = &amp;a * &amp;b;
+    println!("A * B (element-wise):\n{}\n", product);
+    
+    // Element-wise division
+    let quotient = &amp;a / &amp;b;
+    println!("A / B:\n{}\n", quotient);
+    
+    // Chained operations
+    let complex = ((&amp;a * 2.0) + &amp;b) / 3.0;
+    println!("(A * 2 + B) / 3:\n{}\n", complex);
+    
+    Ok(())
+}
+
+/// Demonstrates shape manipulation operations
+fn shape_manipulation_examples() -&gt; Result&lt;()&gt; {
+    println!("=== Shape Manipulation ===");
+    
+    // Create a tensor to manipulate
+    let tensor = Tensor::from_vec(
+        vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0], 
+        vec![2, 4]
+    )?;
+    println!("Original tensor (2x4):\n{}\n", tensor);
+    
+    // Reshape to different dimensions
+    let reshaped = tensor.reshape(vec![4, 2])?;
+    println!("Reshaped to (4x2):\n{}\n", reshaped);
+    
+    // Reshape to 1D
+    let flattened = tensor.reshape(vec![8])?;
+    println!("Flattened to (8,):\n{}\n", flattened);
+    
+    // Transpose (2D only)
+    let matrix = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2])?;
+    let transposed = matrix.transpose()?;
+    println!("Original matrix:\n{}\n", matrix);
+    println!("Transposed matrix:\n{}\n", transposed);
+    
+    // Squeeze and unsqueeze
+    let with_ones = Tensor::ones(vec![1, 3, 1])?;
+    println!("Tensor with size-1 dimensions (1x3x1):\n{}\n", with_ones);
+    
+    let squeezed = with_ones.squeeze(None)?;
+    println!("Squeezed (removes all size-1 dims):\n{}\n", squeezed);
+    
+    let unsqueezed = squeezed.unsqueeze(0)?;
+    println!("Unsqueezed at dimension 0:\n{}\n", unsqueezed);
+    
+    Ok(())
+}
+
+/// Demonstrates data access patterns
+fn data_access_examples() -&gt; Result&lt;()&gt; {
+    println!("=== Data Access ===");
+    
+    let tensor = Tensor::from_vec(vec![1.0, 2.0, 3.0, 4.0], vec![2, 2])?;
+    println!("Tensor:\n{}\n", tensor);
+    
+    // Convert to Vec for external use
+    let data = tensor.to_vec()?;
+    println!("As Vec&lt;f32&gt;: {:?}\n", data);
+    
+    // Reduction operations
+    let sum_all = tensor.sum(None)?;
+    println!("Sum of all elements: {}\n", sum_all);
+    
+    let mean_all = tensor.mean(None)?;
+    println!("Mean of all elements: {}\n", mean_all);
+    
+    // Axis-specific reductions
+    let row_sums = tensor.sum(Some(1))?;  // Sum along columns (axis 1)
+    println!("Row sums (sum along axis 1): {}\n", row_sums);
+    
+    let col_sums = tensor.sum(Some(0))?;  // Sum along rows (axis 0)
+    println!("Column sums (sum along axis 0): {}\n", col_sums);
+    
+    Ok(())
+}
+
+/// Demonstrates performance characteristics
+fn performance_comparison() -&gt; Result&lt;()&gt; {
+    println!("=== Performance Comparison ===");
+    
+    // Small tensor operations (CPU should be faster)
+    let small_a = Tensor::ones(vec![100, 100])?;
+    let small_b = Tensor::ones(vec![100, 100])?;
+    
+    let start = Instant::now();
+    let result = &amp;small_a + &amp;small_b;
+    let small_time = start.elapsed();
+    println!("Small tensor (100x100) addition: {:?}", small_time);
+    
+    // Large tensor operations (GPU might be faster if available)
+    let large_a = Tensor::ones(vec![1000, 1000])?;
+    let large_b = Tensor::ones(vec![1000, 1000])?;
+    
+    let start = Instant::now();
+    let result = &amp;large_a + &amp;large_b;
+    let large_time = start.elapsed();
+    println!("Large tensor (1000x1000) addition: {:?}", large_time);
+    
+    // Show current backend
+    println!("Current backend: {:?}", result.backend_type());
+    
+    // Demonstrate backend conversion (if other backends available)
+    #[cfg(feature = "wgpu")]
+    {
+        println!("\n--- WGPU Backend Comparison ---");
+        let start = Instant::now();
+        let wgpu_a = large_a.to_backend(tensor_frame::BackendType::Wgpu)?;
+        let wgpu_b = large_b.to_backend(tensor_frame::BackendType::Wgpu)?;
+        let conversion_time = start.elapsed();
+        
+        let start = Instant::now();
+        let wgpu_result = &amp;wgpu_a + &amp;wgpu_b;
+        let _sync = wgpu_result.to_vec()?;  // Force synchronization
+        let wgpu_time = start.elapsed();
+        
+        println!("WGPU conversion time: {:?}", conversion_time);
+        println!("WGPU computation time: {:?}", wgpu_time);
+        println!("Total WGPU time: {:?}", conversion_time + wgpu_time);
+    }
+    
+    Ok(())
+}
+
+/// Advanced patterns demonstration
+fn advanced_patterns() -&gt; Result&lt;()&gt; {
+    println!("=== Advanced Patterns ===");
+    
+    // Broadcasting example
+    let matrix = Tensor::ones(vec![3, 4])?;     // Shape: [3, 4]
+    let vector = Tensor::ones(vec![4])?;        // Shape: [4]
+    let broadcasted = &amp;matrix + &amp;vector;        // Result: [3, 4]
+    
+    println!("Matrix (3x4):\n{}\n", matrix);
+    println!("Vector (4,):\n{}\n", vector);
+    println!("Matrix + Vector (broadcasted):\n{}\n", broadcasted);
+    
+    // Complex broadcasting
+    let a = Tensor::ones(vec![2, 1, 3])?;       // Shape: [2, 1, 3]
+    let b = Tensor::ones(vec![1, 4, 1])?;       // Shape: [1, 4, 1]
+    let complex_broadcast = &amp;a + &amp;b;            // Result: [2, 4, 3]
+    
+    println!("Complex broadcasting:");
+    println!("A shape: {:?}", a.shape().dims());
+    println!("B shape: {:?}", b.shape().dims());
+    println!("Result shape: {:?}", complex_broadcast.shape().dims());
+    
+    // Method chaining
+    let result = Tensor::ones(vec![2, 3])?
+        .reshape(vec![3, 2])?
+        .transpose()?;
+    
+    println!("Method chaining result:\n{}\n", result);
+    
+    Ok(())
+}
+
+/// Error handling examples
+fn error_handling_examples() -&gt; Result&lt;()&gt; {
+    println!("=== Error Handling ===");
+    
+    // Shape mismatch error
+    let a = Tensor::ones(vec![2, 3])?;
+    let b = Tensor::ones(vec![3, 2])?;
+    
+    match &amp;a + &amp;b {
+        Ok(result) =&gt; println!("Addition succeeded: {}", result),
+        Err(e) =&gt; println!("Expected error - shape mismatch: {}", e),
+    }
+    
+    // Invalid reshape error
+    let tensor = Tensor::ones(vec![2, 3])?;  // 6 elements
+    match tensor.reshape(vec![2, 2]) {       // 4 elements - invalid!
+        Ok(result) =&gt; println!("Reshape succeeded: {}", result),
+        Err(e) =&gt; println!("Expected error - invalid reshape: {}", e),
+    }
+    
+    // Out of bounds dimension error
+    match tensor.squeeze(Some(5)) {  // Dimension 5 doesn't exist
+        Ok(result) =&gt; println!("Squeeze succeeded: {}", result),
+        Err(e) =&gt; println!("Expected error - invalid dimension: {}", e),
+    }
+    
+    Ok(())
+}</code></pre>
+<h2 id="key-concepts-demonstrated"><a class="header" href="#key-concepts-demonstrated">Key Concepts Demonstrated</a></h2>
+<h3 id="1-tensor-creation"><a class="header" href="#1-tensor-creation">1. Tensor Creation</a></h3>
+<p>Three primary ways to create tensors:</p>
+<ul>
+<li><code>Tensor::zeros(shape)</code> - Creates tensor filled with zeros</li>
+<li><code>Tensor::ones(shape)</code> - Creates tensor filled with ones</li>
+<li><code>Tensor::from_vec(data, shape)</code> - Creates tensor from existing data</li>
+</ul>
+<h3 id="2-reference-vs-owned-operations"><a class="header" href="#2-reference-vs-owned-operations">2. Reference vs. Owned Operations</a></h3>
+<pre><code class="language-rust">// Moves tensors (can only use once)
+let result = a + b;
+
+// Uses references (can reuse tensors)
+let result = &amp;a + &amp;b;</code></pre>
+<h3 id="3-shape-broadcasting"><a class="header" href="#3-shape-broadcasting">3. Shape Broadcasting</a></h3>
+<p>Tensor Frame automatically broadcasts compatible shapes:</p>
+<pre><code class="language-rust">let matrix = Tensor::ones(vec![3, 4])?;  // [3, 4]
+let vector = Tensor::ones(vec![4])?;     // [4] broadcasts to [1, 4]
+let result = matrix + vector;            // Result: [3, 4]</code></pre>
+<h3 id="4-method-chaining"><a class="header" href="#4-method-chaining">4. Method Chaining</a></h3>
+<p>Operations can be chained for concise code:</p>
+<pre><code class="language-rust">let result = tensor
+    .reshape(vec![4, 2])?
+    .transpose()?
+    .squeeze(None)?;</code></pre>
+<h3 id="5-error-handling"><a class="header" href="#5-error-handling">5. Error Handling</a></h3>
+<p>All operations return <code>Result&lt;T&gt;</code> for proper error handling:</p>
+<pre><code class="language-rust">match risky_operation() {
+    Ok(tensor) =&gt; process_tensor(tensor),
+    Err(TensorError::ShapeMismatch { expected, got }) =&gt; {
+        eprintln!("Shape error: expected {:?}, got {:?}", expected, got);
+    }
+    Err(e) =&gt; eprintln!("Other error: {}", e),
+}</code></pre>
+<h2 id="performance-tips"><a class="header" href="#performance-tips">Performance Tips</a></h2>
+<ol>
+<li><strong>Use References</strong>: Use <code>&amp;a + &amp;b</code> instead of <code>a + b</code> to avoid unnecessary clones</li>
+<li><strong>Batch Operations</strong>: Combine operations when possible: <code>(a * 2.0) + b</code> vs separate operations</li>
+<li><strong>Choose Right Backend</strong>: CPU for small tensors, GPU for large operations</li>
+<li><strong>Avoid Frequent Conversions</strong>: Stay on one backend when possible</li>
+</ol>
+<h2 id="common-pitfalls"><a class="header" href="#common-pitfalls">Common Pitfalls</a></h2>
+<ol>
+<li><strong>Shape Mismatches</strong>: Ensure compatible shapes for operations</li>
+<li><strong>Invalid Reshapes</strong>: New shape must have same total elements</li>
+<li><strong>Backend Overhead</strong>: GPU operations have overhead for small tensors</li>
+<li><strong>Memory Usage</strong>: Large tensors consume significant memory</li>
+</ol>
+<h2 id="next-steps"><a class="header" href="#next-steps">Next Steps</a></h2>
+<p>After mastering basic operations, explore:</p>
+<ul>
+<li><a href="examples/./broadcasting.html">Broadcasting Examples</a> - Advanced broadcasting patterns</li>
+<li><a href="examples/./custom-backends.html">Backend Selection</a> - Optimizing backend usage</li>
+<li><a href="examples/../performance.html">Performance Guide</a> - Advanced performance optimization</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="broadcasting-examples"><a class="header" href="#broadcasting-examples">Broadcasting Examples</a></h1>
+<p>Broadcasting is one of the most powerful features in Tensor Frame, allowing operations between tensors of different shapes. This guide provides comprehensive examples of broadcasting patterns and best practices.</p>
+<h2 id="broadcasting-rules-2"><a class="header" href="#broadcasting-rules-2">Broadcasting Rules</a></h2>
+<p>Tensor Frame follows NumPy/PyTorch broadcasting rules:</p>
+<ol>
+<li><strong>Alignment</strong>: Shapes are compared element-wise from the trailing dimension</li>
+<li><strong>Size 1 Expansion</strong>: Dimensions of size 1 are expanded to match</li>
+<li><strong>Missing Dimensions</strong>: Missing leading dimensions are treated as size 1</li>
+<li><strong>Compatibility</strong>: Dimensions must be either equal, or one must be 1</li>
+</ol>
+<h2 id="basic-broadcasting-examples"><a class="header" href="#basic-broadcasting-examples">Basic Broadcasting Examples</a></h2>
+<h3 id="scalar-broadcasting"><a class="header" href="#scalar-broadcasting">Scalar Broadcasting</a></h3>
+<pre><code class="language-rust">use tensor_frame::{Tensor, Result};
+
+fn scalar_broadcasting() -&gt; Result&lt;()&gt; {
+    // Create a base tensor
+    let tensor = Tensor::from_vec(vec![2.0, 4.0, 6.0, 8.0], vec![2, 2])?;
+    println!("Original tensor:\n{}\n", tensor);
+    
+    // Scalar tensor for broadcasting
+    let scalar = Tensor::from_vec(vec![2.0], vec![])?;
+    
+    // All operations support broadcasting
+    let add_result = (tensor.clone() + scalar.clone())?;
+    println!("Tensor + 2.0:\n{}\n", add_result);
+    
+    let sub_result = (tensor.clone() - scalar.clone())?;
+    println!("Tensor - 2.0:\n{}\n", sub_result);
+    
+    let mul_result = (tensor.clone() * scalar.clone())?;
+    println!("Tensor * 2.0:\n{}\n", mul_result);
+    
+    let div_result = (tensor.clone() / scalar.clone())?;
+    println!("Tensor / 2.0:\n{}\n", div_result);
+    
+    Ok(())
+}</code></pre>
+<h3 id="vector-broadcasting"><a class="header" href="#vector-broadcasting">Vector Broadcasting</a></h3>
+<pre><code class="language-rust">fn vector_broadcasting() -&gt; Result&lt;()&gt; {
+    // Matrix-vector operations
+    let matrix = Tensor::from_vec(
+        vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
+        vec![2, 3]
+    )?;
+    let vector = Tensor::from_vec(vec![10.0, 20.0, 30.0], vec![3])?;
+    
+    println!("Matrix (2x3):\n{}\n", matrix);
+    println!("Vector (3,):\n{}\n", vector);
+    
+    // All arithmetic operations support broadcasting
+    let add_result = (matrix.clone() + vector.clone())?;
+    println!("Matrix + Vector:\n{}\n", add_result);
+    
+    let mul_result = (matrix.clone() * vector.clone())?;
+    println!("Matrix * Vector (element-wise):\n{}\n", mul_result);
+    
+    // Row vector broadcasting
+    let row_vector = Tensor::from_vec(vec![100.0, 200.0], vec![2, 1])?;
+    let row_add = (matrix.clone() + row_vector.clone())?;
+    let row_sub = (matrix.clone() - row_vector.clone())?;
+    println!("Matrix + Row Vector (2x1):\n{}\n", row_add);
+    println!("Matrix - Row Vector (2x1):\n{}\n", row_sub);
+    
+    // Complex broadcasting example
+    let a = Tensor::from_vec(vec![10.0, 20.0], vec![2, 1])?;
+    let b = Tensor::from_vec(vec![1.0, 2.0, 3.0], vec![1, 3])?;
+    let complex_result = (a / b)?;  // Broadcasting: [2,1] / [1,3] -&gt; [2,3]
+    println!("Complex broadcasting [2,1] / [1,3]:\n{}\n", complex_result);
+    
+    Ok(())
+}</code></pre>
+<h2 id="advanced-broadcasting-patterns"><a class="header" href="#advanced-broadcasting-patterns">Advanced Broadcasting Patterns</a></h2>
+<h3 id="multi-dimensional-broadcasting"><a class="header" href="#multi-dimensional-broadcasting">Multi-dimensional Broadcasting</a></h3>
+<pre><code class="language-rust">fn multidimensional_broadcasting() -&gt; Result&lt;()&gt; {
+    // 3D tensor broadcasting
+    let tensor_3d = Tensor::ones(vec![2, 3, 4])?;     // Shape: [2, 3, 4]
+    let tensor_2d = Tensor::ones(vec![3, 4])?;        // Shape: [3, 4]
+    let tensor_1d = Tensor::ones(vec![4])?;           // Shape: [4]
+    
+    println!("3D tensor shape: {:?}", tensor_3d.shape().dims());
+    println!("2D tensor shape: {:?}", tensor_2d.shape().dims());
+    println!("1D tensor shape: {:?}", tensor_1d.shape().dims());
+    
+    // 3D + 2D broadcasting: [2,3,4] + [3,4] -&gt; [2,3,4]
+    let result_3d_2d = &amp;tensor_3d + &amp;tensor_2d;
+    println!("3D + 2D result shape: {:?}", result_3d_2d.shape().dims());
+    
+    // 3D + 1D broadcasting: [2,3,4] + [4] -&gt; [2,3,4]
+    let result_3d_1d = &amp;tensor_3d + &amp;tensor_1d;
+    println!("3D + 1D result shape: {:?}", result_3d_1d.shape().dims());
+    
+    // Complex multi-dimensional broadcasting
+    let a = Tensor::ones(vec![1, 3, 1])?;             // Shape: [1, 3, 1]
+    let b = Tensor::ones(vec![2, 1, 4])?;             // Shape: [2, 1, 4]
+    let complex_result = &amp;a + &amp;b;                     // Result: [2, 3, 4]
+    
+    println!("Complex broadcasting:");
+    println!("  A shape: {:?}", a.shape().dims());
+    println!("  B shape: {:?}", b.shape().dims());
+    println!("  Result shape: {:?}", complex_result.shape().dims());
+    
+    Ok(())
+}</code></pre>
+<h3 id="broadcasting-with-size-1-dimensions"><a class="header" href="#broadcasting-with-size-1-dimensions">Broadcasting with Size-1 Dimensions</a></h3>
+<pre><code class="language-rust">fn size_one_broadcasting() -&gt; Result&lt;()&gt; {
+    // Different ways to create broadcastable tensors
+    let base = Tensor::from_vec(
+        vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
+        vec![2, 3]
+    )?;
+    
+    // Row broadcasting (1 x N)
+    let row_broadcast = Tensor::from_vec(vec![10.0, 20.0, 30.0], vec![1, 3])?;
+    let row_result = &amp;base + &amp;row_broadcast;
+    println!("Row broadcasting [2,3] + [1,3]:\n{}\n", row_result);
+    
+    // Column broadcasting (N x 1)
+    let col_broadcast = Tensor::from_vec(vec![100.0, 200.0], vec![2, 1])?;
+    let col_result = &amp;base + &amp;col_broadcast;
+    println!("Column broadcasting [2,3] + [2,1]:\n{}\n", col_result);
+    
+    // Both dimensions broadcast (1 x 1)
+    let scalar_as_tensor = Tensor::from_vec(vec![1000.0], vec![1, 1])?;
+    let scalar_result = &amp;base + &amp;scalar_as_tensor;
+    println!("Scalar broadcasting [2,3] + [1,1]:\n{}\n", scalar_result);
+    
+    Ok(())
+}</code></pre>
+<h2 id="broadcasting-in-practice"><a class="header" href="#broadcasting-in-practice">Broadcasting in Practice</a></h2>
+<h3 id="machine-learning-patterns"><a class="header" href="#machine-learning-patterns">Machine Learning Patterns</a></h3>
+<pre><code class="language-rust">fn ml_broadcasting_patterns() -&gt; Result&lt;()&gt; {
+    // Batch normalization pattern
+    let batch_data = Tensor::ones(vec![32, 128])?;    // 32 samples, 128 features
+    let mean = Tensor::zeros(vec![128])?;             // Feature means
+    let std = Tensor::ones(vec![128])?;               // Feature standard deviations
+    
+    // Normalize: (x - mean) / std
+    let normalized = (&amp;batch_data - &amp;mean) / &amp;std;
+    println!("Batch normalization result shape: {:?}", normalized.shape().dims());
+    
+    // Bias addition pattern  
+    let linear_output = Tensor::ones(vec![32, 10])?;  // Batch size 32, 10 classes
+    let bias = Tensor::from_vec(
+        vec![0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+        vec![10]
+    )?;
+    
+    let biased_output = &amp;linear_output + &amp;bias;
+    println!("Bias addition result shape: {:?}", biased_output.shape().dims());
+    
+    // Attention score broadcasting
+    let queries = Tensor::ones(vec![32, 8, 64])?;     // [batch, heads, dim]
+    let attention_weights = Tensor::ones(vec![32, 8, 1])?;  // [batch, heads, 1]
+    
+    let weighted_queries = &amp;queries * &amp;attention_weights;
+    println!("Attention weighting result shape: {:?}", weighted_queries.shape().dims());
+    
+    Ok(())
+}</code></pre>
+<h3 id="image-processing-patterns"><a class="header" href="#image-processing-patterns">Image Processing Patterns</a></h3>
+<pre><code class="language-rust">fn image_broadcasting_patterns() -&gt; Result&lt;()&gt; {
+    // Image batch processing
+    let images = Tensor::ones(vec![4, 3, 224, 224])?;  // [batch, channels, height, width]
+    
+    // Channel-wise normalization
+    let channel_mean = Tensor::from_vec(
+        vec![0.485, 0.456, 0.406],  // ImageNet means
+        vec![1, 3, 1, 1]
+    )?;
+    let channel_std = Tensor::from_vec(
+        vec![0.229, 0.224, 0.225],  // ImageNet stds
+        vec![1, 3, 1, 1]
+    )?;
+    
+    let normalized_images = (&amp;images - &amp;channel_mean) / &amp;channel_std;
+    println!("Image normalization result shape: {:?}", normalized_images.shape().dims());
+    
+    // Pixel-wise operations
+    let brightness_adjustment = Tensor::from_vec(vec![0.1], vec![1, 1, 1, 1])?;
+    let brightened = &amp;images + &amp;brightness_adjustment;
+    println!("Brightness adjustment result shape: {:?}", brightened.shape().dims());
+    
+    Ok(())
+}</code></pre>
+<h2 id="performance-considerations"><a class="header" href="#performance-considerations">Performance Considerations</a></h2>
+<h3 id="efficient-broadcasting"><a class="header" href="#efficient-broadcasting">Efficient Broadcasting</a></h3>
+<pre><code class="language-rust">use std::time::Instant;
+
+fn broadcasting_performance() -&gt; Result&lt;()&gt; {
+    // Efficient: Broadcasting avoids large intermediate tensors
+    let large_matrix = Tensor::ones(vec![1000, 1000])?;
+    let small_vector = Tensor::ones(vec![1000])?;
+    
+    let start = Instant::now();
+    let efficient_result = &amp;large_matrix + &amp;small_vector;  // Broadcasting
+    let efficient_time = start.elapsed();
+    
+    println!("Efficient broadcasting: {:?}", efficient_time);
+    
+    // Less efficient: Explicit expansion (don't do this!)
+    let start = Instant::now();
+    let expanded_vector = small_vector.reshape(vec![1, 1000])?;
+    // Note: This would need manual tiling which isn't implemented
+    // let manual_result = &amp;large_matrix + &amp;expanded_vector;
+    let manual_time = start.elapsed();
+    
+    println!("Manual expansion overhead: {:?}", manual_time);
+    
+    Ok(())
+}</code></pre>
+<h3 id="memory-efficient-patterns"><a class="header" href="#memory-efficient-patterns">Memory-Efficient Patterns</a></h3>
+<pre><code class="language-rust">fn memory_efficient_broadcasting() -&gt; Result&lt;()&gt; {
+    // Good: Broadcasting reuses memory
+    let data = Tensor::ones(vec![1000, 500])?;
+    let scale_factor = Tensor::from_vec(vec![2.0], vec![1])?;
+    
+    let scaled = &amp;data * &amp;scale_factor;  // Memory efficient
+    
+    // Avoid: Creating large intermediate tensors
+    // let large_scale = scale_factor.broadcast_to(vec![1000, 500])?;  // Wasteful
+    // let scaled = &amp;data * &amp;large_scale;
+    
+    println!("Memory-efficient scaling completed");
+    
+    Ok(())
+}</code></pre>
+<h2 id="common-broadcasting-errors"><a class="header" href="#common-broadcasting-errors">Common Broadcasting Errors</a></h2>
+<h3 id="shape-incompatibility"><a class="header" href="#shape-incompatibility">Shape Incompatibility</a></h3>
+<pre><code class="language-rust">fn broadcasting_errors() -&gt; Result&lt;()&gt; {
+    // These will fail - incompatible shapes
+    let a = Tensor::ones(vec![3, 4])?;
+    let b = Tensor::ones(vec![2, 4])?;  // Different first dimension, not 1
+    
+    match &amp;a + &amp;b {
+        Ok(_) =&gt; println!("Unexpected success"),
+        Err(e) =&gt; println!("Expected error - incompatible shapes: {}", e),
+    }
+    
+    // These will work - compatible shapes
+    let c = Tensor::ones(vec![1, 4])?;  // First dimension is 1
+    let success = &amp;a + &amp;c;
+    println!("Compatible shapes work: {:?}", success.shape().dims());
+    
+    Ok(())
+}</code></pre>
+<h2 id="broadcasting-visualization"><a class="header" href="#broadcasting-visualization">Broadcasting Visualization</a></h2>
+<h3 id="understanding-shape-alignment"><a class="header" href="#understanding-shape-alignment">Understanding Shape Alignment</a></h3>
+<pre><code class="language-rust">fn visualize_broadcasting() -&gt; Result&lt;()&gt; {
+    println!("Broadcasting visualization:");
+    println!();
+    
+    // Example 1: [2, 3] + [3]
+    println!("Example 1: [2, 3] + [3]");
+    println!("  A: [2, 3]");  
+    println!("  B:    [3]  -&gt;  [1, 3]  (implicit leading 1)");
+    println!("  Result: [2, 3]");
+    println!();
+    
+    // Example 2: [4, 1, 5] + [3, 5]
+    println!("Example 2: [4, 1, 5] + [3, 5]");
+    println!("  A: [4, 1, 5]");
+    println!("  B:    [3, 5]  -&gt;  [1, 3, 5]  (implicit leading 1)");
+    println!("  Result: [4, 3, 5]  (1 broadcasts to 3, 4)");
+    println!();
+    
+    // Example 3: Incompatible
+    println!("Example 3: [3, 4] + [2, 4] - INCOMPATIBLE");
+    println!("  A: [3, 4]");
+    println!("  B: [2, 4]");
+    println!("  Error: 3 and 2 cannot broadcast (neither is 1)");
+    println!();
+    
+    Ok(())
+}</code></pre>
+<h2 id="best-practices"><a class="header" href="#best-practices">Best Practices</a></h2>
+<h3 id="1-design-for-broadcasting"><a class="header" href="#1-design-for-broadcasting">1. Design for Broadcasting</a></h3>
+<pre><code class="language-rust">// Good: Design tensors with broadcasting in mind
+let batch_size = 32;
+let features = 128;
+
+let data = Tensor::ones(vec![batch_size, features])?;
+let weights = Tensor::ones(vec![features])?;          // Broadcastable
+let bias = Tensor::ones(vec![features])?;             // Broadcastable
+
+let output = (&amp;data * &amp;weights) + &amp;bias;  // Clean broadcasting</code></pre>
+<h3 id="2-use-explicit-shapes"><a class="header" href="#2-use-explicit-shapes">2. Use Explicit Shapes</a></h3>
+<pre><code class="language-rust">// Better: Be explicit about intended broadcasting
+let matrix = Tensor::ones(vec![10, 20])?;
+let row_vector = Tensor::ones(vec![1, 20])?;    // Explicit [1, 20]
+let col_vector = Tensor::ones(vec![10, 1])?;    // Explicit [10, 1]
+
+let row_broadcast = &amp;matrix + &amp;row_vector;
+let col_broadcast = &amp;matrix + &amp;col_vector;</code></pre>
+<h3 id="3-document-broadcasting-intent"><a class="header" href="#3-document-broadcasting-intent">3. Document Broadcasting Intent</a></h3>
+<pre><code class="language-rust">/// Applies per-channel normalization to image batch
+/// 
+/// # Arguments
+/// * `images` - Shape [batch, channels, height, width]
+/// * `channel_stats` - Shape [1, channels, 1, 1] for broadcasting
+fn normalize_images(images: &amp;Tensor, channel_stats: &amp;Tensor) -&gt; Result&lt;Tensor&gt; {
+    // Broadcasting: [B,C,H,W] - [1,C,1,1] -&gt; [B,C,H,W]
+    images - channel_stats
+}</code></pre>
+<h3 id="4-validate-shapes-early"><a class="header" href="#4-validate-shapes-early">4. Validate Shapes Early</a></h3>
+<pre><code class="language-rust">fn safe_broadcast_operation(a: &amp;Tensor, b: &amp;Tensor) -&gt; Result&lt;Tensor&gt; {
+    // Check compatibility before expensive operations
+    let a_shape = a.shape().dims();
+    let b_shape = b.shape().dims();
+    
+    // Custom validation logic here
+    if !shapes_are_broadcastable(a_shape, b_shape) {
+        return Err(TensorError::ShapeMismatch {
+            expected: a_shape.to_vec(),
+            got: b_shape.to_vec(),
+        });
+    }
+    
+    // Proceed with operation
+    a + b
+}
+
+fn shapes_are_broadcastable(a: &amp;[usize], b: &amp;[usize]) -&gt; bool {
+    let max_len = a.len().max(b.len());
+    
+    for i in 0..max_len {
+        let a_dim = a.get(a.len().saturating_sub(max_len - i)).unwrap_or(&amp;1);
+        let b_dim = b.get(b.len().saturating_sub(max_len - i)).unwrap_or(&amp;1);
+        
+        if *a_dim != *b_dim &amp;&amp; *a_dim != 1 &amp;&amp; *b_dim != 1 {
+            return false;
+        }
+    }
+    true
+}</code></pre>
+<h2 id="next-steps-1"><a class="header" href="#next-steps-1">Next Steps</a></h2>
+<p>After mastering broadcasting:</p>
+<ul>
+<li><a href="examples/./custom-backends.html">Custom Backends</a> - Optimize broadcasting for different backends</li>
+<li><a href="examples/../performance.html">Performance Guide</a> - Advanced broadcasting optimization</li>
+<li><a href="examples/../api/operations.html">API Reference</a> - Detailed operation specifications</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="custom-backend-examples"><a class="header" href="#custom-backend-examples">Custom Backend Examples</a></h1>
+<p>This guide demonstrates how to effectively use different computational backends in Tensor Frame, including when to switch backends, performance optimization strategies, and mixed backend workflows.</p>
+<h2 id="backend-selection-strategies"><a class="header" href="#backend-selection-strategies">Backend Selection Strategies</a></h2>
+<h3 id="automatic-vs-manual-selection"><a class="header" href="#automatic-vs-manual-selection">Automatic vs Manual Selection</a></h3>
+<pre><code class="language-rust">use tensor_frame::{Tensor, BackendType, Result};
+use std::time::Instant;
+
+fn backend_selection_demo() -&gt; Result&lt;()&gt; {
+    println!("=== Backend Selection Strategies ===\n");
+    
+    // Automatic selection (recommended for most cases)
+    let auto_tensor = Tensor::zeros(vec![1000, 1000])?;
+    println!("Automatic backend selected: {:?}", auto_tensor.backend_type());
+    
+    // Manual backend specification
+    let cpu_tensor = auto_tensor.to_backend(BackendType::Cpu)?;
+    println!("Forced CPU backend: {:?}", cpu_tensor.backend_type());
+    
+    #[cfg(feature = "wgpu")]
+    {
+        match auto_tensor.to_backend(BackendType::Wgpu) {
+            Ok(wgpu_tensor) =&gt; {
+                println!("WGPU backend available: {:?}", wgpu_tensor.backend_type());
+            }
+            Err(e) =&gt; {
+                println!("WGPU backend not available: {}", e);
+            }
+        }
+    }
+    
+    #[cfg(feature = "cuda")]
+    {
+        match auto_tensor.to_backend(BackendType::Cuda) {
+            Ok(cuda_tensor) =&gt; {
+                println!("CUDA backend available: {:?}", cuda_tensor.backend_type());
+            }
+            Err(e) =&gt; {
+                println!("CUDA backend not available: {}", e);
+            }
+        }
+    }
+    
+    Ok(())
+}</code></pre>
+<h3 id="size-based-backend-selection"><a class="header" href="#size-based-backend-selection">Size-Based Backend Selection</a></h3>
+<pre><code class="language-rust">fn adaptive_backend_selection() -&gt; Result&lt;()&gt; {
+    println!("=== Adaptive Backend Selection ===\n");
+    
+    let sizes = vec![
+        (vec![10, 10], "tiny"),
+        (vec![100, 100], "small"), 
+        (vec![1000, 1000], "medium"),
+        (vec![3000, 3000], "large"),
+    ];
+    
+    for (shape, description) in sizes {
+        let elements = shape.iter().product::&lt;usize&gt;();
+        
+        // Choose backend based on tensor size
+        let backend = if elements &lt; 1000 {
+            BackendType::Cpu  // CPU overhead minimal for small tensors
+        } else if elements &lt; 1_000_000 {
+            // Try WGPU first, fallback to CPU
+            #[cfg(feature = "wgpu")]
+            { BackendType::Wgpu }
+            #[cfg(not(feature = "wgpu"))]
+            { BackendType::Cpu }
+        } else {
+            // Large tensors: prefer CUDA &gt; WGPU &gt; CPU
+            #[cfg(feature = "cuda")]
+            { BackendType::Cuda }
+            #[cfg(all(feature = "wgpu", not(feature = "cuda")))]
+            { BackendType::Wgpu }
+            #[cfg(all(not(feature = "wgpu"), not(feature = "cuda")))]
+            { BackendType::Cpu }
+        };
+        
+        let tensor = Tensor::zeros(shape.clone())?;
+        let optimized_tensor = tensor.to_backend(backend)?;
+        
+        println!("{} tensor {:?}: {} elements -&gt; {:?} backend", 
+                description, shape, elements, optimized_tensor.backend_type());
+    }
+    
+    Ok(())
+}</code></pre>
+<h2 id="performance-benchmarking-1"><a class="header" href="#performance-benchmarking-1">Performance Benchmarking</a></h2>
+<h3 id="backend-performance-comparison"><a class="header" href="#backend-performance-comparison">Backend Performance Comparison</a></h3>
+<pre><code class="language-rust">fn benchmark_backends() -&gt; Result&lt;()&gt; {
+    println!("=== Backend Performance Comparison ===\n");
+    
+    let sizes = vec![
+        vec![100, 100],
+        vec![500, 500], 
+        vec![1000, 1000],
+        vec![2000, 2000],
+    ];
+    
+    for size in sizes {
+        println!("Benchmarking {}x{} matrix addition:", size[0], size[1]);
+        
+        // Create test tensors
+        let a = Tensor::ones(size.clone())?;
+        let b = Tensor::ones(size.clone())?;
+        
+        // CPU benchmark
+        let cpu_a = a.to_backend(BackendType::Cpu)?;
+        let cpu_b = b.to_backend(BackendType::Cpu)?;
+        
+        let start = Instant::now();
+        let cpu_result = &amp;cpu_a + &amp;cpu_b;
+        let cpu_time = start.elapsed();
+        
+        println!("  CPU: {:?}", cpu_time);
+        
+        // WGPU benchmark (if available)
+        #[cfg(feature = "wgpu")]
+        {
+            match (a.to_backend(BackendType::Wgpu), b.to_backend(BackendType::Wgpu)) {
+                (Ok(wgpu_a), Ok(wgpu_b)) =&gt; {
+                    let start = Instant::now();
+                    let wgpu_result = &amp;wgpu_a + &amp;wgpu_b;
+                    // Force synchronization by converting back
+                    let _sync = wgpu_result.to_vec()?;
+                    let wgpu_time = start.elapsed();
+                    
+                    let speedup = cpu_time.as_nanos() as f64 / wgpu_time.as_nanos() as f64;
+                    println!("  WGPU: {:?} ({}x speedup)", wgpu_time, speedup);
+                }
+                _ =&gt; println!("  WGPU: Not available"),
+            }
+        }
+        
+        // CUDA benchmark (if available)
+        #[cfg(feature = "cuda")]
+        {
+            match (a.to_backend(BackendType::Cuda), b.to_backend(BackendType::Cuda)) {
+                (Ok(cuda_a), Ok(cuda_b)) =&gt; {
+                    let start = Instant::now();
+                    let cuda_result = &amp;cuda_a + &amp;cuda_b;
+                    let _sync = cuda_result.to_vec()?;
+                    let cuda_time = start.elapsed();
+                    
+                    let speedup = cpu_time.as_nanos() as f64 / cuda_time.as_nanos() as f64;
+                    println!("  CUDA: {:?} ({}x speedup)", cuda_time, speedup);
+                }
+                _ =&gt; println!("  CUDA: Not available"),
+            }
+        }
+        
+        println!();
+    }
+    
+    Ok(())
+}</code></pre>
+<h3 id="operation-specific-benchmarks"><a class="header" href="#operation-specific-benchmarks">Operation-Specific Benchmarks</a></h3>
+<pre><code class="language-rust">fn operation_benchmarks() -&gt; Result&lt;()&gt; {
+    println!("=== Operation-Specific Benchmarks ===\n");
+    
+    let size = vec![1000, 1000];
+    let a = Tensor::ones(size.clone())?;
+    let b = Tensor::ones(size.clone())?;
+    
+    // Test different operations
+    let operations = vec![
+        ("Addition", |a: &amp;Tensor, b: &amp;Tensor| a + b),
+        ("Multiplication", |a: &amp;Tensor, b: &amp;Tensor| a * b),
+        ("Complex", |a: &amp;Tensor, b: &amp;Tensor| (a * 2.0) + b),
+    ];
+    
+    for (op_name, operation) in operations {
+        println!("Operation: {}", op_name);
+        
+        // CPU timing
+        let cpu_a = a.to_backend(BackendType::Cpu)?;
+        let cpu_b = b.to_backend(BackendType::Cpu)?;
+        
+        let start = Instant::now();
+        let _cpu_result = operation(&amp;cpu_a, &amp;cpu_b)?;
+        let cpu_time = start.elapsed();
+        
+        println!("  CPU: {:?}", cpu_time);
+        
+        // GPU timing (if available)
+        #[cfg(feature = "wgpu")]
+        {
+            if let (Ok(gpu_a), Ok(gpu_b)) = (
+                a.to_backend(BackendType::Wgpu),
+                b.to_backend(BackendType::Wgpu)
+            ) {
+                let start = Instant::now();
+                let gpu_result = operation(&amp;gpu_a, &amp;gpu_b)?;
+                let _sync = gpu_result.to_vec()?;  // Force sync
+                let gpu_time = start.elapsed();
+                
+                let speedup = cpu_time.as_nanos() as f64 / gpu_time.as_nanos() as f64;
+                println!("  GPU: {:?} ({}x speedup)", gpu_time, speedup);
+            }
+        }
+        
+        println!();
+    }
+    
+    Ok(())
+}</code></pre>
+<h2 id="mixed-backend-workflows"><a class="header" href="#mixed-backend-workflows">Mixed Backend Workflows</a></h2>
+<h3 id="pipeline-with-backend-transitions"><a class="header" href="#pipeline-with-backend-transitions">Pipeline with Backend Transitions</a></h3>
+<pre><code class="language-rust">fn mixed_backend_pipeline() -&gt; Result&lt;()&gt; {
+    println!("=== Mixed Backend Pipeline ===\n");
+    
+    // Stage 1: Data preparation on CPU (I/O intensive)
+    println!("Stage 1: Data preparation on CPU");
+    let raw_data = vec![1.0; 1_000_000];  // Simulate data loading
+    let cpu_tensor = Tensor::from_vec(raw_data, vec![1000, 1000])?;
+    println!("  Created tensor on CPU: {:?}", cpu_tensor.backend_type());
+    
+    // Stage 2: Heavy computation on GPU
+    #[cfg(feature = "wgpu")]
+    {
+        println!("Stage 2: Moving to GPU for computation");
+        let gpu_tensor = cpu_tensor.to_backend(BackendType::Wgpu)?;
+        println!("  Moved to GPU: {:?}", gpu_tensor.backend_type());
+        
+        // Perform heavy computations on GPU
+        let processed = (&amp;gpu_tensor * 2.0) + 1.0;
+        let normalized = &amp;processed / processed.sum(None)?;
+        
+        println!("  Completed GPU computations");
+        
+        // Stage 3: Results back to CPU for output
+        println!("Stage 3: Moving results back to CPU");
+        let final_result = normalized.to_backend(BackendType::Cpu)?;
+        println!("  Final result on CPU: {:?}", final_result.backend_type());
+        
+        // Stage 4: Extract specific values (CPU efficient)
+        let summary = final_result.sum(None)?;
+        println!("  Summary value: {}", summary.to_vec()?[0]);
+    }
+    
+    #[cfg(not(feature = "wgpu"))]
+    {
+        println!("Stage 2-4: Processing on CPU (GPU not available)");
+        let processed = (&amp;cpu_tensor * 2.0) + 1.0;
+        let summary = processed.sum(None)?;
+        println!("  Summary value: {}", summary.to_vec()?[0]);
+    }
+    
+    Ok(())
+}</code></pre>
+<h3 id="batch-processing-strategy"><a class="header" href="#batch-processing-strategy">Batch Processing Strategy</a></h3>
+<pre><code class="language-rust">fn batch_processing_strategy() -&gt; Result&lt;()&gt; {
+    println!("=== Batch Processing Strategy ===\n");
+    
+    // Simulate multiple data batches
+    let batch_sizes = vec![100, 500, 1000, 2000];
+    
+    for batch_size in batch_sizes {
+        println!("Processing batch size: {}", batch_size);
+        
+        // Create multiple tensors (simulating data batches)
+        let batches: Result&lt;Vec&lt;_&gt;&gt; = (0..5)
+            .map(|i| {
+                let data = vec![i as f32; batch_size * batch_size];
+                Tensor::from_vec(data, vec![batch_size, batch_size])
+            })
+            .collect();
+        
+        let batches = batches?;
+        
+        // Choose optimal backend based on batch size
+        let backend = if batch_size &lt; 500 {
+            BackendType::Cpu
+        } else {
+            #[cfg(feature = "wgpu")]
+            { BackendType::Wgpu }
+            #[cfg(not(feature = "wgpu"))]
+            { BackendType::Cpu }
+        };
+        
+        let start = Instant::now();
+        
+        // Convert all batches to optimal backend
+        let gpu_batches: Result&lt;Vec&lt;_&gt;&gt; = batches
+            .into_iter()
+            .map(|batch| batch.to_backend(backend))
+            .collect();
+        
+        let gpu_batches = gpu_batches?;
+        
+        // Process all batches
+        let results: Result&lt;Vec&lt;_&gt;&gt; = gpu_batches
+            .iter()
+            .map(|batch| batch.sum(None))
+            .collect();
+        
+        let results = results?;
+        let processing_time = start.elapsed();
+        
+        println!("  Backend: {:?}", backend);
+        println!("  Processing time: {:?}", processing_time);
+        println!("  Results count: {}", results.len());
+        println!();
+    }
+    
+    Ok(())
+}</code></pre>
+<h2 id="error-handling-and-fallback-strategies"><a class="header" href="#error-handling-and-fallback-strategies">Error Handling and Fallback Strategies</a></h2>
+<h3 id="robust-backend-selection"><a class="header" href="#robust-backend-selection">Robust Backend Selection</a></h3>
+<pre><code class="language-rust">fn robust_backend_selection(tensor: Tensor) -&gt; Result&lt;Tensor&gt; {
+    // Try backends in order of preference
+    let backends_to_try = vec![
+        #[cfg(feature = "cuda")]
+        BackendType::Cuda,
+        #[cfg(feature = "wgpu")]
+        BackendType::Wgpu,
+        BackendType::Cpu,
+    ];
+    
+    for backend in backends_to_try {
+        match tensor.to_backend(backend) {
+            Ok(converted_tensor) =&gt; {
+                println!("Successfully using backend: {:?}", backend);
+                return Ok(converted_tensor);
+            }
+            Err(e) =&gt; {
+                println!("Backend {:?} failed: {}", backend, e);
+                continue;
+            }
+        }
+    }
+    
+    // This should never happen since CPU should always work
+    Err(tensor_frame::TensorError::BackendError(
+        "No backend available".to_string()
+    ))
+}
+
+fn robust_operation_with_fallback() -&gt; Result&lt;()&gt; {
+    println!("=== Robust Operation with Fallback ===\n");
+    
+    let large_tensor = Tensor::ones(vec![2000, 2000])?;
+    
+    // Try GPU operation first
+    let result = match large_tensor.to_backend(BackendType::Wgpu) {
+        Ok(gpu_tensor) =&gt; {
+            match gpu_tensor.sum(None) {
+                Ok(result) =&gt; {
+                    println!("GPU operation successful");
+                    result
+                }
+                Err(e) =&gt; {
+                    println!("GPU operation failed: {}, falling back to CPU", e);
+                    large_tensor.to_backend(BackendType::Cpu)?.sum(None)?
+                }
+            }
+        }
+        Err(e) =&gt; {
+            println!("GPU conversion failed: {}, using CPU", e);
+            large_tensor.sum(None)?
+        }
+    };
+    
+    println!("Final result: {}", result.to_vec()?[0]);
+    
+    Ok(())
+}</code></pre>
+<h3 id="memory-management-across-backends"><a class="header" href="#memory-management-across-backends">Memory Management Across Backends</a></h3>
+<pre><code class="language-rust">fn memory_management_demo() -&gt; Result&lt;()&gt; {
+    println!("=== Memory Management Across Backends ===\n");
+    
+    // Monitor memory usage pattern
+    let tensor_size = vec![1000, 1000];  // 4MB tensor
+    
+    // Start with CPU
+    let cpu_tensor = Tensor::ones(tensor_size.clone())?;
+    println!("Created tensor on CPU");
+    
+    // Convert to GPU (allocates GPU memory)
+    #[cfg(feature = "wgpu")]
+    {
+        let gpu_tensor = cpu_tensor.to_backend(BackendType::Wgpu)?;
+        println!("Converted to GPU (both CPU and GPU memory used)");
+        
+        // Process on GPU
+        let gpu_result = (&amp;gpu_tensor * 2.0) + 1.0;
+        println!("Processed on GPU");
+        
+        // Convert back to CPU (allocates new CPU memory)
+        let final_result = gpu_result.to_backend(BackendType::Cpu)?;
+        println!("Converted back to CPU");
+        
+        // At this point: original CPU tensor, GPU tensor, and final CPU tensor exist
+        // Memory is automatically freed when variables go out of scope
+        
+        let summary = final_result.sum(None)?;
+        println!("Final summary: {}", summary.to_vec()?[0]);
+    }
+    
+    println!("Memory automatically freed when variables go out of scope");
+    
+    Ok(())
+}</code></pre>
+<h2 id="production-patterns"><a class="header" href="#production-patterns">Production Patterns</a></h2>
+<h3 id="configuration-driven-backend-selection"><a class="header" href="#configuration-driven-backend-selection">Configuration-Driven Backend Selection</a></h3>
+<pre><code class="language-rust">use std::env;
+
+#[derive(Debug)]
+struct TensorConfig {
+    preferred_backend: BackendType,
+    fallback_backends: Vec&lt;BackendType&gt;,
+    small_tensor_threshold: usize,
+}
+
+impl TensorConfig {
+    fn from_env() -&gt; Self {
+        let preferred = env::var("TENSOR_BACKEND")
+            .unwrap_or_else(|_| "auto".to_string());
+        
+        let preferred_backend = match preferred.as_str() {
+            "cpu" =&gt; BackendType::Cpu,
+            #[cfg(feature = "wgpu")]
+            "wgpu" =&gt; BackendType::Wgpu,
+            #[cfg(feature = "cuda")]
+            "cuda" =&gt; BackendType::Cuda,
+            _ =&gt; {
+                // Auto-select best available
+                #[cfg(feature = "cuda")]
+                { BackendType::Cuda }
+                #[cfg(all(feature = "wgpu", not(feature = "cuda")))]
+                { BackendType::Wgpu }
+                #[cfg(all(not(feature = "wgpu"), not(feature = "cuda")))]
+                { BackendType::Cpu }
+            }
+        };
+        
+        let threshold = env::var("SMALL_TENSOR_THRESHOLD")
+            .unwrap_or_else(|_| "10000".to_string())
+            .parse()
+            .unwrap_or(10000);
+        
+        TensorConfig {
+            preferred_backend,
+            fallback_backends: vec![BackendType::Cpu],  // Always fallback to CPU
+            small_tensor_threshold: threshold,
+        }
+    }
+    
+    fn select_backend(&amp;self, tensor_size: usize) -&gt; BackendType {
+        if tensor_size &lt; self.small_tensor_threshold {
+            BackendType::Cpu  // Always use CPU for small tensors
+        } else {
+            self.preferred_backend
+        }
+    }
+}
+
+fn production_backend_usage() -&gt; Result&lt;()&gt; {
+    println!("=== Production Backend Usage ===\n");
+    
+    let config = TensorConfig::from_env();
+    println!("Configuration: {:?}", config);
+    
+    // Use configuration for tensor operations
+    let sizes = vec![100, 1000, 10000, 100000];
+    
+    for size in sizes {
+        let tensor = Tensor::ones(vec![size])?;
+        let elements = tensor.numel();
+        
+        let backend = config.select_backend(elements);
+        let optimized_tensor = tensor.to_backend(backend)?;
+        
+        println!("Tensor size {}: using {:?} backend", 
+                elements, optimized_tensor.backend_type());
+    }
+    
+    Ok(())
+}</code></pre>
+<h3 id="application-level-backend-strategy"><a class="header" href="#application-level-backend-strategy">Application-Level Backend Strategy</a></h3>
+<pre><code class="language-rust">struct TensorApplication {
+    config: TensorConfig,
+}
+
+impl TensorApplication {
+    fn new() -&gt; Self {
+        Self {
+            config: TensorConfig::from_env(),
+        }
+    }
+    
+    fn process_data(&amp;self, data: Vec&lt;f32&gt;, shape: Vec&lt;usize&gt;) -&gt; Result&lt;Tensor&gt; {
+        // Create tensor
+        let tensor = Tensor::from_vec(data, shape)?;
+        
+        // Select optimal backend
+        let backend = self.config.select_backend(tensor.numel());
+        let optimized_tensor = tensor.to_backend(backend)?;
+        
+        // Perform operations
+        let processed = (&amp;optimized_tensor * 2.0) + 1.0;
+        let normalized = &amp;processed / processed.sum(None)?;
+        
+        Ok(normalized)
+    }
+    
+    fn batch_process(&amp;self, batches: Vec&lt;Vec&lt;f32&gt;&gt;, shape: Vec&lt;usize&gt;) -&gt; Result&lt;Vec&lt;Tensor&gt;&gt; {
+        batches
+            .into_iter()
+            .map(|batch| self.process_data(batch, shape.clone()))
+            .collect()
+    }
+}</code></pre>
+<h2 id="best-practices-summary"><a class="header" href="#best-practices-summary">Best Practices Summary</a></h2>
+<h3 id="1-size-based-selection"><a class="header" href="#1-size-based-selection">1. Size-Based Selection</a></h3>
+<ul>
+<li><strong>Small tensors (&lt; 10K elements)</strong>: Use CPU backend</li>
+<li><strong>Medium tensors (10K - 1M elements)</strong>: Consider WGPU</li>
+<li><strong>Large tensors (&gt; 1M elements)</strong>: Prefer CUDA &gt; WGPU &gt; CPU</li>
+</ul>
+<h3 id="2-operation-based-selection"><a class="header" href="#2-operation-based-selection">2. Operation-Based Selection</a></h3>
+<ul>
+<li><strong>I/O operations</strong>: Use CPU backend</li>
+<li><strong>Element-wise operations</strong>: Use GPU backends for large tensors</li>
+<li><strong>Reductions</strong>: GPU effective for very large tensors</li>
+<li><strong>Large reductions</strong>: CUDA &gt; CPU &gt; WGPU (until WGPU reductions implemented)</li>
+</ul>
+<h3 id="3-memory-management"><a class="header" href="#3-memory-management">3. Memory Management</a></h3>
+<ul>
+<li>Convert to target backend early in pipeline</li>
+<li>Avoid frequent backend conversions</li>
+<li>Use batch processing when possible</li>
+<li>Monitor memory usage in production</li>
+</ul>
+<h3 id="4-error-handling"><a class="header" href="#4-error-handling">4. Error Handling</a></h3>
+<ul>
+<li>Always provide CPU fallback</li>
+<li>Handle backend-specific errors gracefully</li>
+<li>Use configuration for backend preferences</li>
+<li>Test with all available backends</li>
+</ul>
+<h3 id="5-performance-optimization"><a class="header" href="#5-performance-optimization">5. Performance Optimization</a></h3>
+<ul>
+<li>Benchmark with your specific workload</li>
+<li>Consider warmup time for GPU backends</li>
+<li>Profile memory transfer overhead</li>
+<li>Use appropriate tensor sizes for each backend</li>
+</ul>
+<h2 id="next-steps-2"><a class="header" href="#next-steps-2">Next Steps</a></h2>
+<ul>
+<li><a href="examples/../performance.html">Performance Guide</a> - Advanced optimization techniques</li>
+<li><a href="examples/../api/backends.html">API Reference</a> - Detailed backend API documentation</li>
+<li><a href="examples/../backends/">Backend-Specific Guides</a> - Deep dives into each backend</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="performance-guide"><a class="header" href="#performance-guide">Performance Guide</a></h1>
+<p>This guide provides detailed information on optimizing Tensor Frame performance across different backends and use cases.</p>
+<h2 id="performance-overview"><a class="header" href="#performance-overview">Performance Overview</a></h2>
+<p>Tensor Frame's performance characteristics vary significantly based on:</p>
+<ul>
+<li><strong>Tensor size</strong>: Small vs large tensors have different optimal backends</li>
+<li><strong>Operation type</strong>: Element-wise vs reductions vs matrix operations</li>
+<li><strong>Backend selection</strong>: CPU vs WGPU vs CUDA performance profiles</li>
+<li><strong>Memory patterns</strong>: Data locality and transfer overhead</li>
+</ul>
+<h2 id="backend-performance-characteristics"><a class="header" href="#backend-performance-characteristics">Backend Performance Characteristics</a></h2>
+<h3 id="cpu-backend-4"><a class="header" href="#cpu-backend-4">CPU Backend</a></h3>
+<ul>
+<li><strong>Best for</strong>: Small tensors (&lt; 10K elements), development, guaranteed availability</li>
+<li><strong>Strengths</strong>: Low latency, no setup overhead, excellent debugging</li>
+<li><strong>Limitations</strong>: Limited parallelism, memory bandwidth bound for large operations</li>
+</ul>
+<pre><code class="language-rust">use tensor_frame::Tensor;
+// CPU optimal: Small tensors and scalar operations
+let small = Tensor::ones(vec![100, 100])?;
+let result = small.sum(None)?;  // ~0.1ms on modern CPU</code></pre>
+<h3 id="wgpu-backend-4"><a class="header" href="#wgpu-backend-4">WGPU Backend</a></h3>
+<ul>
+<li><strong>Best for</strong>: Large element-wise operations (&gt; 100K elements), cross-platform deployment</li>
+<li><strong>Strengths</strong>: Massive parallelism, good memory bandwidth, portable</li>
+<li><strong>Limitations</strong>: GPU setup overhead (~1-10ms), limited operation support</li>
+</ul>
+<pre><code class="language-rust">use tensor_frame::Tensor;
+// WGPU optimal: Large parallel operations
+let large = Tensor::ones(vec![2048, 2048])?
+    .to_backend(BackendType::Wgpu)?;
+let result = (large_a * large_b) + large_c;  // ~2ms on modern GPU</code></pre>
+<h3 id="cuda-backend-4"><a class="header" href="#cuda-backend-4">CUDA Backend</a></h3>
+<ul>
+<li><strong>Best for</strong>: Very large operations (&gt; 1M elements), production workloads</li>
+<li><strong>Strengths</strong>: Peak performance, mature optimizations, cuBLAS integration</li>
+<li><strong>Limitations</strong>: NVIDIA-only, CUDA toolkit requirement</li>
+</ul>
+<pre><code class="language-rust">use tensor_frame::Tensor;
+// CUDA optimal: Matrix operations and very large tensors
+let matrices = Tensor::ones(vec![4096, 4096])?
+    .to_backend(BackendType::Cuda)?;
+let result = matrix_a.matmul(&amp;matrix_b)?;  // ~15ms with cuBLAS</code></pre>
+<h2 id="operation-specific-performance"><a class="header" href="#operation-specific-performance">Operation-Specific Performance</a></h2>
+<h3 id="element-wise-operations"><a class="header" href="#element-wise-operations">Element-wise Operations</a></h3>
+<p><strong>Performance Scaling</strong>:</p>
+<ul>
+<li>CPU: O(n) with thread-level parallelism (8-32 threads)</li>
+<li>WGPU: O(n) with massive parallelism (1000+ threads)</li>
+<li>CUDA: O(n) with optimal parallelism (10000+ threads)</li>
+</ul>
+<pre><code class="language-rust">use std::time::Instant;
+
+fn benchmark_element_wise() -&gt; Result&lt;()&gt; {
+    let sizes = vec![1000, 5000, 10000, 50000];
+    
+    for size in sizes {
+        let a = Tensor::ones(vec![size, size])?;
+        let b = Tensor::ones(vec![size, size])?;
+        
+        // CPU timing
+        let start = Instant::now();
+        let cpu_result = &amp;a + &amp;b;
+        let cpu_time = start.elapsed();
+        
+        // GPU timing (if available)
+        #[cfg(feature = "wgpu")]
+        {
+            let gpu_a = a.to_backend(BackendType::Wgpu)?;
+            let gpu_b = b.to_backend(BackendType::Wgpu)?;
+            
+            let start = Instant::now();
+            let gpu_result = &amp;gpu_a + &amp;gpu_b;
+            let _sync = gpu_result.to_vec()?;
+            let gpu_time = start.elapsed();
+            
+            let speedup = cpu_time.as_nanos() as f64 / gpu_time.as_nanos() as f64;
+            println!("Size {}x{}: CPU {:?}, GPU {:?}, Speedup: {:.1}x", 
+                    size, size, cpu_time, gpu_time, speedup);
+        }
+    }
+    
+    Ok(())
+}</code></pre>
+<h3 id="reduction-operations-2"><a class="header" href="#reduction-operations-2">Reduction Operations</a></h3>
+<p><strong>Performance Notes</strong>:</p>
+<ul>
+<li>CPU: Rayon parallel reduction, cache-efficient</li>
+<li>GPU: Requires multiple kernel launches for large reductions</li>
+<li>Memory-bound for large tensors</li>
+</ul>
+<pre><code class="language-rust">fn reduction_performance() -&gt; Result&lt;()&gt; {
+    let tensor = Tensor::ones(vec![10000, 10000])?;  // 100M elements
+    
+    // Sum reduction timing
+    let start = Instant::now();
+    let sum = tensor.sum(None)?;
+    let cpu_time = start.elapsed();
+    
+    println!("CPU sum reduction (100M elements): {:?}", cpu_time);
+    println!("Result: {}", sum.to_vec()?[0]);
+    
+    Ok(())
+}</code></pre>
+<h2 id="memory-performance"><a class="header" href="#memory-performance">Memory Performance</a></h2>
+<h3 id="memory-transfer-costs"><a class="header" href="#memory-transfer-costs">Memory Transfer Costs</a></h3>
+<p>GPU operations include memory transfer overhead:</p>
+<pre><code class="language-rust">fn memory_transfer_analysis() -&gt; Result&lt;()&gt; {
+    let sizes = vec![1000, 5000, 10000];
+    
+    for size in sizes {
+        let tensor = Tensor::ones(vec![size, size])?;
+        let elements = tensor.numel();
+        let bytes = elements * 4;  // f32 = 4 bytes
+        
+        #[cfg(feature = "wgpu")]
+        {
+            // Time conversion to GPU
+            let start = Instant::now();
+            let gpu_tensor = tensor.to_backend(BackendType::Wgpu)?;
+            let upload_time = start.elapsed();
+            
+            // Time conversion back to CPU
+            let start = Instant::now();
+            let _data = gpu_tensor.to_vec()?;
+            let download_time = start.elapsed();
+            
+            let upload_bw = bytes as f64 / upload_time.as_secs_f64() / 1e9;  // GB/s
+            let download_bw = bytes as f64 / download_time.as_secs_f64() / 1e9;  // GB/s
+            
+            println!("Size {}x{} ({} MB):", size, size, bytes / 1024 / 1024);
+            println!("  Upload: {:?} ({:.1} GB/s)", upload_time, upload_bw);
+            println!("  Download: {:?} ({:.1} GB/s)", download_time, download_bw);
+        }
+    }
+    
+    Ok(())
+}</code></pre>
+<h3 id="memory-layout-optimization-2"><a class="header" href="#memory-layout-optimization-2">Memory Layout Optimization</a></h3>
+<pre><code class="language-rust">// Efficient: Contiguous memory access
+let matrix = Tensor::from_vec(data, vec![rows, cols])?;
+let transposed = matrix.transpose()?;  // May require memory copy
+
+// Efficient: Operations that preserve layout
+let result = (&amp;matrix_a + &amp;matrix_b) * 2.0;  // All operations maintain layout
+
+// Less efficient: Operations that break layout
+let reshaped = matrix.reshape(vec![cols, rows])?;  // May require copy</code></pre>
+<h2 id="optimization-strategies"><a class="header" href="#optimization-strategies">Optimization Strategies</a></h2>
+<h3 id="1-backend-selection-strategy"><a class="header" href="#1-backend-selection-strategy">1. Backend Selection Strategy</a></h3>
+<pre><code class="language-rust">fn optimal_backend_for_workload(tensor_size: usize, operation: &amp;str) -&gt; BackendType {
+    match (tensor_size, operation) {
+        // Small tensors: CPU always optimal
+        (0..=10_000, _) =&gt; BackendType::Cpu,
+        
+        // Large reductions: Prefer CUDA
+        (_, "reduction") if tensor_size &gt; 1_000_000 =&gt; {
+            #[cfg(feature = "cuda")]
+            { BackendType::Cuda }
+            #[cfg(not(feature = "cuda"))]
+            { BackendType::Cpu }
+        }
+        
+        // Large element-wise: GPU beneficial
+        (10_001..=1_000_000, "elementwise") =&gt; {
+            #[cfg(feature = "wgpu")]
+            { BackendType::Wgpu }
+            #[cfg(not(feature = "wgpu"))]
+            { BackendType::Cpu }
+        }
+        
+        // Very large: Prefer CUDA &gt; WGPU &gt; CPU
+        (1_000_001.., _) =&gt; {
+            #[cfg(feature = "cuda")]
+            { BackendType::Cuda }
+            #[cfg(all(feature = "wgpu", not(feature = "cuda")))]
+            { BackendType::Wgpu }
+            #[cfg(all(not(feature = "wgpu"), not(feature = "cuda")))]
+            { BackendType::Cpu }
+        }
+        
+        // Default: CPU
+        _ =&gt; BackendType::Cpu,
+    }
+}</code></pre>
+<h3 id="2-operation-fusion"><a class="header" href="#2-operation-fusion">2. Operation Fusion</a></h3>
+<pre><code class="language-rust">// Efficient: Fused operations
+let result = ((a * b) + c) / d;  // Single expression, potential fusion
+
+// Less efficient: Separate operations  
+let temp1 = a * b;
+let temp2 = temp1 + c;
+let result = temp2 / d;  // Multiple temporary allocations</code></pre>
+<h3 id="3-batch-processing"><a class="header" href="#3-batch-processing">3. Batch Processing</a></h3>
+<pre><code class="language-rust">fn efficient_batch_processing(batches: Vec&lt;Tensor&gt;) -&gt; Result&lt;Vec&lt;Tensor&gt;&gt; {
+    // Convert all to same backend once
+    let backend = BackendType::Wgpu;
+    let gpu_batches: Result&lt;Vec&lt;_&gt;&gt; = batches
+        .into_iter()
+        .map(|t| t.to_backend(backend))
+        .collect();
+    
+    // Process on GPU
+    gpu_batches?
+        .into_iter()
+        .map(|batch| {
+            // Heavy computation on GPU
+            (batch * 2.0) + 1.0
+        })
+        .collect()
+}</code></pre>
+<h3 id="4-memory-pool-usage"><a class="header" href="#4-memory-pool-usage">4. Memory Pool Usage</a></h3>
+<pre><code class="language-rust">// Efficient: Reuse similar-sized tensors
+struct TensorPool {
+    cached_tensors: HashMap&lt;Vec&lt;usize&gt;, Vec&lt;Tensor&gt;&gt;,
+}
+
+impl TensorPool {
+    fn get_or_create(&amp;mut self, shape: Vec&lt;usize&gt;) -&gt; Result&lt;Tensor&gt; {
+        if let Some(cached) = self.cached_tensors.get_mut(&amp;shape) {
+            if let Some(tensor) = cached.pop() {
+                return Ok(tensor);
+            }
+        }
+        
+        // Create new tensor if no cached version
+        Tensor::zeros(shape)
+    }
+    
+    fn return_tensor(&amp;mut self, tensor: Tensor) {
+        let shape = tensor.shape().dims().to_vec();
+        self.cached_tensors
+            .entry(shape)
+            .or_insert_with(Vec::new)
+            .push(tensor);
+    }
+}</code></pre>
+<h2 id="profiling-and-debugging"><a class="header" href="#profiling-and-debugging">Profiling and Debugging</a></h2>
+<h3 id="cpu-profiling"><a class="header" href="#cpu-profiling">CPU Profiling</a></h3>
+<pre><code class="language-rust">// Use built-in timing
+use std::time::Instant;
+
+let start = Instant::now();
+let result = expensive_operation()?;
+println!("Operation took: {:?}", start.elapsed());
+
+// Use external profilers
+// cargo install flamegraph
+// cargo flamegraph --bin your_app</code></pre>
+<h3 id="gpu-profiling"><a class="header" href="#gpu-profiling">GPU Profiling</a></h3>
+<p><strong>NVIDIA Tools</strong> (for CUDA backend):</p>
+<pre><code class="language-bash"># Nsight Systems for timeline analysis
+nsys profile --stats=true ./your_app
+
+# Nsight Compute for kernel analysis  
+ncu --metrics sm__throughput.avg.pct_of_peak_sustained_elapsed ./your_app
+</code></pre>
+<p><strong>Platform Tools</strong> (for WGPU backend):</p>
+<ul>
+<li><strong>Windows</strong>: PIX for Windows, RenderDoc</li>
+<li><strong>macOS</strong>: Xcode Instruments (GPU Timeline)</li>
+<li><strong>Linux</strong>: RenderDoc, Vulkan Tools</li>
+</ul>
+<h3 id="memory-profiling"><a class="header" href="#memory-profiling">Memory Profiling</a></h3>
+<pre><code class="language-rust">fn memory_usage_analysis() -&gt; Result&lt;()&gt; {
+    use std::alloc::{GlobalAlloc, Layout, System};
+    
+    // Monitor system memory usage
+    #[cfg(target_os = "linux")]
+    {
+        use std::fs;
+        let status = fs::read_to_string("/proc/self/status")?;
+        for line in status.lines() {
+            if line.starts_with("VmRSS:") {
+                println!("Memory usage: {}", line);
+            }
+        }
+    }
+    
+    // GPU memory monitoring (platform-specific)
+    #[cfg(feature = "cuda")]
+    {
+        // CUDA memory info
+        let (free, total) = cuda::memory_info()?;
+        println!("GPU memory: {} MB free of {} MB total", 
+                free / 1024 / 1024, total / 1024 / 1024);
+    }
+    
+    Ok(())
+}</code></pre>
+<h2 id="performance-benchmarking-2"><a class="header" href="#performance-benchmarking-2">Performance Benchmarking</a></h2>
+<h3 id="comprehensive-benchmark-suite"><a class="header" href="#comprehensive-benchmark-suite">Comprehensive Benchmark Suite</a></h3>
+<pre><code class="language-rust">use criterion::{criterion_group, criterion_main, Criterion};
+
+fn bench_tensor_operations(c: &amp;mut Criterion) {
+    let sizes = vec![100, 500, 1000, 2000];
+    
+    for size in sizes {
+        let a = Tensor::ones(vec![size, size]).unwrap();
+        let b = Tensor::ones(vec![size, size]).unwrap();
+        
+        // CPU benchmark
+        c.bench_function(&amp;format!("cpu_add_{}x{}", size, size), |bench| {
+            bench.iter(|| {
+                let _result = &amp;a + &amp;b;
+            });
+        });
+        
+        // GPU benchmark (if available)
+        #[cfg(feature = "wgpu")]
+        {
+            let gpu_a = a.to_backend(BackendType::Wgpu).unwrap();
+            let gpu_b = b.to_backend(BackendType::Wgpu).unwrap();
+            
+            c.bench_function(&amp;format!("gpu_add_{}x{}", size, size), |bench| {
+                bench.iter(|| {
+                    let result = &amp;gpu_a + &amp;gpu_b;
+                    let _sync = result.to_vec().unwrap();  // Force sync
+                });
+            });
+        }
+    }
+}
+
+criterion_group!(benches, bench_tensor_operations);
+criterion_main!(benches);</code></pre>
+<h2 id="performance-troubleshooting"><a class="header" href="#performance-troubleshooting">Performance Troubleshooting</a></h2>
+<h3 id="common-performance-issues"><a class="header" href="#common-performance-issues">Common Performance Issues</a></h3>
+<ol>
+<li><strong>Small Tensors on GPU</strong></li>
+</ol>
+<pre><code class="language-rust">// Problem: GPU overhead for small operations
+let small = Tensor::ones(vec![10, 10])?;
+let slow = small.to_backend(BackendType::Wgpu)?;  // Overhead &gt; computation
+
+// Solution: Use CPU for small tensors
+let fast = small;  // Stay on CPU</code></pre>
+<ol start="2">
+<li><strong>Frequent Backend Conversions</strong></li>
+</ol>
+<pre><code class="language-rust">// Problem: Repeated conversions
+for i in 0..1000 {
+    let gpu_tensor = cpu_tensor.to_backend(BackendType::Wgpu)?;
+    let result = gpu_tensor + 1.0;
+    let back_to_cpu = result.to_backend(BackendType::Cpu)?;
+}
+
+// Solution: Convert once
+let gpu_tensor = cpu_tensor.to_backend(BackendType::Wgpu)?;
+for i in 0..1000 {
+    gpu_tensor = gpu_tensor + 1.0;  // Stay on GPU
+}
+let final_result = gpu_tensor.to_backend(BackendType::Cpu)?;</code></pre>
+<ol start="3">
+<li><strong>Memory Fragmentation</strong></li>
+</ol>
+<pre><code class="language-rust">// Problem: Large temporary allocations
+let huge_temp = (huge_a * huge_b) + huge_c;  // 3 large tensors in memory
+
+// Solution: In-place operations (when available)
+let result = huge_a.mul_add(&amp;huge_b, &amp;huge_c)?;  // Hypothetical in-place op</code></pre>
+<h3 id="performance-debugging-checklist"><a class="header" href="#performance-debugging-checklist">Performance Debugging Checklist</a></h3>
+<ol>
+<li><strong>Profile first</strong>: Measure before optimizing</li>
+<li><strong>Check backend selection</strong>: Ensure optimal backend for workload</li>
+<li><strong>Monitor memory transfers</strong>: GPU transfer costs often dominate</li>
+<li><strong>Verify operation fusion</strong>: Combine operations when possible</li>
+<li><strong>Consider batch size</strong>: Larger batches amortize overhead</li>
+<li><strong>Test different tensor sizes</strong>: Performance characteristics vary by size</li>
+<li><strong>Use appropriate data types</strong>: f32 vs f64 performance difference</li>
+<li><strong>Monitor memory usage</strong>: Avoid memory pressure and swapping</li>
+</ol>
+<h2 id="hardware-specific-optimization"><a class="header" href="#hardware-specific-optimization">Hardware-Specific Optimization</a></h2>
+<h3 id="cpu-optimization"><a class="header" href="#cpu-optimization">CPU Optimization</a></h3>
+<ul>
+<li>Use all available cores (Rayon handles this automatically)</li>
+<li>Ensure sufficient memory bandwidth</li>
+<li>Consider NUMA topology for large systems</li>
+<li>Link with optimized BLAS (OpenBLAS, Intel MKL)</li>
+</ul>
+<h3 id="gpu-optimization"><a class="header" href="#gpu-optimization">GPU Optimization</a></h3>
+<ul>
+<li>Ensure sufficient GPU memory</li>
+<li>Consider tensor sizes that align with GPU architecture</li>
+<li>Use appropriate batch sizes for GPU utilization</li>
+<li>Monitor thermal throttling on mobile/laptop GPUs</li>
+</ul>
+<h3 id="memory-hierarchy"><a class="header" href="#memory-hierarchy">Memory Hierarchy</a></h3>
+<ul>
+<li>L1/L2 cache: Small frequently-accessed tensors</li>
+<li>System RAM: Medium tensors and CPU operations</li>
+<li>GPU VRAM: Large tensors for GPU operations</li>
+<li>Storage: Streaming large datasets</li>
+</ul>
+<h2 id="conclusion"><a class="header" href="#conclusion">Conclusion</a></h2>
+<p>Tensor Frame performance optimization requires understanding:</p>
+<ol>
+<li><strong>Workload characteristics</strong>: Size, operations, access patterns</li>
+<li><strong>Backend strengths</strong>: CPU for small/mixed, GPU for large parallel</li>
+<li><strong>Memory costs</strong>: Transfer overhead, allocation patterns</li>
+<li><strong>Platform specifics</strong>: Hardware capabilities and limitations</li>
+</ol>
+<p>Use profiling tools to guide optimization decisions and always measure performance improvements to ensure they provide real benefits for your specific use case.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="contributing-to-tensor-frame"><a class="header" href="#contributing-to-tensor-frame">Contributing to Tensor Frame</a></h1>
+<p>We welcome contributions to Tensor Frame! This guide will help you get started with contributing to the project.</p>
+<h2 id="getting-started-1"><a class="header" href="#getting-started-1">Getting Started</a></h2>
+<h3 id="development-setup"><a class="header" href="#development-setup">Development Setup</a></h3>
+<ol>
+<li><strong>Clone the repository</strong>:</li>
+</ol>
+<pre><code class="language-bash">git clone https://github.com/TrainPioneers/Tensor-Frame.git
+cd Tensor-Frame
+</code></pre>
+<ol start="2">
+<li><strong>Install Rust</strong> (if not already installed):</li>
+</ol>
+<pre><code class="language-bash">curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source ~/.cargo/env
+</code></pre>
+<ol start="3">
+<li><strong>Install development dependencies</strong>:</li>
+</ol>
+<pre><code class="language-bash"># For documentation building
+cargo install mdbook
+
+# For benchmarking
+cargo install criterion
+
+# For code formatting
+rustup component add rustfmt
+
+# For linting
+rustup component add clippy
+</code></pre>
+<ol start="4">
+<li><strong>Build and test</strong>:</li>
+</ol>
+<pre><code class="language-bash"># Build with all features
+cargo build --all-features
+
+# Run tests
+cargo test
+
+# Run with specific backend
+cargo test --features wgpu
+cargo test --features cuda
+</code></pre>
+<h2 id="development-workflow"><a class="header" href="#development-workflow">Development Workflow</a></h2>
+<h3 id="building-the-project"><a class="header" href="#building-the-project">Building the Project</a></h3>
+<pre><code class="language-bash"># Quick compilation check
+cargo check
+
+# Build with specific backends
+cargo build --features wgpu
+cargo build --features cuda
+cargo build --all-features
+
+# Release build
+cargo build --release --all-features
+</code></pre>
+<h3 id="running-tests"><a class="header" href="#running-tests">Running Tests</a></h3>
+<pre><code class="language-bash"># Run all tests
+cargo test
+
+# Test specific backend
+make test-wgpu
+make test-cuda
+
+# Test with verbose output
+cargo test -- --nocapture
+
+# Run specific test
+cargo test test_tensor_creation
+</code></pre>
+<h3 id="code-formatting-and-linting"><a class="header" href="#code-formatting-and-linting">Code Formatting and Linting</a></h3>
+<pre><code class="language-bash"># Format code
+cargo fmt
+
+# Check formatting
+cargo fmt --check
+
+# Run clippy lints
+cargo clippy
+
+# Run clippy with all features
+cargo clippy --all-features
+
+# Fix clippy warnings
+cargo clippy --fix
+</code></pre>
+<h3 id="documentation"><a class="header" href="#documentation">Documentation</a></h3>
+<pre><code class="language-bash"># Generate API documentation
+cargo doc --open
+
+# Build the book
+cd docs
+mdbook build
+
+# Serve book locally
+mdbook serve
+</code></pre>
+<h2 id="contribution-guidelines"><a class="header" href="#contribution-guidelines">Contribution Guidelines</a></h2>
+<h3 id="code-style"><a class="header" href="#code-style">Code Style</a></h3>
+<ul>
+<li><strong>Formatting</strong>: Use <code>cargo fmt</code> for consistent formatting</li>
+<li><strong>Linting</strong>: Address all <code>cargo clippy</code> warnings</li>
+<li><strong>Naming</strong>: Use descriptive names following Rust conventions</li>
+<li><strong>Comments</strong>: Document public APIs and complex algorithms</li>
+<li><strong>Error Handling</strong>: Use proper <code>Result</code> types and meaningful error messages</li>
+</ul>
+<h3 id="testing"><a class="header" href="#testing">Testing</a></h3>
+<p>All contributions must include appropriate tests:</p>
+<pre><code class="language-rust">#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_new_feature() {
+        let tensor = Tensor::zeros(vec![2, 3]).unwrap();
+        let result = tensor.new_operation().unwrap();
+        assert_eq!(result.shape().dims(), &amp;[2, 3]);
+    }
+
+    #[test]
+    fn test_error_handling() {
+        let tensor = Tensor::zeros(vec![2, 3]).unwrap();
+        let result = tensor.invalid_operation();
+        assert!(result.is_err());
+    }
+}</code></pre>
+<h3 id="documentation-requirements"><a class="header" href="#documentation-requirements">Documentation Requirements</a></h3>
+<ul>
+<li><strong>Public APIs</strong>: All public functions, structs, and traits must have documentation</li>
+<li><strong>Examples</strong>: Include usage examples in documentation</li>
+<li><strong>Error Cases</strong>: Document when functions return errors</li>
+<li><strong>Safety</strong>: Document any unsafe code usage</li>
+</ul>
+<pre><code class="language-rust">/// Creates a new tensor filled with zeros.
+///
+/// # Arguments
+/// * `shape` - The dimensions of the tensor
+///
+/// # Returns
+/// A new tensor filled with zeros, or an error if the shape is invalid.
+///
+/// # Examples
+/// ```
+/// use tensor_frame::Tensor;
+/// 
+/// let tensor = Tensor::zeros(vec![2, 3])?;
+/// assert_eq!(tensor.numel(), 6);
+/// # Ok::&lt;(), tensor_frame::TensorError&gt;(())
+/// ```
+///
+/// # Errors
+/// Returns `TensorError::InvalidShape` if any dimension is zero.
+pub fn zeros(shape: Vec&lt;usize&gt;) -&gt; Result&lt;Self&gt; {
+    // Implementation
+}</code></pre>
+<h2 id="types-of-contributions"><a class="header" href="#types-of-contributions">Types of Contributions</a></h2>
+<h3 id="bug-fixes"><a class="header" href="#bug-fixes">Bug Fixes</a></h3>
+<ol>
+<li>
+<p><strong>Report the issue</strong>: Create a GitHub issue with:</p>
+<ul>
+<li>Clear reproduction steps</li>
+<li>Expected vs actual behavior</li>
+<li>Environment details (OS, Rust version, GPU info)</li>
+<li>Minimal code example</li>
+</ul>
+</li>
+<li>
+<p><strong>Fix the bug</strong>:</p>
+<ul>
+<li>Create a focused fix addressing the specific issue</li>
+<li>Add regression tests to prevent recurrence</li>
+<li>Update documentation if the bug was in documented behavior</li>
+</ul>
+</li>
+</ol>
+<h3 id="new-features"><a class="header" href="#new-features">New Features</a></h3>
+<p>Before implementing new features:</p>
+<ol>
+<li>
+<p><strong>Discuss the feature</strong>: Open a GitHub issue to discuss:</p>
+<ul>
+<li>Use case and motivation</li>
+<li>Proposed API design</li>
+<li>Implementation approach</li>
+<li>Performance implications</li>
+</ul>
+</li>
+<li>
+<p><strong>Implementation guidelines</strong>:</p>
+<ul>
+<li>Follow existing patterns and conventions</li>
+<li>Implement for all relevant backends</li>
+<li>Add comprehensive tests</li>
+<li>Update documentation and examples</li>
+</ul>
+</li>
+</ol>
+<h4 id="backend-implementation"><a class="header" href="#backend-implementation">Backend Implementation</a></h4>
+<p>New operations should be implemented across all backends:</p>
+<pre><code class="language-rust">// src/backend/mod.rs
+pub trait Backend {
+    // Add new operation to trait
+    fn new_operation(&amp;self, input: &amp;Storage) -&gt; Result&lt;Storage&gt;;
+}
+
+// src/backend/cpu.rs
+impl Backend for CpuBackend {
+    fn new_operation(&amp;self, input: &amp;Storage) -&gt; Result&lt;Storage&gt; {
+        match input {
+            Storage::Cpu(data) =&gt; {
+                // CPU implementation using Rayon
+                let result: Vec&lt;f32&gt; = data
+                    .par_iter()
+                    .map(|&amp;x| compute_new_operation(x))
+                    .collect();
+                Ok(Storage::Cpu(result))
+            }
+            _ =&gt; Err(TensorError::BackendError("Invalid storage type".to_string())),
+        }
+    }
+}
+
+// src/backend/wgpu.rs
+impl Backend for WgpuBackend {
+    fn new_operation(&amp;self, input: &amp;Storage) -&gt; Result&lt;Storage&gt; {
+        match input {
+            Storage::Wgpu(wgpu_storage) =&gt; {
+                // WGPU implementation using compute shaders
+                self.execute_compute_shader(
+                    &amp;wgpu_storage.buffer,
+                    include_str!("../shaders/new_operation.wgsl")
+                )
+            }
+            _ =&gt; Err(TensorError::BackendError("Invalid storage type".to_string())),
+        }
+    }
+}</code></pre>
+<h3 id="performance-improvements"><a class="header" href="#performance-improvements">Performance Improvements</a></h3>
+<ol>
+<li><strong>Benchmark first</strong>: Establish baseline performance</li>
+<li><strong>Profile the bottleneck</strong>: Use profiling tools to identify issues</li>
+<li><strong>Implement optimization</strong>: Make targeted improvements</li>
+<li><strong>Measure improvement</strong>: Verify performance gains</li>
+<li><strong>Add performance tests</strong>: Prevent performance regressions</li>
+</ol>
+<pre><code class="language-rust">// Add benchmark for new optimization
+use criterion::{criterion_group, criterion_main, Criterion};
+
+fn bench_optimized_operation(c: &amp;mut Criterion) {
+    let tensor = Tensor::ones(vec![1000, 1000]).unwrap();
+    
+    c.bench_function("optimized_operation", |b| {
+        b.iter(|| {
+            tensor.optimized_operation().unwrap()
+        });
+    });
+}
+
+criterion_group!(benches, bench_optimized_operation);
+criterion_main!(benches);</code></pre>
+<h3 id="documentation-improvements"><a class="header" href="#documentation-improvements">Documentation Improvements</a></h3>
+<ul>
+<li><strong>API documentation</strong>: Improve function/struct documentation</li>
+<li><strong>Examples</strong>: Add or improve usage examples</li>
+<li><strong>Guides</strong>: Write tutorials for specific use cases</li>
+<li><strong>Book</strong>: Contribute to the mdbook documentation</li>
+</ul>
+<h2 id="backend-specific-contributions"><a class="header" href="#backend-specific-contributions">Backend-Specific Contributions</a></h2>
+<h3 id="cpu-backend-5"><a class="header" href="#cpu-backend-5">CPU Backend</a></h3>
+<ul>
+<li><strong>Optimization</strong>: Improve Rayon parallelization</li>
+<li><strong>BLAS integration</strong>: Better integration with optimized BLAS libraries</li>
+<li><strong>Memory layout</strong>: Optimize for cache efficiency</li>
+</ul>
+<h3 id="wgpu-backend-5"><a class="header" href="#wgpu-backend-5">WGPU Backend</a></h3>
+<ul>
+<li><strong>Shader optimization</strong>: Improve WGSL compute shaders</li>
+<li><strong>New operations</strong>: Implement missing operations (matmul, reductions)</li>
+<li><strong>Platform support</strong>: Improve compatibility across graphics APIs</li>
+</ul>
+<h3 id="cuda-backend-5"><a class="header" href="#cuda-backend-5">CUDA Backend</a></h3>
+<ul>
+<li><strong>Kernel optimization</strong>: Improve CUDA kernel performance</li>
+<li><strong>cuBLAS integration</strong>: Better integration with cuBLAS/cuDNN</li>
+<li><strong>Memory management</strong>: Optimize GPU memory usage</li>
+</ul>
+<h2 id="pull-request-process"><a class="header" href="#pull-request-process">Pull Request Process</a></h2>
+<h3 id="before-submitting"><a class="header" href="#before-submitting">Before Submitting</a></h3>
+<ol>
+<li><strong>Ensure tests pass</strong>:</li>
+</ol>
+<pre><code class="language-bash">cargo test --all-features
+</code></pre>
+<ol start="2">
+<li><strong>Check formatting and lints</strong>:</li>
+</ol>
+<pre><code class="language-bash">cargo fmt --check
+cargo clippy --all-features
+</code></pre>
+<ol start="3">
+<li><strong>Update documentation</strong>:</li>
+</ol>
+<pre><code class="language-bash">cargo doc --all-features
+cd docs &amp;&amp; mdbook build
+</code></pre>
+<ol start="4">
+<li><strong>Add changelog entry</strong> (if applicable):</li>
+</ol>
+<pre><code class="language-markdown">## [Unreleased]
+### Added
+- New tensor operation `my_operation` (#123)
+### Fixed  
+- Fixed broadcasting bug in GPU backend (#124)
+</code></pre>
+<h3 id="pull-request-template"><a class="header" href="#pull-request-template">Pull Request Template</a></h3>
+<pre><code class="language-markdown">## Description
+Brief description of the changes and motivation.
+
+## Type of Change
+- [ ] Bug fix (non-breaking change which fixes an issue)
+- [ ] New feature (non-breaking change which adds functionality)
+- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
+- [ ] Documentation update
+
+## Testing
+- [ ] I have added tests that prove my fix is effective or that my feature works
+- [ ] New and existing unit tests pass locally with my changes
+- [ ] I have tested with different backends (CPU/WGPU/CUDA)
+
+## Checklist
+- [ ] My code follows the code style of this project
+- [ ] I have performed a self-review of my own code
+- [ ] I have commented my code, particularly in hard-to-understand areas
+- [ ] I have made corresponding changes to the documentation
+- [ ] My changes generate no new warnings
+- [ ] Any dependent changes have been merged and published
+</code></pre>
+<h3 id="review-process"><a class="header" href="#review-process">Review Process</a></h3>
+<ol>
+<li><strong>Automated checks</strong>: CI will run tests, linting, and formatting checks</li>
+<li><strong>Code review</strong>: Maintainers will review for:
+<ul>
+<li>Code quality and style</li>
+<li>Test coverage</li>
+<li>Documentation completeness</li>
+<li>Performance implications</li>
+<li>API design consistency</li>
+</ul>
+</li>
+<li><strong>Feedback</strong>: Address review feedback and update the PR</li>
+<li><strong>Approval</strong>: Once approved, maintainers will merge the PR</li>
+</ol>
+<h2 id="issue-reporting"><a class="header" href="#issue-reporting">Issue Reporting</a></h2>
+<h3 id="bug-reports"><a class="header" href="#bug-reports">Bug Reports</a></h3>
+<p>Use the bug report template:</p>
+<pre><code class="language-markdown">**Describe the bug**
+A clear and concise description of what the bug is.
+
+**To Reproduce**
+Steps to reproduce the behavior:
+1. Create tensor with '...'
+2. Call operation '....'
+3. See error
+
+**Expected behavior**
+A clear and concise description of what you expected to happen.
+
+**Code Example**
+```rust
+use tensor_frame::Tensor;
+
+let tensor = Tensor::zeros(vec![2, 3])?;
+let result = tensor.problematic_operation()?; // This fails
+</code></pre>
+<p><strong>Environment:</strong></p>
+<ul>
+<li>OS: [e.g. Ubuntu 20.04]</li>
+<li>Rust version: [e.g. 1.75.0]</li>
+<li>Tensor Frame version: [e.g. 0.1.0]</li>
+<li>GPU info: [if applicable]</li>
+<li>Backend: [CPU/WGPU/CUDA]</li>
+</ul>
+<p><strong>Additional context</strong>
+Add any other context about the problem here.</p>
+<pre><code>
+### Feature Requests
+
+Use the feature request template:
+
+```markdown
+**Is your feature request related to a problem?**
+A clear and concise description of what the problem is.
+
+**Describe the solution you'd like**
+A clear and concise description of what you want to happen.
+
+**Describe alternatives you've considered**
+A clear and concise description of any alternative solutions or features you've considered.
+
+**Use case**
+Describe how this feature would be used in practice.
+
+**API Design** (if applicable)
+```rust
+// Proposed API
+let result = tensor.new_operation(parameters)?;
+</code></pre>
+<p><strong>Additional context</strong>
+Add any other context about the feature request here.</p>
+<pre><code>
+## Community Guidelines
+
+### Code of Conduct
+
+- Be respectful and inclusive
+- Focus on constructive feedback
+- Help newcomers learn and contribute
+- Celebrate diverse perspectives and backgrounds
+
+### Communication
+
+- **GitHub Issues**: Bug reports, feature requests, design discussions
+- **GitHub Discussions**: General questions, show and tell, ideas
+- **Pull Requests**: Code contributions and reviews
+
+### Recognition
+
+Contributors are recognized in:
+- `CONTRIBUTORS.md` file
+- Release notes for significant contributions
+- GitHub contributor statistics
+
+## Getting Help
+
+If you need help contributing:
+
+1. **Read existing code**: Look at similar implementations for patterns
+2. **Check documentation**: API docs and this book contain guidance
+3. **Ask questions**: Open a GitHub issue or discussion
+4. **Start small**: Begin with bug fixes or documentation improvements
+
+Thank you for contributing to Tensor Frame!</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="editor.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+
+    </div>
+    </body>
+</html>

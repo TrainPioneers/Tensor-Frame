@@ -1,0 +1,579 @@
+<!DOCTYPE HTML>
+<html lang="en" class="navy sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Broadcasting - Tensor Frame Documentation</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="A high-performance, PyTorch-like tensor library for Rust with multiple computational backends">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "navy";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('navy')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Tensor Frame Documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/TrainPioneers/Tensor-Frame" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="broadcasting-examples"><a class="header" href="#broadcasting-examples">Broadcasting Examples</a></h1>
+<p>Broadcasting is one of the most powerful features in Tensor Frame, allowing operations between tensors of different shapes. This guide provides comprehensive examples of broadcasting patterns and best practices.</p>
+<h2 id="broadcasting-rules"><a class="header" href="#broadcasting-rules">Broadcasting Rules</a></h2>
+<p>Tensor Frame follows NumPy/PyTorch broadcasting rules:</p>
+<ol>
+<li><strong>Alignment</strong>: Shapes are compared element-wise from the trailing dimension</li>
+<li><strong>Size 1 Expansion</strong>: Dimensions of size 1 are expanded to match</li>
+<li><strong>Missing Dimensions</strong>: Missing leading dimensions are treated as size 1</li>
+<li><strong>Compatibility</strong>: Dimensions must be either equal, or one must be 1</li>
+</ol>
+<h2 id="basic-broadcasting-examples"><a class="header" href="#basic-broadcasting-examples">Basic Broadcasting Examples</a></h2>
+<h3 id="scalar-broadcasting"><a class="header" href="#scalar-broadcasting">Scalar Broadcasting</a></h3>
+<pre><code class="language-rust">use tensor_frame::{Tensor, Result};
+
+fn scalar_broadcasting() -&gt; Result&lt;()&gt; {
+    // Create a base tensor
+    let tensor = Tensor::from_vec(vec![2.0, 4.0, 6.0, 8.0], vec![2, 2])?;
+    println!("Original tensor:\n{}\n", tensor);
+    
+    // Scalar tensor for broadcasting
+    let scalar = Tensor::from_vec(vec![2.0], vec![])?;
+    
+    // All operations support broadcasting
+    let add_result = (tensor.clone() + scalar.clone())?;
+    println!("Tensor + 2.0:\n{}\n", add_result);
+    
+    let sub_result = (tensor.clone() - scalar.clone())?;
+    println!("Tensor - 2.0:\n{}\n", sub_result);
+    
+    let mul_result = (tensor.clone() * scalar.clone())?;
+    println!("Tensor * 2.0:\n{}\n", mul_result);
+    
+    let div_result = (tensor.clone() / scalar.clone())?;
+    println!("Tensor / 2.0:\n{}\n", div_result);
+    
+    Ok(())
+}</code></pre>
+<h3 id="vector-broadcasting"><a class="header" href="#vector-broadcasting">Vector Broadcasting</a></h3>
+<pre><code class="language-rust">fn vector_broadcasting() -&gt; Result&lt;()&gt; {
+    // Matrix-vector operations
+    let matrix = Tensor::from_vec(
+        vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
+        vec![2, 3]
+    )?;
+    let vector = Tensor::from_vec(vec![10.0, 20.0, 30.0], vec![3])?;
+    
+    println!("Matrix (2x3):\n{}\n", matrix);
+    println!("Vector (3,):\n{}\n", vector);
+    
+    // All arithmetic operations support broadcasting
+    let add_result = (matrix.clone() + vector.clone())?;
+    println!("Matrix + Vector:\n{}\n", add_result);
+    
+    let mul_result = (matrix.clone() * vector.clone())?;
+    println!("Matrix * Vector (element-wise):\n{}\n", mul_result);
+    
+    // Row vector broadcasting
+    let row_vector = Tensor::from_vec(vec![100.0, 200.0], vec![2, 1])?;
+    let row_add = (matrix.clone() + row_vector.clone())?;
+    let row_sub = (matrix.clone() - row_vector.clone())?;
+    println!("Matrix + Row Vector (2x1):\n{}\n", row_add);
+    println!("Matrix - Row Vector (2x1):\n{}\n", row_sub);
+    
+    // Complex broadcasting example
+    let a = Tensor::from_vec(vec![10.0, 20.0], vec![2, 1])?;
+    let b = Tensor::from_vec(vec![1.0, 2.0, 3.0], vec![1, 3])?;
+    let complex_result = (a / b)?;  // Broadcasting: [2,1] / [1,3] -&gt; [2,3]
+    println!("Complex broadcasting [2,1] / [1,3]:\n{}\n", complex_result);
+    
+    Ok(())
+}</code></pre>
+<h2 id="advanced-broadcasting-patterns"><a class="header" href="#advanced-broadcasting-patterns">Advanced Broadcasting Patterns</a></h2>
+<h3 id="multi-dimensional-broadcasting"><a class="header" href="#multi-dimensional-broadcasting">Multi-dimensional Broadcasting</a></h3>
+<pre><code class="language-rust">fn multidimensional_broadcasting() -&gt; Result&lt;()&gt; {
+    // 3D tensor broadcasting
+    let tensor_3d = Tensor::ones(vec![2, 3, 4])?;     // Shape: [2, 3, 4]
+    let tensor_2d = Tensor::ones(vec![3, 4])?;        // Shape: [3, 4]
+    let tensor_1d = Tensor::ones(vec![4])?;           // Shape: [4]
+    
+    println!("3D tensor shape: {:?}", tensor_3d.shape().dims());
+    println!("2D tensor shape: {:?}", tensor_2d.shape().dims());
+    println!("1D tensor shape: {:?}", tensor_1d.shape().dims());
+    
+    // 3D + 2D broadcasting: [2,3,4] + [3,4] -&gt; [2,3,4]
+    let result_3d_2d = &amp;tensor_3d + &amp;tensor_2d;
+    println!("3D + 2D result shape: {:?}", result_3d_2d.shape().dims());
+    
+    // 3D + 1D broadcasting: [2,3,4] + [4] -&gt; [2,3,4]
+    let result_3d_1d = &amp;tensor_3d + &amp;tensor_1d;
+    println!("3D + 1D result shape: {:?}", result_3d_1d.shape().dims());
+    
+    // Complex multi-dimensional broadcasting
+    let a = Tensor::ones(vec![1, 3, 1])?;             // Shape: [1, 3, 1]
+    let b = Tensor::ones(vec![2, 1, 4])?;             // Shape: [2, 1, 4]
+    let complex_result = &amp;a + &amp;b;                     // Result: [2, 3, 4]
+    
+    println!("Complex broadcasting:");
+    println!("  A shape: {:?}", a.shape().dims());
+    println!("  B shape: {:?}", b.shape().dims());
+    println!("  Result shape: {:?}", complex_result.shape().dims());
+    
+    Ok(())
+}</code></pre>
+<h3 id="broadcasting-with-size-1-dimensions"><a class="header" href="#broadcasting-with-size-1-dimensions">Broadcasting with Size-1 Dimensions</a></h3>
+<pre><code class="language-rust">fn size_one_broadcasting() -&gt; Result&lt;()&gt; {
+    // Different ways to create broadcastable tensors
+    let base = Tensor::from_vec(
+        vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
+        vec![2, 3]
+    )?;
+    
+    // Row broadcasting (1 x N)
+    let row_broadcast = Tensor::from_vec(vec![10.0, 20.0, 30.0], vec![1, 3])?;
+    let row_result = &amp;base + &amp;row_broadcast;
+    println!("Row broadcasting [2,3] + [1,3]:\n{}\n", row_result);
+    
+    // Column broadcasting (N x 1)
+    let col_broadcast = Tensor::from_vec(vec![100.0, 200.0], vec![2, 1])?;
+    let col_result = &amp;base + &amp;col_broadcast;
+    println!("Column broadcasting [2,3] + [2,1]:\n{}\n", col_result);
+    
+    // Both dimensions broadcast (1 x 1)
+    let scalar_as_tensor = Tensor::from_vec(vec![1000.0], vec![1, 1])?;
+    let scalar_result = &amp;base + &amp;scalar_as_tensor;
+    println!("Scalar broadcasting [2,3] + [1,1]:\n{}\n", scalar_result);
+    
+    Ok(())
+}</code></pre>
+<h2 id="broadcasting-in-practice"><a class="header" href="#broadcasting-in-practice">Broadcasting in Practice</a></h2>
+<h3 id="machine-learning-patterns"><a class="header" href="#machine-learning-patterns">Machine Learning Patterns</a></h3>
+<pre><code class="language-rust">fn ml_broadcasting_patterns() -&gt; Result&lt;()&gt; {
+    // Batch normalization pattern
+    let batch_data = Tensor::ones(vec![32, 128])?;    // 32 samples, 128 features
+    let mean = Tensor::zeros(vec![128])?;             // Feature means
+    let std = Tensor::ones(vec![128])?;               // Feature standard deviations
+    
+    // Normalize: (x - mean) / std
+    let normalized = (&amp;batch_data - &amp;mean) / &amp;std;
+    println!("Batch normalization result shape: {:?}", normalized.shape().dims());
+    
+    // Bias addition pattern  
+    let linear_output = Tensor::ones(vec![32, 10])?;  // Batch size 32, 10 classes
+    let bias = Tensor::from_vec(
+        vec![0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+        vec![10]
+    )?;
+    
+    let biased_output = &amp;linear_output + &amp;bias;
+    println!("Bias addition result shape: {:?}", biased_output.shape().dims());
+    
+    // Attention score broadcasting
+    let queries = Tensor::ones(vec![32, 8, 64])?;     // [batch, heads, dim]
+    let attention_weights = Tensor::ones(vec![32, 8, 1])?;  // [batch, heads, 1]
+    
+    let weighted_queries = &amp;queries * &amp;attention_weights;
+    println!("Attention weighting result shape: {:?}", weighted_queries.shape().dims());
+    
+    Ok(())
+}</code></pre>
+<h3 id="image-processing-patterns"><a class="header" href="#image-processing-patterns">Image Processing Patterns</a></h3>
+<pre><code class="language-rust">fn image_broadcasting_patterns() -&gt; Result&lt;()&gt; {
+    // Image batch processing
+    let images = Tensor::ones(vec![4, 3, 224, 224])?;  // [batch, channels, height, width]
+    
+    // Channel-wise normalization
+    let channel_mean = Tensor::from_vec(
+        vec![0.485, 0.456, 0.406],  // ImageNet means
+        vec![1, 3, 1, 1]
+    )?;
+    let channel_std = Tensor::from_vec(
+        vec![0.229, 0.224, 0.225],  // ImageNet stds
+        vec![1, 3, 1, 1]
+    )?;
+    
+    let normalized_images = (&amp;images - &amp;channel_mean) / &amp;channel_std;
+    println!("Image normalization result shape: {:?}", normalized_images.shape().dims());
+    
+    // Pixel-wise operations
+    let brightness_adjustment = Tensor::from_vec(vec![0.1], vec![1, 1, 1, 1])?;
+    let brightened = &amp;images + &amp;brightness_adjustment;
+    println!("Brightness adjustment result shape: {:?}", brightened.shape().dims());
+    
+    Ok(())
+}</code></pre>
+<h2 id="performance-considerations"><a class="header" href="#performance-considerations">Performance Considerations</a></h2>
+<h3 id="efficient-broadcasting"><a class="header" href="#efficient-broadcasting">Efficient Broadcasting</a></h3>
+<pre><code class="language-rust">use std::time::Instant;
+
+fn broadcasting_performance() -&gt; Result&lt;()&gt; {
+    // Efficient: Broadcasting avoids large intermediate tensors
+    let large_matrix = Tensor::ones(vec![1000, 1000])?;
+    let small_vector = Tensor::ones(vec![1000])?;
+    
+    let start = Instant::now();
+    let efficient_result = &amp;large_matrix + &amp;small_vector;  // Broadcasting
+    let efficient_time = start.elapsed();
+    
+    println!("Efficient broadcasting: {:?}", efficient_time);
+    
+    // Less efficient: Explicit expansion (don't do this!)
+    let start = Instant::now();
+    let expanded_vector = small_vector.reshape(vec![1, 1000])?;
+    // Note: This would need manual tiling which isn't implemented
+    // let manual_result = &amp;large_matrix + &amp;expanded_vector;
+    let manual_time = start.elapsed();
+    
+    println!("Manual expansion overhead: {:?}", manual_time);
+    
+    Ok(())
+}</code></pre>
+<h3 id="memory-efficient-patterns"><a class="header" href="#memory-efficient-patterns">Memory-Efficient Patterns</a></h3>
+<pre><code class="language-rust">fn memory_efficient_broadcasting() -&gt; Result&lt;()&gt; {
+    // Good: Broadcasting reuses memory
+    let data = Tensor::ones(vec![1000, 500])?;
+    let scale_factor = Tensor::from_vec(vec![2.0], vec![1])?;
+    
+    let scaled = &amp;data * &amp;scale_factor;  // Memory efficient
+    
+    // Avoid: Creating large intermediate tensors
+    // let large_scale = scale_factor.broadcast_to(vec![1000, 500])?;  // Wasteful
+    // let scaled = &amp;data * &amp;large_scale;
+    
+    println!("Memory-efficient scaling completed");
+    
+    Ok(())
+}</code></pre>
+<h2 id="common-broadcasting-errors"><a class="header" href="#common-broadcasting-errors">Common Broadcasting Errors</a></h2>
+<h3 id="shape-incompatibility"><a class="header" href="#shape-incompatibility">Shape Incompatibility</a></h3>
+<pre><code class="language-rust">fn broadcasting_errors() -&gt; Result&lt;()&gt; {
+    // These will fail - incompatible shapes
+    let a = Tensor::ones(vec![3, 4])?;
+    let b = Tensor::ones(vec![2, 4])?;  // Different first dimension, not 1
+    
+    match &amp;a + &amp;b {
+        Ok(_) =&gt; println!("Unexpected success"),
+        Err(e) =&gt; println!("Expected error - incompatible shapes: {}", e),
+    }
+    
+    // These will work - compatible shapes
+    let c = Tensor::ones(vec![1, 4])?;  // First dimension is 1
+    let success = &amp;a + &amp;c;
+    println!("Compatible shapes work: {:?}", success.shape().dims());
+    
+    Ok(())
+}</code></pre>
+<h2 id="broadcasting-visualization"><a class="header" href="#broadcasting-visualization">Broadcasting Visualization</a></h2>
+<h3 id="understanding-shape-alignment"><a class="header" href="#understanding-shape-alignment">Understanding Shape Alignment</a></h3>
+<pre><code class="language-rust">fn visualize_broadcasting() -&gt; Result&lt;()&gt; {
+    println!("Broadcasting visualization:");
+    println!();
+    
+    // Example 1: [2, 3] + [3]
+    println!("Example 1: [2, 3] + [3]");
+    println!("  A: [2, 3]");  
+    println!("  B:    [3]  -&gt;  [1, 3]  (implicit leading 1)");
+    println!("  Result: [2, 3]");
+    println!();
+    
+    // Example 2: [4, 1, 5] + [3, 5]
+    println!("Example 2: [4, 1, 5] + [3, 5]");
+    println!("  A: [4, 1, 5]");
+    println!("  B:    [3, 5]  -&gt;  [1, 3, 5]  (implicit leading 1)");
+    println!("  Result: [4, 3, 5]  (1 broadcasts to 3, 4)");
+    println!();
+    
+    // Example 3: Incompatible
+    println!("Example 3: [3, 4] + [2, 4] - INCOMPATIBLE");
+    println!("  A: [3, 4]");
+    println!("  B: [2, 4]");
+    println!("  Error: 3 and 2 cannot broadcast (neither is 1)");
+    println!();
+    
+    Ok(())
+}</code></pre>
+<h2 id="best-practices"><a class="header" href="#best-practices">Best Practices</a></h2>
+<h3 id="1-design-for-broadcasting"><a class="header" href="#1-design-for-broadcasting">1. Design for Broadcasting</a></h3>
+<pre><code class="language-rust">// Good: Design tensors with broadcasting in mind
+let batch_size = 32;
+let features = 128;
+
+let data = Tensor::ones(vec![batch_size, features])?;
+let weights = Tensor::ones(vec![features])?;          // Broadcastable
+let bias = Tensor::ones(vec![features])?;             // Broadcastable
+
+let output = (&amp;data * &amp;weights) + &amp;bias;  // Clean broadcasting</code></pre>
+<h3 id="2-use-explicit-shapes"><a class="header" href="#2-use-explicit-shapes">2. Use Explicit Shapes</a></h3>
+<pre><code class="language-rust">// Better: Be explicit about intended broadcasting
+let matrix = Tensor::ones(vec![10, 20])?;
+let row_vector = Tensor::ones(vec![1, 20])?;    // Explicit [1, 20]
+let col_vector = Tensor::ones(vec![10, 1])?;    // Explicit [10, 1]
+
+let row_broadcast = &amp;matrix + &amp;row_vector;
+let col_broadcast = &amp;matrix + &amp;col_vector;</code></pre>
+<h3 id="3-document-broadcasting-intent"><a class="header" href="#3-document-broadcasting-intent">3. Document Broadcasting Intent</a></h3>
+<pre><code class="language-rust">/// Applies per-channel normalization to image batch
+/// 
+/// # Arguments
+/// * `images` - Shape [batch, channels, height, width]
+/// * `channel_stats` - Shape [1, channels, 1, 1] for broadcasting
+fn normalize_images(images: &amp;Tensor, channel_stats: &amp;Tensor) -&gt; Result&lt;Tensor&gt; {
+    // Broadcasting: [B,C,H,W] - [1,C,1,1] -&gt; [B,C,H,W]
+    images - channel_stats
+}</code></pre>
+<h3 id="4-validate-shapes-early"><a class="header" href="#4-validate-shapes-early">4. Validate Shapes Early</a></h3>
+<pre><code class="language-rust">fn safe_broadcast_operation(a: &amp;Tensor, b: &amp;Tensor) -&gt; Result&lt;Tensor&gt; {
+    // Check compatibility before expensive operations
+    let a_shape = a.shape().dims();
+    let b_shape = b.shape().dims();
+    
+    // Custom validation logic here
+    if !shapes_are_broadcastable(a_shape, b_shape) {
+        return Err(TensorError::ShapeMismatch {
+            expected: a_shape.to_vec(),
+            got: b_shape.to_vec(),
+        });
+    }
+    
+    // Proceed with operation
+    a + b
+}
+
+fn shapes_are_broadcastable(a: &amp;[usize], b: &amp;[usize]) -&gt; bool {
+    let max_len = a.len().max(b.len());
+    
+    for i in 0..max_len {
+        let a_dim = a.get(a.len().saturating_sub(max_len - i)).unwrap_or(&amp;1);
+        let b_dim = b.get(b.len().saturating_sub(max_len - i)).unwrap_or(&amp;1);
+        
+        if *a_dim != *b_dim &amp;&amp; *a_dim != 1 &amp;&amp; *b_dim != 1 {
+            return false;
+        }
+    }
+    true
+}</code></pre>
+<h2 id="next-steps"><a class="header" href="#next-steps">Next Steps</a></h2>
+<p>After mastering broadcasting:</p>
+<ul>
+<li><a href="./custom-backends.html">Custom Backends</a> - Optimize broadcasting for different backends</li>
+<li><a href="../performance.html">Performance Guide</a> - Advanced broadcasting optimization</li>
+<li><a href="../api/operations.html">API Reference</a> - Detailed operation specifications</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../examples/basic.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../examples/custom-backends.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../examples/basic.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../examples/custom-backends.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="../ace.js"></script>
+        <script src="../mode-rust.js"></script>
+        <script src="../editor.js"></script>
+        <script src="../theme-dawn.js"></script>
+        <script src="../theme-tomorrow_night.js"></script>
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>
