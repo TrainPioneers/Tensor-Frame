@@ -155,8 +155,8 @@ impl WgpuBackend {
             sender.send(result).unwrap();
         });
 
-        // Poll device in wgpu v25
-        let _ = self.device.poll(wgpu::MaintainBase::Wait);
+        // Poll device in wgpu v26
+        let _ = self.device.poll(wgpu::PollType::Wait);
 
         let rt = tokio::runtime::Runtime::new().map_err(|e| {
             TensorError::BackendError(format!("Failed to create tokio runtime: {}", e))
