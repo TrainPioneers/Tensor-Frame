@@ -21,7 +21,7 @@ futures = { version = "0.3.31", optional = true }
 tokio = { version = "1.45", features = ["rt", "rt-multi-thread"], optional = true }
 
 # CUDA dependencies (optional)
-cudarc = { version = "0.17", features = ["cuda-version-from-build-system"], optional = true }
+cudarc = { version = "0.19", features = ["cuda-version-from-build-system"], optional = true }
 
 [features]
 default = ["cpu"]
